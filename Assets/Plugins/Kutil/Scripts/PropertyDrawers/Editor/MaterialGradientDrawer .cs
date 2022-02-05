@@ -95,8 +95,11 @@ namespace Kutil {
             }
 
             if (textureAsset.width != resolution) {
+#if UNITY_2021_1_OR_NEWER
+                textureAsset.Reinitialize(resolution, 1);
+#else
                 textureAsset.Resize(resolution, 1);
-                // textureAsset.Reinitialize(resolution, 1);
+#endif
             }
 
             return textureAsset;

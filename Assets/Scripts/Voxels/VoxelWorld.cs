@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Kutils;
+using Kutil;
 
 /// <summary>
 /// handles chunks. all chunks need to be in a world

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Kutils;
+using Kutil;
 
 /// <summary>
 /// holds data for a single voxel

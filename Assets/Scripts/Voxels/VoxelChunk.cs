@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Kutils;
+using Kutil;
 
 /// <summary>
 /// handles a single chunk of voxels
@@ -41,12 +41,31 @@ public class VoxelChunk : MonoBehaviour {
         for (int i = 0; i < volume; i++) {
             // y,z,x
             Vector3Int position = Pos(i);
-            Voxel voxel = new Voxel { chunk = this, position = position };
+            Voxel voxel = new Voxel{ };
             voxels[i] = voxel;
             // voxel.index = i;
             // voxel.value = 0;
             // if (WorldPosition(i).y < 2) 
         }
         // visuals.CreateMesh(this);
+    }
+    /// <summary>
+    /// position of voxel at index i
+    /// </summary>
+    /// <param name="i"></param>
+    /// <returns>v3int position</returns>
+    public Vector3Int Pos(int i) {
+        Vector3Int pos = Vector3Int.zero;
+        pos.x = i % resolution;
+        pos.z = (i / resolution) % resolution;
+        pos.y = i / floorArea;
+        return pos;
+    }
+    public int IndexAt(Vector3Int pos) => IndexAt(pos.x, pos.y, pos.z);
+    public int IndexAt(int x, int y, int z) {
+        if (x < 0 || x >= resolution || y < 0 || y >= resolution || z < 0 || z >= resolution)
+            return -1;
+        int index = x + y * floorArea + z * resolution;
+        return index;
     }
 }
