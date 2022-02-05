@@ -13,6 +13,8 @@ public class VoxelChunk : MonoBehaviour {
     [SerializeField, HideInInspector] Voxel[] _voxels;
     [SerializeField, HideInInspector] VoxelWorld _world;
 
+    private VoxelRenderer visuals;
+    
     public bool showDebug = false;
 
     public Vector3Int chunkPos { get => _chunkPos; private set => _chunkPos = value; }
@@ -23,17 +25,18 @@ public class VoxelChunk : MonoBehaviour {
     public int floorArea => resolution * resolution;
     public int volume => resolution * resolution * resolution;
 
-    public void Initialize(VoxelWorld world, Vector3Int chunkPos, int resolution, float voxelSize) {
+    public void Initialize(VoxelWorld world, Vector3Int chunkPos, int resolution) {
         this.world = world;
         this.chunkPos = chunkPos;
         this.resolution = resolution;
         // this.voxelSize = voxelSize;
-        // visuals = GetComponent<MeshGen>();
+        visuals = GetComponent<VoxelRenderer>();
         // if (!visuals) {
         //     var mf = gameObject.AddComponent<MeshFilter>();
         //     var mr = gameObject.AddComponent<MeshRenderer>();
         //     visuals = gameObject.AddComponent<MeshGen>();
         // }
+        visuals.Initialize(this);
         FillVoxelsNew();
     }
     protected void FillVoxelsNew() {
@@ -42,15 +45,49 @@ public class VoxelChunk : MonoBehaviour {
             // y,z,x
             Vector3Int position = Pos(i);
             Voxel voxel = new Voxel{ };
+            voxel.shape = Voxel.VoxelShape.cube;
             voxels[i] = voxel;
             // voxel.index = i;
-            // voxel.value = 0;
             // if (WorldPosition(i).y < 2) 
         }
         // visuals.CreateMesh(this);
     }
+    public void Clear() {
+        voxels = null;
+    }
+
+    [ContextMenu("ResetValue")]
+    public void ResetValues() {
+        for (int i = 0; i < volume; i++) {
+            voxels[i].ResetToDefaults();
+        }
+        // Refresh(true);
+    }
+    public void SetData(Voxel[] data) {
+        if (data.Length != volume) {
+            Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
+            return;
+        }
+        for (int i = 0; i < data.Length; i++) {
+            voxels[i].CopyValues(data[i]);
+        }
+    }
+    public void Refresh(bool andNeighbors = false) {
+        visuals.UpdateMesh();
+        if (andNeighbors) {
+            // todo
+            // for (int i = 1; i < VoxelCube.cubePositions.Length; i++) {
+            //     Vector3Int dir = -VoxelCube.cubePositions[i];
+            //     VoxelChunk neighbor = world.GetNeighbor(this, dir);
+            //     if (neighbor) {
+            //         neighbor.Refresh(false);
+            //     }
+            // }
+        }
+    }
+
     /// <summary>
-    /// position of voxel at index i
+    /// local position of voxel at index i
     /// </summary>
     /// <param name="i"></param>
     /// <returns>v3int position</returns>
@@ -67,5 +104,12 @@ public class VoxelChunk : MonoBehaviour {
             return -1;
         int index = x + y * floorArea + z * resolution;
         return index;
+    }
+    public Voxel GetLocalVoxelAt(Vector3Int pos) => GetLocalVoxelAt(IndexAt(pos));
+    public Voxel GetLocalVoxelAt(int index) {
+        if (index >= 0 && index < voxels.Length)
+            return voxels[index];
+        else
+            return null;
     }
 }
