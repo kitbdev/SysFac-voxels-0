@@ -9,7 +9,7 @@ using Kutil;
 public class VoxelWorld : MonoBehaviour {
 
     public float voxelSize = 1;
-    private int defaultChunkResolution = 16;
+    public int defaultChunkResolution = 16;
     // [SerializeField] List<VoxelChunk> world = new List<VoxelChunk>();
 
     [Space]
@@ -18,12 +18,13 @@ public class VoxelWorld : MonoBehaviour {
     [SerializeField] bool genOnStart = false;
 
     UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
-    
-    public float chunkSize => voxelSize * defaultChunkResolution;
 
-    private void Start() {
+    public float chunkSize => voxelSize * defaultChunkResolution;
+    private void OnEnable() {
         chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
-            () => { return Instantiate<GameObject>(voxelChunkPrefab); },
+            () => {
+                return Instantiate(voxelChunkPrefab, transform);
+            },
             (chunk) => { chunk.SetActive(true); },
             (chunk) => { chunk.SetActive(false); },
             (chunk) => {
@@ -34,7 +35,11 @@ public class VoxelWorld : MonoBehaviour {
                 }
             },
             false, 20, 1000);
-
+    }
+    private void OnDisable() {
+        chunkPool.Dispose();
+    }
+    private void Start() {
         if (Application.isPlaying && genOnStart) {
             StartGeneration();
         }
@@ -59,8 +64,7 @@ public class VoxelWorld : MonoBehaviour {
         }
     }
     [ContextMenu("ReGen")]
-    public void StartGeneration()
-    {
+    public void StartGeneration() {
         Clear();
         GenChunk(Vector3Int.zero);
         // AddChunksCube(0, 0, 0, startRes.x, startRes.y, startRes.z);
@@ -68,7 +72,7 @@ public class VoxelWorld : MonoBehaviour {
     public void GenChunk(Vector3Int chunkPos) {
         GameObject chunkgo = chunkPool.Get();
         chunkgo.transform.localPosition = (Vector3)chunkPos * chunkSize;
-        chunkgo.name =  $"chunk {chunkPos.x},{chunkPos.y},{chunkPos.z}";
+        chunkgo.name = $"chunk {chunkPos.x},{chunkPos.y},{chunkPos.z}";
         VoxelChunk chunk = chunkgo.GetComponent<VoxelChunk>();
         chunk.Initialize(this, chunkPos, defaultChunkResolution);
         allChunks.Add(chunk);

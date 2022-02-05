@@ -3,8 +3,19 @@ using System.IO;
 
 namespace Kutil {
     public static class SaveSystem {
+        // public static class JSON{
 
-        static string localPath = Application.dataPath + "/Data/Saves/";
+        // }
+        public static class Local {
+            // public static void Save(string filename, string content, bool overwrite = true) {
+            //     // SaveSystem.SaveLocal(filename, content, overwrite);
+            // }
+        }
+        public static class Persistent {
+
+        }
+
+        static string localPath = Application.dataPath + "/Data/";
         static string persistentPath = Application.persistentDataPath;
         static string savedataext = ".json";
 
@@ -27,6 +38,9 @@ namespace Kutil {
             savePath += savedataext;
             Debug.Log($"Saved to {savePath}!");
             File.WriteAllText(savePath, content);
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
         }
         public static string LoadLocal(string filename) {
             string savePath = localPath + filename + savedataext;

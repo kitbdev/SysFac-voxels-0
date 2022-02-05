@@ -137,8 +137,8 @@ public class VoxelRenderer : MonoBehaviour {
             for (int y = 0; y < chunk.resolution; y++) {
                 for (int z = 0; z < chunk.resolution; z++) {
                     for (int x = 0; x < chunk.resolution; x++) {
-                        // Vector3Int pos = V3IMul(dirx, x) + V3IMul(dirz, z) + V3IMul(absdir, y);
-                        Vector3Int pos = new Vector3Int(x, y, z);//todo
+                        Vector3Int pos = V3IMul(dirx, x) + V3IMul(dirz, z) + V3IMul(absdir, y);
+                        // Vector3Int pos = new Vector3Int(x, y, z);//todo
                         var voxel = chunk.GetLocalVoxelAt(pos);
                         if (voxel.shape != Voxel.VoxelShape.cube && voxel.shape != Voxel.VoxelShape.customcubey) {
                             return;

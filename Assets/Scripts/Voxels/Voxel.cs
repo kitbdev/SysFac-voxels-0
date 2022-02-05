@@ -16,21 +16,21 @@ public class Voxel {
         custom,
     }
     public VoxelShape shape;
-    public int textureId;
+    public int blockId;
     // public Color tint;
     // todo lighting data?
     // todo anim data
 
     public void ResetToDefaults() {
         shape = VoxelShape.cube;
-        textureId = 0;
+        blockId = 0;
     }
     public void CopyValues(Voxel voxel) {
         shape = voxel.shape;
-        textureId = voxel.textureId;
+        blockId = voxel.blockId;
     }
     public override string ToString() {
-        return $"Voxel {shape.ToString()} tex:{textureId}";
+        return $"Voxel {shape.ToString()} tex:{blockId}";
     }
 }
 [System.Serializable]
