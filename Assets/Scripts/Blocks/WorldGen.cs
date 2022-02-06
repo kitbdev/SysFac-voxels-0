@@ -5,8 +5,10 @@ using Kutil;
 
 public class WorldGen : MonoBehaviour {
 
-    public string airblock = "air";
-    public string groundblock = "stone";
+    public BlockTypeRef airBlockref = new BlockTypeRef("air");
+    public BlockTypeRef stoneBlockRef = new BlockTypeRef("stone");
+    public BlockTypeRef grassBlockRef = new BlockTypeRef("grass");
+    public BlockTypeRef dirtBlockRef = new BlockTypeRef("dirt");
 
     VoxelWorld world;
     BlockManager blockManager;
@@ -39,7 +41,14 @@ public class WorldGen : MonoBehaviour {
                 for (int y = 0; y < chunk.resolution; y++) {
                     Vector3Int vlpos = new Vector3Int(x, y, z);
                     Vector3Int vwpos = cpos * chunk.resolution + vlpos;
-                    string touse = vwpos.y > heightmap[hmid] ? airblock : groundblock;
+                    string touse = airBlockref.idname;
+                    if (vwpos.y == heightmap[hmid] - 1) {
+                        touse = grassBlockRef.idname;
+                    } else if (vwpos.y > heightmap[hmid] - 4 && vwpos.y < heightmap[hmid] - 1) {
+                        touse = dirtBlockRef.idname;
+                    } else if (vwpos.y <= heightmap[hmid] - 4) {
+                        touse = stoneBlockRef.idname;
+                    }
                     BlockType blockType = blockManager.GetBlockType(touse);
                     // if (blockType.id > 0) {
                     //     Debug.Log(blockType);

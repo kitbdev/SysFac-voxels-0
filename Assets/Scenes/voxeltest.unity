@@ -677,8 +677,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5327e8f6c05ad104ea0117050b5cc6c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  airblock: air
-  groundblock: stone
+  airBlockref:
+    idname: air
+  stoneBlockRef:
+    idname: stone
+  grassBlockRef:
+    idname: grass
+  dirtBlockRef:
+    idname: dirt
 --- !u!1 &1264246706
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,24 +783,32 @@ MonoBehaviour:
   - id: 0
     idname: air
     displayName: Air
+    textureNameOverride: 
     shape: 0
-    textureId: 0
     isTransparent: 1
     maxStack: 0
     itemid: 0
   - id: 1
     idname: stone
     displayName: Stone
+    textureNameOverride: 
     shape: 1
-    textureId: 0
     isTransparent: 0
     maxStack: 0
     itemid: 0
   - id: 2
     idname: dirt
     displayName: dirt
+    textureNameOverride: 
     shape: 1
-    textureId: 0
+    isTransparent: 0
+    maxStack: 0
+    itemid: 0
+  - id: 3
+    idname: grass
+    displayName: grass
+    textureNameOverride: grass_block_side
+    shape: 1
     isTransparent: 0
     maxStack: 0
     itemid: 0
