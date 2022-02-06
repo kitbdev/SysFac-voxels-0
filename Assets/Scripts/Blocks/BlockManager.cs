@@ -4,6 +4,7 @@ using System.Linq;
 using Kutil;
 using UnityEngine;
 
+[DefaultExecutionOrder(-5)]
 public class BlockManager : Singleton<BlockManager> {
     [System.Serializable]
     class AllBlocks {
@@ -64,7 +65,7 @@ public class BlockManager : Singleton<BlockManager> {
             return Vector2Int.zero;
         } else if (blockTextureAtlas.packDict.ContainsKey(blockType.idname)) {
             Vector2 coord = blockTextureAtlas.packDict[blockType.idname];
-            Debug.Log($"found {blockType} coord {coord}");
+            // Debug.Log($"found {blockType} coord {coord}"); 
             return Vector2Int.FloorToInt(coord);
         } else {
             Debug.LogWarning($"Texture for block {blockType}({blockType.idname}) not found!");

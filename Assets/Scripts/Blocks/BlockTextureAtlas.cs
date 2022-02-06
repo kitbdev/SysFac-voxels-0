@@ -4,32 +4,24 @@ using UnityEngine;
 using Kutil;
 using System.Linq;
 
+[DefaultExecutionOrder(-20)]
 public class BlockTextureAtlas : MonoBehaviour {
 
     [SerializeField] Texture2D _atlas;
     [SerializeField, ReadOnly] int _textureResolution = 16;
     public int atlasSize = 512;
     [SerializeField] Texture2D[] topack;
-    [SerializeField] protected Dictionary<string, Vector2> _packDict = new Dictionary<string, Vector2>();
+	[System.Serializable] public class DictionaryStringVector2 : SerializableDictionary<string, Vector2> {}
+    [SerializeField] protected DictionaryStringVector2 _packDict = new DictionaryStringVector2();
 
     public Texture2D atlas { get => _atlas; protected set => _atlas = value; }
-    public Dictionary<string, Vector2> packDict { get => _packDict; protected set => _packDict = value; }
+    public DictionaryStringVector2 packDict { get => _packDict; protected set => _packDict = value; }
     public int textureResolution { get => _textureResolution; protected set => _textureResolution = value; }
     public float textureBlockScale => ((float)textureResolution) / atlasSize;
 
-    [SerializeField, HideInInspector] KeyValuePair<string, Vector2>[] packDictKeys;
 
     private void Awake() {
         Pack();
-    }
-    private void OnEnable() {
-        if (packDictKeys != null && packDictKeys.Length > 0) {
-            // restore dict
-            packDict = packDictKeys.ToDictionary((kvp) => kvp.Key, (kvp) => kvp.Value);
-        }
-    }
-    private void OnDisable() {
-        packDictKeys = packDict.ToArray();
     }
 
     [ContextMenu("Pack")]
