@@ -33,8 +33,13 @@ public class BlockManager : Singleton<BlockManager> {
     }
     private void OnEnable() {
         LoadData();
-        defBlockMat.mainTexture = blockTextureAtlas.atlas;
+        UpdateMat();
         // blockTypeDict = blockTypes.ToDictionary((b) => b.idname);
+    }
+
+    [ContextMenu("Update mat")]
+    private void UpdateMat() {
+        defBlockMat.mainTexture = blockTextureAtlas.atlas;
     }
 
     public BlockType GetBlockTypeAtIndex(int index) {
