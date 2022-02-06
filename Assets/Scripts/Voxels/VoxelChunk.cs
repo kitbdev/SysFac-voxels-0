@@ -31,11 +31,24 @@ public class VoxelChunk : MonoBehaviour {
         this.resolution = resolution;
         // this.voxelSize = voxelSize;
         visuals = GetComponent<VoxelRenderer>();
-        // if (!visuals) {
-        //     var mf = gameObject.AddComponent<MeshFilter>();
-        //     var mr = gameObject.AddComponent<MeshRenderer>();
-        //     visuals = gameObject.AddComponent<MeshGen>();
-        // }
+        if (!visuals) {
+            //     var mf = gameObject.AddComponent<MeshFilter>();
+            //     var mr = gameObject.AddComponent<MeshRenderer>();
+            visuals = gameObject.AddComponent<VoxelRenderer>();
+        }
+        if (world.enableCollision) {
+            if (!world.useBoxColliders) {
+                gameObject.AddComponent<MeshCollider>();
+            } else {
+                if (gameObject.TryGetComponent<MeshCollider>(out var mcol)) {
+                    if (Application.isPlaying) {
+                        Destroy(mcol);
+                    } else {
+                        DestroyImmediate(mcol);
+                    }
+                }
+            }
+        }
         visuals.Initialize(this);
         FillVoxelsNew();
     }
@@ -43,7 +56,7 @@ public class VoxelChunk : MonoBehaviour {
         voxels = new Voxel[volume];
         for (int i = 0; i < volume; i++) {
             // y,z,x
-            Vector3Int position = Pos(i);
+            Vector3Int position = GetLocalPos(i);
             Voxel voxel = new Voxel { };
             voxel.shape = Voxel.VoxelShape.cube;
             voxels[i] = voxel;
@@ -82,6 +95,12 @@ public class VoxelChunk : MonoBehaviour {
     }
     public void Refresh(bool andNeighbors = false) {
         visuals.UpdateMesh();
+        RemoveBoxColliders();
+        if (world.enableCollision) {
+            if (world.useBoxColliders) {
+                AddBoxColliders();
+            }
+        }
         if (andNeighbors) {
             // todo
             // for (int i = 1; i < VoxelCube.cubePositions.Length; i++) {
@@ -94,12 +113,63 @@ public class VoxelChunk : MonoBehaviour {
         }
     }
 
+    private void AddBoxColliders() {
+        var collgo = new GameObject("col");
+        collgo.transform.parent = transform;
+        collgo.transform.localPosition = Vector3.zero;
+        List<Bounds> surfaceVoxels = new List<Bounds>();
+        for (int i = 0; i < volume; i++) {
+            Vector3Int vpos = GetLocalPos(i);
+            // todo blockdata for collision on/off
+            Voxel voxel = GetLocalVoxelAt(i);
+            if (voxel.blockId == 0) {
+                continue;
+            }
+            bool hidden = IsVoxelHidden(vpos);
+            if (!hidden) {
+                surfaceVoxels.Add(new Bounds(vpos, Vector3.one));
+            }
+        }
+        foreach (var survox in surfaceVoxels) {
+            BoxCollider boxCollider = collgo.AddComponent<BoxCollider>();
+            boxCollider.center = survox.center;
+            boxCollider.size = survox.size;
+        }
+    }
+    private void RemoveBoxColliders() {
+        if (transform.childCount > 0) {
+            if (Application.isPlaying) {
+                Destroy(transform.GetChild(0).gameObject);
+            } else {
+                DestroyImmediate(transform.GetChild(0).gameObject);
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// True if voxel has nontransparent voxels on all sides
+    /// </summary>
+    /// <param name="vpos"></param>
+    /// <returns></returns>
+    public bool IsVoxelHidden(Vector3Int vpos) {
+        bool hidden = true;
+        foreach (Vector3Int dir in VoxelRenderer.dirs) {
+            Voxel voxel = GetLocalVoxelAt(vpos + dir);
+            if (voxel == null || voxel.isTransparent) {
+                hidden = false;
+                break;
+            }
+        }
+        return hidden;
+    }
+
     /// <summary>
     /// local position of voxel at index i
     /// </summary>
     /// <param name="i"></param>
     /// <returns>v3int position</returns>
-    public Vector3Int Pos(int i) {
+    public Vector3Int GetLocalPos(int i) {
         Vector3Int pos = Vector3Int.zero;
         pos.x = i % resolution;
         pos.z = (i / resolution) % resolution;

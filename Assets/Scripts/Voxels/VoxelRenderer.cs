@@ -33,6 +33,7 @@ public class VoxelRenderer : MonoBehaviour {
         ApplyMesh();
     }
     void SetupMesh() {
+        // todo use advanced mesh api to be better and faster
         mesh = new Mesh();
         mesh.name = "Chunk Mesh";
         vertices = new List<Vector3>();
@@ -110,6 +111,7 @@ public class VoxelRenderer : MonoBehaviour {
     void CreateBlock(Vector3Int vpos) {
         // get block type
         var voxel = chunk.GetLocalVoxelAt(vpos);
+        // todo cache this instance and do other performance stuff
         var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
         if (voxel.shape == Voxel.VoxelShape.none) {
             return;
@@ -141,14 +143,13 @@ public class VoxelRenderer : MonoBehaviour {
         // int d = 0;
         {
             Vector3Int normalDir = dirs[d];
-            Vector3Int rightTangent = dirXs[d];
+            Vector3Int rightTangent = dirTangents[d];
             Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
             // cull check
             Voxel coverNeighbor = chunk.GetLocalVoxelAt(vpos + normalDir);
             bool renderFace = coverNeighbor == null
                 // || coverNeighbor.shape == Voxel.VoxelShape.none
                 || coverNeighbor.isTransparent;
-            ;
             // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
             if (!renderFace) {
                 continue;
@@ -176,7 +177,7 @@ public class VoxelRenderer : MonoBehaviour {
         triangles.Add(v1);
     }
 
-    Vector3Int[] dirs = new Vector3Int[6] {
+    public static Vector3Int[] dirs = new Vector3Int[6] {
         new Vector3Int(1,0,0),// right
         new Vector3Int(0,0,1),// forward
         new Vector3Int(0,1,0),// up
@@ -184,7 +185,7 @@ public class VoxelRenderer : MonoBehaviour {
         new Vector3Int(0,0,-1),// back
         new Vector3Int(0,-1,0),// down
         };
-    Vector3Int[] dirXs = new Vector3Int[6] {
+    Vector3Int[] dirTangents = new Vector3Int[6] {
         new Vector3Int(0,0,1),
         new Vector3Int(-1,0,0),
         new Vector3Int(1,0,0),

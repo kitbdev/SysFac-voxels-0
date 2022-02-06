@@ -12,7 +12,8 @@ public class VoxelWorld : MonoBehaviour {
 
     public float voxelSize = 1;
     public int defaultChunkResolution = 16;
-    // [SerializeField] List<VoxelChunk> world = new List<VoxelChunk>();
+    public bool enableCollision = true;
+    public bool useBoxColliders = true;
 
     [Space]
     [SerializeField] GameObject voxelChunkPrefab;

@@ -1,6 +1,7 @@
 // https://answers.unity.com/questions/460727/how-to-serialize-dictionary-with-unity-serializati.html
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Kutil {
@@ -20,9 +21,17 @@ namespace Kutil {
         public void OnBeforeSerialize() {
             keys.Clear();
             values.Clear();
-            foreach (KeyValuePair<TKey, TValue> pair in this) {
-                keys.Add(pair.Key);
-                values.Add(pair.Value);
+            if (typeof(TKey).IsSubclassOf(typeof(UnityEngine.Object)) || typeof(TKey) == typeof(UnityEngine.Object)) {
+                // avoid copying UnityEngine.Objects that have been destroyed in the event that they're used as a key
+                foreach (var element in this.Where(element => element.Key != null)) {
+                    keys.Add(element.Key);
+                    values.Add(element.Value);
+                }
+            } else {
+                foreach (var element in this) {
+                    keys.Add(element.Key);
+                    values.Add(element.Value);
+                }
             }
         }
 
