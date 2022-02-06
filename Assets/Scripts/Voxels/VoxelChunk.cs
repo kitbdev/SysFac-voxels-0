@@ -102,19 +102,22 @@ public class VoxelChunk : MonoBehaviour {
             }
         }
         if (andNeighbors) {
-            // todo
-            // for (int i = 1; i < VoxelCube.cubePositions.Length; i++) {
-            //     Vector3Int dir = -VoxelCube.cubePositions[i];
-            //     VoxelChunk neighbor = world.GetNeighbor(this, dir);
-            //     if (neighbor) {
-            //         neighbor.Refresh(false);
-            //     }
-            // }
+            // updates the 7 neighbors behind, below, and left (otherwise recursion?)
+            for (int i = 1; i < Voxel.cubePositions.Length; i++) {
+                Vector3Int dir = -Voxel.cubePositions[i];
+                VoxelChunk neighbor = world.GetNeighbor(this, dir);
+                if (neighbor) {
+                    neighbor.Refresh(false);
+                }
+            }
         }
+    }
+    public void LocalRefresh(Vector3Int pos, int size){
+
     }
 
     private void AddBoxColliders() {
-        var collgo = new GameObject("col");
+        var collgo = new GameObject($"chunk {chunkPos} col");
         collgo.transform.parent = transform;
         collgo.transform.localPosition = Vector3.zero;
         List<Bounds> surfaceVoxels = new List<Bounds>();
@@ -146,6 +149,25 @@ public class VoxelChunk : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Includes neighbors in other chunks
+    /// </summary>
+    /// <param name="pos">voxel position</param>
+    /// <returns></returns>
+    public Voxel GetVoxelN(Vector3Int localpos) {
+        Voxel voxel = GetLocalVoxelAt(localpos);
+        if (voxel != null) {
+            return voxel;
+        }
+        Vector3Int cdir = new Vector3Int(
+            localpos.x >= resolution ? 1 : (localpos.x < 0 ? -1 : 0),
+            localpos.y >= resolution ? 1 : (localpos.y < 0 ? -1 : 0),
+            localpos.z >= resolution ? 1 : (localpos.z < 0 ? -1 : 0)
+        );
+        localpos -= cdir * resolution;
+        Voxel copy = world.GetChunkAt(chunkPos + cdir)?.GetVoxelN(localpos);
+        return copy;
+    }
 
     /// <summary>
     /// True if voxel has nontransparent voxels on all sides
@@ -154,8 +176,8 @@ public class VoxelChunk : MonoBehaviour {
     /// <returns></returns>
     public bool IsVoxelHidden(Vector3Int vpos) {
         bool hidden = true;
-        foreach (Vector3Int dir in VoxelRenderer.dirs) {
-            Voxel voxel = GetLocalVoxelAt(vpos + dir);
+        foreach (Vector3Int dir in Voxel.unitDirs) {
+            Voxel voxel = GetVoxelN(vpos + dir);
             if (voxel == null || voxel.isTransparent) {
                 hidden = false;
                 break;
@@ -176,14 +198,14 @@ public class VoxelChunk : MonoBehaviour {
         pos.y = i / floorArea;
         return pos;
     }
-    public int IndexAt(Vector3Int pos) => IndexAt(pos.x, pos.y, pos.z);
+    public int IndexAt(Vector3Int localpos) => IndexAt(localpos.x, localpos.y, localpos.z);
     public int IndexAt(int x, int y, int z) {
         if (x < 0 || x >= resolution || y < 0 || y >= resolution || z < 0 || z >= resolution)
             return -1;
         int index = x + y * floorArea + z * resolution;
         return index;
     }
-    public Voxel GetLocalVoxelAt(Vector3Int pos) => GetLocalVoxelAt(IndexAt(pos));
+    public Voxel GetLocalVoxelAt(Vector3Int localpos) => GetLocalVoxelAt(IndexAt(localpos));
     public Voxel GetLocalVoxelAt(int index) {
         if (index >= 0 && index < voxels.Length)
             return voxels[index];

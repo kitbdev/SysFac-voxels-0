@@ -18,6 +18,7 @@ public class LocalChunkLoader : MonoBehaviour {
 
     private void Awake() {
         world ??= GetComponent<VoxelWorld>();
+        // Debug.Log($"ccp:{world.ChunkposToWorldposCenter(Vector3.zero)} fp:{world.ChunkposToWorldpos(Vector3.zero)} ep:{world.ChunkposToWorldpos(Vector3.one)}");
     }
 
     private void Update() {
@@ -32,16 +33,20 @@ public class LocalChunkLoader : MonoBehaviour {
             return;
         }
         validChunks.Clear();
+        // todo currently using chunk the target is in
         foreach (var target in targets) {
             int ccheckDist = (int)(target.radius / world.chunkSize) + 1;
             Vector3Int centerChunk = world.WorldposToChunkpos(target.transform.position);
-            for (int y = -ccheckDist; y < ccheckDist; y++) {
-                for (int x = -ccheckDist; x < ccheckDist; x++) {
-                    for (int z = -ccheckDist; z < ccheckDist; z++) {
+            Vector3 cchunkCenter = world.ChunkposToWorldposCenter(centerChunk);
+            for (int y = -ccheckDist; y <= ccheckDist; y++) {
+                for (int x = -ccheckDist; x <= ccheckDist; x++) {
+                    for (int z = -ccheckDist; z <= ccheckDist; z++) {
                         Vector3Int checkChunk = centerChunk + new Vector3Int(x, y, z);
-                        float chunkDist = Vector3.Distance(target.transform.position, world.ChunkposToWorldposCenter(checkChunk));
+                        Vector3 nChunkCenter = world.ChunkposToWorldposCenter(checkChunk);
+                        float chunkDist = Vector3.Distance(target.transform.position, nChunkCenter);
+                        // float chunkDist = Vector3.Distance(cchunkCenter, nChunkCenter);
                         // todo chunk center check
-                        if (chunkDist < target.radius) {
+                        if (chunkDist <= target.radius) {
                             // in range
                             validChunks.Add(checkChunk);
                         }
@@ -54,5 +59,13 @@ public class LocalChunkLoader : MonoBehaviour {
         var unloadChunks = world.activeChunksPos.Except(validChunks);
         world.LoadChunks(loadChunks.ToArray());
         world.UnloadChunks(unloadChunks.ToArray());
+    }
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = new Color(0.2f, 0.9f, 0.5f, 0.1f);
+        foreach (var target in targets) {
+            Gizmos.DrawSphere(target.transform.position, 0.1f);
+            Gizmos.DrawSphere(target.transform.position, target.radius);
+        }
+        Gizmos.color = Color.white;
     }
 }

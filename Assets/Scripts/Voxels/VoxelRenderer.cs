@@ -139,14 +139,14 @@ public class VoxelRenderer : MonoBehaviour {
             AddTriSquare(vcount, vcount + 1, vcount + 2, vcount + 3);
         }
         // create faces
-        for (int d = 0; d < dirs.Length; d++)
+        for (int d = 0; d < Voxel.unitDirs.Length; d++)
         // int d = 0;
         {
-            Vector3Int normalDir = dirs[d];
+            Vector3Int normalDir = Voxel.unitDirs[d];
             Vector3Int rightTangent = dirTangents[d];
             Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
             // cull check
-            Voxel coverNeighbor = chunk.GetLocalVoxelAt(vpos + normalDir);
+            Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
             bool renderFace = coverNeighbor == null
                 // || coverNeighbor.shape == Voxel.VoxelShape.none
                 || coverNeighbor.isTransparent;
@@ -177,14 +177,6 @@ public class VoxelRenderer : MonoBehaviour {
         triangles.Add(v1);
     }
 
-    public static Vector3Int[] dirs = new Vector3Int[6] {
-        new Vector3Int(1,0,0),// right
-        new Vector3Int(0,0,1),// forward
-        new Vector3Int(0,1,0),// up
-        new Vector3Int(-1,0,0),// left
-        new Vector3Int(0,0,-1),// back
-        new Vector3Int(0,-1,0),// down
-        };
     Vector3Int[] dirTangents = new Vector3Int[6] {
         new Vector3Int(0,0,1),
         new Vector3Int(-1,0,0),

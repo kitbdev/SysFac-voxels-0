@@ -35,14 +35,16 @@ public class WorldGen : MonoBehaviour {
         Voxel[] data = new Voxel[chunk.volume];
         for (int x = 0; x < chunk.resolution; x++) {
             for (int z = 0; z < chunk.resolution; z++) {
-                int coordid = x * chunk.resolution + z;
+                int hmid = x * chunk.resolution + z;
                 for (int y = 0; y < chunk.resolution; y++) {
-                    string touse = y > heightmap[coordid] ? airblock : groundblock;
+                    Vector3Int vlpos = new Vector3Int(x, y, z);
+                    Vector3Int vwpos = cpos * chunk.resolution + vlpos;
+                    string touse = vwpos.y > heightmap[hmid] ? airblock : groundblock;
                     BlockType blockType = blockManager.GetBlockType(touse);
                     // if (blockType.id > 0) {
                     //     Debug.Log(blockType);
                     // }
-                    data[chunk.IndexAt(new Vector3Int(x, y, z))] = new Voxel(blockType);
+                    data[chunk.IndexAt(vlpos)] = new Voxel(blockType);
                 }
             }
         }

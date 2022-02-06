@@ -1,5 +1,6 @@
 using UnityEngine;
 using Kutil;
+using System.Linq;
 
 /// <summary>
 /// holds data for a single voxel
@@ -49,6 +50,33 @@ public class Voxel {
     public override string ToString() {
         return $"Voxel {shape.ToString()} id:{blockId}";
     }
+
+    public static Vector3Int[] GetUnitNeighbors(Vector3Int pos, bool includeSelf = false) {
+        var neighbors = unitDirs.Select((v) => { return v + pos; });
+        if (!includeSelf) {
+            neighbors = neighbors.Skip(1);
+        }
+        return neighbors.ToArray();
+    }
+
+    public static Vector3Int[] unitDirs = new Vector3Int[6] {
+        new Vector3Int(1,0,0),// right
+        new Vector3Int(0,0,1),// forward
+        new Vector3Int(0,1,0),// up
+        new Vector3Int(-1,0,0),// left
+        new Vector3Int(0,0,-1),// back
+        new Vector3Int(0,-1,0),// down
+        };
+    public static Vector3Int[] cubePositions = {
+        new Vector3Int(0,0,0),//0
+        new Vector3Int(1,0,0),//1
+        new Vector3Int(1,0,1),//2
+        new Vector3Int(0,0,1),//3
+        new Vector3Int(0,1,0),//4
+        new Vector3Int(1,1,0),//5
+        new Vector3Int(1,1,1),//6
+        new Vector3Int(0,1,1),//7
+    };
 }
 [System.Serializable]
 public class FatVoxel {

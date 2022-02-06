@@ -62,6 +62,12 @@ public class VoxelWorld : MonoBehaviour {
 
     }
 
+    [ContextMenu("Refresh")]
+    public void RefreshAll() {
+        foreach (var chunk in activeChunks) {
+            chunk.Refresh();
+        }
+    }
     [ContextMenu("Clear")]
     public void Clear() {
         if (activeChunks == null) {
@@ -104,19 +110,19 @@ public class VoxelWorld : MonoBehaviour {
     }
 
     void AddChunks(params Vector3Int[] chunkposs) {
-        // if (!Application.isPlaying)
-        // {
         foreach (var cp in chunkposs) {
             if (HasChunkActiveAt(cp))
                 continue;
             CreateChunk(cp);
         }
-        // }
+        // todo refresh neighbor chunks?
+        // maybe just when loading?
     }
     void RemoveAllChunks() {
         RemoveChunks(activeChunksPos.ToArray());
     }
     void RemoveChunks(params Vector3Int[] chunkposs) {
+        HashSet<Vector3Int> chunksToRefresh = new HashSet<Vector3Int>();
         foreach (var cp in chunkposs) {
             VoxelChunk chunk = GetChunkAt(cp);
             if (!chunk) continue;
@@ -124,6 +130,10 @@ public class VoxelWorld : MonoBehaviour {
             activeChunks.Remove(chunk);
             activeChunksDict.Remove(cp);
             chunkPool.Release(chunk.gameObject);
+            Voxel.GetUnitNeighbors(cp).ToList().ForEach((cp) => chunksToRefresh.Add(cp));
+        }
+        foreach (var cpos in chunksToRefresh.Except(chunkposs)) {
+            GetChunkAt(cpos)?.Refresh();
         }
     }
 
