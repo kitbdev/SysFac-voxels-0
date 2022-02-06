@@ -14,7 +14,7 @@ public class VoxelChunk : MonoBehaviour {
     [SerializeField, HideInInspector] VoxelWorld _world;
 
     private VoxelRenderer visuals;
-    
+
     public bool showDebug = false;
 
     public Vector3Int chunkPos { get => _chunkPos; private set => _chunkPos = value; }
@@ -44,7 +44,7 @@ public class VoxelChunk : MonoBehaviour {
         for (int i = 0; i < volume; i++) {
             // y,z,x
             Vector3Int position = Pos(i);
-            Voxel voxel = new Voxel{ };
+            Voxel voxel = new Voxel { };
             voxel.shape = Voxel.VoxelShape.cube;
             voxels[i] = voxel;
             // voxel.index = i;
@@ -63,12 +63,20 @@ public class VoxelChunk : MonoBehaviour {
         }
         // Refresh(true);
     }
+    public void SetVoxel(int index, Voxel voxel) {
+        voxels[index].CopyValues(voxel);
+    }
+    public void SetAll(Voxel voxel) {
+        for (int i = 0; i < volume; i++) {
+            voxels[i].CopyValues(voxel);
+        }
+    }
     public void SetData(Voxel[] data) {
         if (data.Length != volume) {
             Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
             return;
         }
-        for (int i = 0; i < data.Length; i++) {
+        for (int i = 0; i < volume; i++) {
             voxels[i].CopyValues(data[i]);
         }
     }
@@ -111,5 +119,13 @@ public class VoxelChunk : MonoBehaviour {
             return voxels[index];
         else
             return null;
+    }
+    private void OnDrawGizmos() {
+        if (!showDebug) {
+            return;
+        }
+        Gizmos.color = new Color(0, 0.8f, 0.5f, 0.1f);
+        Gizmos.DrawCube(world.ChunkposToWorldposCenter(chunkPos), world.chunkSize * Vector3.one);
+        Gizmos.color = Color.white;
     }
 }

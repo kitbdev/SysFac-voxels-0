@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Kutil;
+using Unity.Mathematics;
+using System.Linq;
 
 /// <summary>
 /// handles chunks. all chunks need to be in a world
@@ -14,12 +16,17 @@ public class VoxelWorld : MonoBehaviour {
 
     [Space]
     [SerializeField] GameObject voxelChunkPrefab;
-    [SerializeField] List<VoxelChunk> allChunks = new List<VoxelChunk>();
+    [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
+    [SerializeField] Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
     [SerializeField] bool genOnStart = false;
 
     UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
     public float chunkSize => voxelSize * defaultChunkResolution;
+
+    public List<VoxelChunk> activeChunks { get => _activeChunks; set => _activeChunks = value; }
+    public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
+
     private void OnEnable() {
         chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
             () => {
@@ -34,7 +41,7 @@ public class VoxelWorld : MonoBehaviour {
                     DestroyImmediate(chunk);
                 }
             },
-            false, 20, 1000);
+            true, 50, 1000);
     }
     private void OnDisable() {
         chunkPool.Dispose();
@@ -44,39 +51,116 @@ public class VoxelWorld : MonoBehaviour {
             StartGeneration();
         }
     }
+    public void SaveVoxels() {
+
+    }
+    public void LoadVoxels() {
+
+    }
 
     [ContextMenu("Clear")]
     public void Clear() {
-        if (allChunks == null) {
-            allChunks = new List<VoxelChunk>();
-            // worlddict = new Dictionary<Vector3Int, VoxelChunk>();
+        if (activeChunks == null) {
+            activeChunks = new List<VoxelChunk>();
+            activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
             // chunksToPopulate = new List<int>();
         } else {
-            for (int i = allChunks.Count - 1; i >= 0; i--) {
-                if (!allChunks[i]) continue;
-                VoxelChunk chunk = allChunks[i];
+            for (int i = activeChunks.Count - 1; i >= 0; i--) {
+                if (!activeChunks[i]) continue;
+                VoxelChunk chunk = activeChunks[i];
                 chunk.Clear();
                 chunkPool.Release(chunk.gameObject);
             }
-            allChunks.Clear();
-            // worlddict.Clear();
+            activeChunks.Clear();
+            activeChunksDict.Clear();
             // chunksToPopulate.Clear();
         }
     }
     [ContextMenu("ReGen")]
     public void StartGeneration() {
         Clear();
-        GenChunk(Vector3Int.zero);
+        LoadChunks(Vector3Int.zero);
         // AddChunksCube(0, 0, 0, startRes.x, startRes.y, startRes.z);
     }
-    public void GenChunk(Vector3Int chunkPos) {
+    void GenEmptyChunk(Vector3Int chunkPos) {
+        var chunk = CreateChunk(chunkPos);
+        chunk.SetAll(new Voxel { blockId = 0 });
+        chunk.Refresh();
+    }
+
+    VoxelChunk CreateChunk(Vector3Int chunkPos) {
         GameObject chunkgo = chunkPool.Get();
         chunkgo.transform.localPosition = (Vector3)chunkPos * chunkSize;
         chunkgo.name = $"chunk {chunkPos.x},{chunkPos.y},{chunkPos.z}";
         VoxelChunk chunk = chunkgo.GetComponent<VoxelChunk>();
         chunk.Initialize(this, chunkPos, defaultChunkResolution);
-        allChunks.Add(chunk);
-        // worlddict.Add(cp, chunk);
-        chunk.Refresh();
+        activeChunks.Add(chunk);
+        activeChunksDict.Add(chunkPos, chunk);
+        return chunk;
+    }
+
+    void AddChunks(params Vector3Int[] chunkposs) {
+        // if (!Application.isPlaying)
+        // {
+        foreach (var cp in chunkposs) {
+            if (HasChunkActiveAt(cp))
+                continue;
+            CreateChunk(cp);
+        }
+        // }
+    }
+    void RemoveChunks(params Vector3Int[] chunkposs) {
+        foreach (var cp in chunkposs) {
+            VoxelChunk chunk = GetChunkAt(cp);
+            if (!chunk) continue;
+            chunk.Clear();
+            activeChunks.Remove(chunk);
+            activeChunksDict.Remove(cp);
+            chunkPool.Release(chunk.gameObject);
+        }
+    }
+
+    public void LoadChunks(params Vector3Int[] chunkposs) {
+        // todo multithread
+        foreach (var cp in chunkposs) {
+            AddChunks(cp);
+            // todo restore if have data or generate
+            GetChunkAt(cp).Refresh();
+        }
+    }
+    public void UnloadChunks(params Vector3Int[] chunkposs) {
+        foreach (var cp in chunkposs) {
+            // todo save each chunk - only if dirty
+            RemoveChunks(cp);
+        }
+    }
+
+
+    public bool HasChunkActiveAt(Vector3Int cpos) {
+        // return world.Exists(c => c.chunkPos == pos);
+        return activeChunksDict.ContainsKey(cpos);
+    }
+    public VoxelChunk GetChunkAt(Vector3Int cpos) {
+        // return world.Find(c => c.chunkPos == pos);
+        return HasChunkActiveAt(cpos) ? activeChunksDict[cpos] : null;
+    }
+    public VoxelChunk GetNeighbor(VoxelChunk start, Vector3Int dir) {
+        Vector3Int npos = start.chunkPos + dir;
+        return GetChunkAt(npos);
+    }
+
+    public Vector3 ChunkposToWorldpos(Vector3 cpos) {
+        Vector3 wpos = cpos * chunkSize;
+        wpos = transform.TransformPoint(wpos);
+        return wpos;
+    }
+    public Vector3 ChunkposToWorldposCenter(Vector3 cpos) {
+        var wpos = ChunkposToWorldpos(cpos) + (chunkSize - 1) / 2 * Vector3.one;
+        return wpos;
+    }
+    public Vector3Int WorldposToChunkpos(Vector3 wpos) {
+        wpos = transform.InverseTransformPoint(wpos);
+        Vector3Int cpos = Vector3Int.FloorToInt(wpos / chunkSize);
+        return cpos;
     }
 }

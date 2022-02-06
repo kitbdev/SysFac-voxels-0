@@ -15,8 +15,10 @@ public class Voxel {
         customcubexyz,
         custom,
     }
-    public VoxelShape shape;
+
     public int blockId;
+    public VoxelShape shape;
+    public bool isTransparent;
     // public Color tint;
     // todo lighting data?
     // todo anim data
@@ -24,13 +26,15 @@ public class Voxel {
     public void ResetToDefaults() {
         shape = VoxelShape.cube;
         blockId = 0;
+        isTransparent = false;
     }
     public void CopyValues(Voxel voxel) {
         shape = voxel.shape;
         blockId = voxel.blockId;
+        isTransparent = voxel.isTransparent;
     }
     public override string ToString() {
-        return $"Voxel {shape.ToString()} tex:{blockId}";
+        return $"Voxel {shape.ToString()} id:{blockId}";
     }
 }
 [System.Serializable]

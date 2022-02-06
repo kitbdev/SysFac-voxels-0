@@ -149,8 +149,9 @@ public class VoxelRenderer : MonoBehaviour {
                         // todo check other chunks
                         // var coverNeighbor = chunk.GetVoxelAt(pos + dir);
                         var coverNeighbor = chunk.GetLocalVoxelAt(pos + dir);
-                        // todo transparency?
-                        bool isBlocked = coverNeighbor != null && coverNeighbor.shape == Voxel.VoxelShape.cube;// && !coverNeighbor.isTransparent
+                        bool isBlocked = coverNeighbor != null && 
+                            coverNeighbor.shape == Voxel.VoxelShape.cube && 
+                            !coverNeighbor.isTransparent;
                         if (isBlocked) {
                             continue;
                         }
