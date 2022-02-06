@@ -69,6 +69,7 @@ public class VoxelRenderer : MonoBehaviour {
         uvs.Clear();
     }
     void ApplyMesh() {
+
         mesh.vertices = vertices.ToArray();
         mesh.SetTriangles(triangles, 0, false);
         mesh.uv = uvs.ToArray();
@@ -125,6 +126,7 @@ public class VoxelRenderer : MonoBehaviour {
         for (int d = 0; d < dirs.Length; d++)
         // int d = 4;
         {
+            // Debug.Log($"drawing0");
             Vector3Int dir = dirs[d];
             Vector3Int dirx = dirXs[d];
             Vector3Int dirz = dirZs[d];
@@ -137,20 +139,22 @@ public class VoxelRenderer : MonoBehaviour {
             for (int y = 0; y < chunk.resolution; y++) {
                 for (int z = 0; z < chunk.resolution; z++) {
                     for (int x = 0; x < chunk.resolution; x++) {
-                        Vector3Int pos = V3IMul(dirx, x) + V3IMul(dirz, z) + V3IMul(absdir, y);
-                        // Vector3Int pos = new Vector3Int(x, y, z);//todo
+                        // Vector3Int pos = V3IMul(dirx, x) + V3IMul(dirz, z) + V3IMul(absdir, y);
+                        Vector3Int pos = new Vector3Int(x, y, z);//todo
                         var voxel = chunk.GetLocalVoxelAt(pos);
-                        if (voxel.shape != Voxel.VoxelShape.cube && voxel.shape != Voxel.VoxelShape.customcubey) {
-                            return;
+                        if (voxel.shape == Voxel.VoxelShape.none) {
+                            continue;
                         }
+                        //  && voxel.shape != Voxel.VoxelShape.customcubey) {
+                        // Debug.Log($"drawingv");
                         // if (!voxel.IsAboveSurface) {
                         //     continue;
                         // }
                         // todo check other chunks
                         // var coverNeighbor = chunk.GetVoxelAt(pos + dir);
                         var coverNeighbor = chunk.GetLocalVoxelAt(pos + dir);
-                        bool isBlocked = coverNeighbor != null && 
-                            coverNeighbor.shape == Voxel.VoxelShape.cube && 
+                        bool isBlocked = coverNeighbor != null &&
+                            coverNeighbor.shape == Voxel.VoxelShape.cube &&
                             !coverNeighbor.isTransparent;
                         if (isBlocked) {
                             continue;

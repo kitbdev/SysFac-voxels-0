@@ -1,1 +1,1 @@
-{"blockTypes":[{"idname":"t1","displayName":"test","shape":1,"textureId":0,"maxStack":0,"itemid":0},{"idname":"t2","displayName":"test2","shape":1,"textureId":0,"maxStack":0,"itemid":0}]}
+{"blockTypes":[{"id":0,"idname":"air","displayName":"Air","shape":0,"textureId":0,"maxStack":0,"itemid":0},{"id":1,"idname":"stone","displayName":"Stone","shape":1,"textureId":0,"maxStack":0,"itemid":0},{"id":2,"idname":"grass","displayName":"Grass","shape":1,"textureId":0,"maxStack":0,"itemid":0}]}

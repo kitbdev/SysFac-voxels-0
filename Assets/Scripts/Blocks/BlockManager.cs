@@ -13,19 +13,38 @@ public class BlockManager : Singleton<BlockManager> {
     private const string blocksfilename = "defblocks";
 
     [SerializeField] TextAsset blocksjson;
+    public BlockTextureAtlas blockTextureAtlas;
+    public Material defBlockMat;
 
     [SerializeField]
     List<BlockType> _blockTypes = new List<BlockType>();
     Dictionary<string, BlockType> _blockTypeDict = new Dictionary<string, BlockType>();
 
-    List<BlockType> blockTypes { get => _blockTypes; set => _blockTypes = value; }
-    Dictionary<string, BlockType> blockTypeDict { get => _blockTypeDict; set => _blockTypeDict = value; }
+    public List<BlockType> blockTypes { get => _blockTypes; private set => _blockTypes = value; }
+    public Dictionary<string, BlockType> blockTypeDict { get => _blockTypeDict; private set => _blockTypeDict = value; }
 
+    private void OnValidate() {
+        for (int i = 0; i < blockTypes.Count; i++) {
+            blockTypes[i].id = i;
+            if (blockTypes[i].displayName == "") {
+                blockTypes[i].displayName = blockTypes[i].idname;
+            }
+        }
+    }
     private void OnEnable() {
         LoadData();
+        defBlockMat.mainTexture = blockTextureAtlas.atlas;
         // blockTypeDict = blockTypes.ToDictionary((b) => b.idname);
     }
 
+    public BlockType GetBlockTypeAtIndex(int index) {
+        if (index >= 0 && index < blockTypes.Count) {
+            return blockTypes[index];
+        } else {
+            Debug.LogWarning($"Block index {index} does not exist!");
+            return null;
+        }
+    }
     public BlockType GetBlockType(string id) {
         if (blockTypeDict.ContainsKey(id)) {
             return blockTypeDict[id];
@@ -43,6 +62,9 @@ public class BlockManager : Singleton<BlockManager> {
     }
     [ContextMenu("save")]
     void SaveData() {
+        for (int i = 0; i < blockTypes.Count; i++) {
+            blockTypes[i].id = i;
+        }
         AllBlocks allBlocks = new AllBlocks { blockTypes = blockTypes };
         // string content = JsonUtility.ToJson(allBlocks);
         // blocksjson = new TextAsset(content);

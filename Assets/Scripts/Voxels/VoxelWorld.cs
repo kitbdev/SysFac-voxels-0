@@ -22,9 +22,11 @@ public class VoxelWorld : MonoBehaviour {
 
     UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
+    public event System.Action<Vector3Int> generateChunkEvent;
+
     public float chunkSize => voxelSize * defaultChunkResolution;
 
-    public List<VoxelChunk> activeChunks { get => _activeChunks; set => _activeChunks = value; }
+    public List<VoxelChunk> activeChunks { get => _activeChunks; private set => _activeChunks = value; }
     public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
 
     private void OnEnable() {
@@ -44,6 +46,7 @@ public class VoxelWorld : MonoBehaviour {
             true, 50, 1000);
     }
     private void OnDisable() {
+        RemoveAllChunks();
         chunkPool.Dispose();
     }
     private void Start() {
@@ -109,6 +112,9 @@ public class VoxelWorld : MonoBehaviour {
         }
         // }
     }
+    void RemoveAllChunks() {
+        RemoveChunks(activeChunksPos.ToArray());
+    }
     void RemoveChunks(params Vector3Int[] chunkposs) {
         foreach (var cp in chunkposs) {
             VoxelChunk chunk = GetChunkAt(cp);
@@ -125,7 +131,8 @@ public class VoxelWorld : MonoBehaviour {
         foreach (var cp in chunkposs) {
             AddChunks(cp);
             // todo restore if have data or generate
-            GetChunkAt(cp).Refresh();
+            generateChunkEvent?.Invoke(cp);
+            // GetChunkAt(cp).Refresh();
         }
     }
     public void UnloadChunks(params Vector3Int[] chunkposs) {

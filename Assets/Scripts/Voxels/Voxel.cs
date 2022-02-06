@@ -23,6 +23,15 @@ public class Voxel {
     // todo lighting data?
     // todo anim data
 
+    public Voxel() {
+        ResetToDefaults();
+    }
+    public Voxel(BlockType blockType) {
+        blockId = blockType.id;
+        shape = blockType.shape;
+        isTransparent = false;
+    }
+
     public void ResetToDefaults() {
         shape = VoxelShape.cube;
         blockId = 0;

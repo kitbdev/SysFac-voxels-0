@@ -6,5 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager> {
+    VoxelWorld _mainWorld;
 
+    public VoxelWorld mainWorld { get => _mainWorld; private set => _mainWorld = value; }
 }

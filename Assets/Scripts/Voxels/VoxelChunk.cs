@@ -10,7 +10,7 @@ public class VoxelChunk : MonoBehaviour {
 
     [SerializeField, ReadOnly] Vector3Int _chunkPos;
     int _resolution;
-    [SerializeField, HideInInspector] Voxel[] _voxels;
+    [SerializeField, ReadOnly] Voxel[] _voxels;
     [SerializeField, HideInInspector] VoxelWorld _world;
 
     private VoxelRenderer visuals;
@@ -121,7 +121,7 @@ public class VoxelChunk : MonoBehaviour {
             return null;
     }
     private void OnDrawGizmos() {
-        if (!showDebug) {
+        if (!showDebug || !world) {
             return;
         }
         Gizmos.color = new Color(0, 0.8f, 0.5f, 0.1f);
