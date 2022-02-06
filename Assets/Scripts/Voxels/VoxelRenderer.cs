@@ -9,6 +9,7 @@ public class VoxelRenderer : MonoBehaviour {
 
     [SerializeField, ReadOnly] VoxelChunk chunk;
     [SerializeField, ReadOnly] VoxelWorld world;
+    [SerializeField, ReadOnly] float textureUVScale = 16f / 512;
 
     [SerializeField, ReadOnly] Mesh mesh;
     [SerializeField, ReadOnly] List<Vector3> vertices;
@@ -21,7 +22,8 @@ public class VoxelRenderer : MonoBehaviour {
     public void Initialize(VoxelChunk chunk) {
         this.chunk = chunk;
         world = chunk.world;
-        CreateMesh();
+        SetupMesh();
+        textureUVScale = BlockManager.Instance.blockTextureAtlas.textureBlockScale;
     }
 
     public void UpdateMesh() {
@@ -30,7 +32,7 @@ public class VoxelRenderer : MonoBehaviour {
         CreateMeshVoxels();
         ApplyMesh();
     }
-    void CreateMesh() {
+    void SetupMesh() {
         mesh = new Mesh();
         mesh.name = "Chunk Mesh";
         vertices = new List<Vector3>();
@@ -70,7 +72,6 @@ public class VoxelRenderer : MonoBehaviour {
         uvs.Clear();
     }
     void ApplyMesh() {
-
         mesh.vertices = vertices.ToArray();
         mesh.SetTriangles(triangles, 0, false);
         mesh.uv = uvs.ToArray();
@@ -93,177 +94,69 @@ public class VoxelRenderer : MonoBehaviour {
     [ContextMenu("VoxelGen")]
     void CreateMeshVoxels() {
         // create 6 faces, one in each direction, for each voxel
-        // Vector3Int[] dirs = new Vector3Int[6] {
-        //     new Vector3Int(1,0,0),
-        //     new Vector3Int(0,1,0),
-        //     new Vector3Int(0,0,1),
-        //     new Vector3Int(-1,0,0),
-        //     new Vector3Int(0,-1,0),
-        //     new Vector3Int(0,0,-1),
-        //     };
-        // Vector3Int[] dirXs = new Vector3Int[6] {
-        //     new Vector3Int(0,1,0),
-        //     new Vector3Int(0,0,1),
-        //     new Vector3Int(1,0,0),
-        //     new Vector3Int(0,1,0),
-        //     new Vector3Int(0,0,1),
-        //     new Vector3Int(1,0,0),
-        //     };
-        // Vector3Int[] dirZs = new Vector3Int[6] {
-        //     new Vector3Int(0,0,1),
-        //     new Vector3Int(1,0,0),
-        //     new Vector3Int(0,1,0),
-        //     new Vector3Int(0,0,1),
-        //     new Vector3Int(1,0,0),
-        //     new Vector3Int(0,1,0),
-        //     };
-        // Vector3Int V3IMul(Vector3Int vec, int val) {
-        //     vec.x *= val;
-        //     vec.y *= val;
-        //     vec.z *= val;
-        //     return vec;
-        // }
-        // create meshes for cubes
-        // for (int d = 0; d < dirs.Length; d++)
-        // int d = 0;
-        // {
-        //     // Debug.Log($"drawing0");
-        //     Vector3Int dir = dirs[d];
-        //     Vector3Int dirx = dirXs[d];
-        //     Vector3Int dirz = dirZs[d];
-        //     Vector3Int absdir = new Vector3Int(math.abs(dir.x), math.abs(dir.y), math.abs(dir.z));
-        //     bool isNeg = dir == absdir;
-        //     // dir.x < 0 || dir.y > 0 || dir.z < 0; // for triangle winding
-        //     Vector3 dirv = new Vector3(dir.x > 0 ? dir.x : 0, dir.y > 0 ? dir.y : 0, dir.z > 0 ? dir.z : 0);
-        //     Vector3 dirxv = (Vector3)dirx * voxelSize;
-        //     Vector3 dirzv = (Vector3)dirz * voxelSize;
-        //     for (int y = 0; y < chunk.resolution; y++) {
-        //         for (int z = 0; z < chunk.resolution; z++) {
-        //             for (int x = 0; x < chunk.resolution; x++) {
-        //                 // Vector3Int pos = V3IMul(dirx, x) + V3IMul(dirz, z) + V3IMul(absdir, y);
-        //                 Vector3Int pos = new Vector3Int(x, y, z);//todo
-        //                 var voxel = chunk.GetLocalVoxelAt(pos);
-        //                 if (voxel.shape == Voxel.VoxelShape.none) {
-        //                     continue;
-        //                 }
-        //                 //  && voxel.shape != Voxel.VoxelShape.customcubey) {
-        //                 // Debug.Log($"drawingv");
-        //                 // if (!voxel.IsAboveSurface) {
-        //                 //     continue;
-        //                 // }
-        //                 // todo check other chunks
-        //                 // var coverNeighbor = chunk.GetVoxelAt(pos + dir);
-        //                 var coverNeighbor = chunk.GetLocalVoxelAt(pos + dir);
-        //                 bool isBlocked = coverNeighbor != null &&
-        //                     coverNeighbor.shape == Voxel.VoxelShape.cube &&
-        //                     !coverNeighbor.isTransparent;
-        //                 if (isBlocked) {
-        //                     continue;
-        //                 }
-        //                 // we need to show
-        //                 // todo be greedy https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/
-        //                 // add two tris
-        //                 var cpos = (Vector3)pos * voxelSize + dirv * voxelSize - Vector3.one * voxelSize / 2;
-        //                 int vcount = vertices.Count;
-        //                 if (voxel.shape == Voxel.VoxelShape.customcubey) {
-        //                     Vector3 vector3 = dirzv * 0.9f;
-        //                 }
-        //                 vertices.Add(cpos);
-        //                 vertices.Add(cpos + dirxv);
-        //                 vertices.Add(cpos + dirzv);
-        //                 vertices.Add(cpos + dirxv + dirzv);
-        //                 // todo uvs
-        //                 float uvscale = 1f / 4;
-        //                 Vector2 texoffset = Vector2.zero;
-        //                 uvs.Add(uvscale * (texoffset + Vector2.zero));
-        //                 uvs.Add(uvscale * (texoffset + Vector2.right));
-        //                 uvs.Add(uvscale * (texoffset + Vector2.up));
-        //                 uvs.Add(uvscale * (texoffset + Vector2.one));
-        //                 if (!isNeg) {
-        //                     triangles.Add(vcount);
-        //                     triangles.Add(vcount + 2);
-        //                     triangles.Add(vcount + 1);
-        //                     triangles.Add(vcount + 1);
-        //                     triangles.Add(vcount + 2);
-        //                     triangles.Add(vcount + 3);
-        //                     // AddTriFace(vcount,vcount+2,vcount+1,vcount+3,col);
-        //                 } else {
-        //                     // AddTriFace(vcount,vcount+2,vcount+1,vcount+3,col);
-        //                     triangles.Add(vcount);
-        //                     triangles.Add(vcount + 1);
-        //                     triangles.Add(vcount + 2);
-        //                     triangles.Add(vcount + 1);
-        //                     triangles.Add(vcount + 3);
-        //                     triangles.Add(vcount + 2);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // meshes for other shapes
 
+        // todo meshes for other shapes
         for (int y = 0; y < chunk.resolution; y++) {
             for (int z = 0; z < chunk.resolution; z++) {
                 for (int x = 0; x < chunk.resolution; x++) {
-                    CreateCube(new Vector3Int(x, y, z));
+                    CreateBlock(new Vector3Int(x, y, z));
                 }
             }
         }
     }
-    void CreateCube(Vector3Int vpos) {
+    class BlockData {
+
+    }
+    void CreateBlock(Vector3Int vpos) {
         // get block type
         var voxel = chunk.GetLocalVoxelAt(vpos);
         var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
         if (voxel.shape == Voxel.VoxelShape.none) {
             return;
         }
-        Vector3 from = Vector3.zero;
-        Vector3 to = Vector3.one;
+
+        Vector3 fromVec = Vector3.zero;
+        Vector3 toVec = Vector3.one;
+        Vector2 uvfrom = Vector2.zero;
+        Vector2 uvto = Vector2.one;
+        Vector2 texoffset = new Vector2(0, 0) + voxel.textureCoord;
+
+        void CreateFace(Vector3 vertexpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
+            int vcount = vertices.Count;
+            // vertices
+            vertices.Add(vertexpos + fromVec);
+            vertices.Add(vertexpos + fromVec + Vector3.Scale(rightTangent, toVec));
+            vertices.Add(vertexpos + fromVec + Vector3.Scale(upTangent, toVec));
+            vertices.Add(vertexpos + fromVec + Vector3.Scale(rightTangent + upTangent, toVec));
+            // uvs
+            uvs.Add(textureUVScale * (texoffset + uvfrom));
+            uvs.Add(textureUVScale * (texoffset + Vector2.right * uvto + uvfrom));
+            uvs.Add(textureUVScale * (texoffset + Vector2.up * uvto + uvfrom));
+            uvs.Add(textureUVScale * (texoffset + Vector2.one * uvto + uvfrom));
+            // tris
+            AddTriSquare(vcount, vcount + 1, vcount + 2, vcount + 3);
+        }
         // create faces
         for (int d = 0; d < dirs.Length; d++)
         // int d = 0;
         {
-            Vector3Int dir = dirs[d];
+            Vector3Int normalDir = dirs[d];
+            Vector3Int rightTangent = dirXs[d];
+            Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
             // cull check
-            var coverNeighbor = chunk.GetLocalVoxelAt(vpos + dir);
-            bool isBlocked = coverNeighbor != null &&
-                coverNeighbor.shape == Voxel.VoxelShape.cube &&
-                !coverNeighbor.isTransparent;
-            if (isBlocked) {
-                return;
+            Voxel coverNeighbor = chunk.GetLocalVoxelAt(vpos + normalDir);
+            bool renderFace = coverNeighbor == null
+                // || coverNeighbor.shape == Voxel.VoxelShape.none
+                || coverNeighbor.isTransparent;
+            ;
+            // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
+            if (!renderFace) {
+                continue;
             }
-            void CreateFace(Vector3 vpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
-                var vertexpos = (Vector3)vpos * voxelSize - Vector3.one * voxelSize / 2;
-                int vcount = vertices.Count;
-                vertices.Add(vertexpos);
-                vertices.Add(vertexpos + rightTangent);
-                vertices.Add(vertexpos + upTangent);
-                vertices.Add(vertexpos + rightTangent + upTangent);
-                AddTriSquare(vcount, vcount + 2, vcount + 1, vcount + 3);
-
-            }
-            Vector3Int dirx = dirXs[d];
-            Vector3Int dirz = dirZs[d];
-            Vector3Int absdir = new Vector3Int(math.abs(dir.x), math.abs(dir.y), math.abs(dir.z));
-            Vector3 dirv = new Vector3(dir.x > 0 ? dir.x : 0, dir.y > 0 ? dir.y : 0, dir.z > 0 ? dir.z : 0);
-            Vector3 dirxv = (Vector3)dirx * voxelSize;
-            Vector3 dirzv = (Vector3)dirz * voxelSize;
-            // create vertices
-            var vertexpos = (Vector3)vpos * voxelSize + dirv * voxelSize - Vector3.one * voxelSize / 2;
-            int vcount = vertices.Count;
-            vertices.Add(vertexpos);
-            vertices.Add(vertexpos + dirxv);
-            vertices.Add(vertexpos + dirzv);
-            vertices.Add(vertexpos + dirxv + dirzv);
-            // uvs
-            float uvscale = 1f / 4;
-            Vector2 texoffset = Vector2.zero;
-            uvs.Add(uvscale * (texoffset + Vector2.zero));
-            uvs.Add(uvscale * (texoffset + Vector2.right));
-            uvs.Add(uvscale * (texoffset + Vector2.up));
-            uvs.Add(uvscale * (texoffset + Vector2.one));
-            // tris
-            AddTriSquare(vcount, vcount + 2, vcount + 1, vcount + 3);
+            // add face
+            Vector3 vertexpos = (Vector3)vpos * voxelSize - Vector3.one * voxelSize / 2;
+            vertexpos += vOffsets[d] * voxelSize;
+            CreateFace(vertexpos, normalDir, rightTangent, upTangent);
         }
     }
 
@@ -292,20 +185,20 @@ public class VoxelRenderer : MonoBehaviour {
         new Vector3Int(0,-1,0),// down
         };
     Vector3Int[] dirXs = new Vector3Int[6] {
-        new Vector3Int(0,1,0),
-        new Vector3Int(1,0,0),
         new Vector3Int(0,0,1),
-        new Vector3Int(0,1,0),
+        new Vector3Int(-1,0,0),
         new Vector3Int(1,0,0),
-        new Vector3Int(0,0,1),
+        new Vector3Int(0,0,-1),
+        new Vector3Int(1,0,0),
+        new Vector3Int(1,0,0),
         };
-    Vector3Int[] dirZs = new Vector3Int[6] {
-        new Vector3Int(0,0,1),
-        new Vector3Int(0,1,0),
-        new Vector3Int(1,0,0),
-        new Vector3Int(0,0,1),
-        new Vector3Int(0,1,0),
-        new Vector3Int(1,0,0),
+    Vector3[] vOffsets = new Vector3[6] {
+        new Vector3(1,0,0),
+        new Vector3(1,0,1),
+        new Vector3(0,1,0),
+        new Vector3(0,0,1),
+        new Vector3(0,0,0),
+        new Vector3(0,0,1),
         };
 
 

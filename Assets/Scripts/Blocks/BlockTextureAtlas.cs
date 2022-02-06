@@ -15,9 +15,21 @@ public class BlockTextureAtlas : MonoBehaviour {
     public Texture2D atlas { get => _atlas; protected set => _atlas = value; }
     public Dictionary<string, Vector2> packDict { get => _packDict; protected set => _packDict = value; }
     public int textureResolution { get => _textureResolution; protected set => _textureResolution = value; }
+    public float textureBlockScale => ((float)textureResolution) / atlasSize;
+
+    [SerializeField, HideInInspector] KeyValuePair<string, Vector2>[] packDictKeys;
 
     private void Awake() {
         Pack();
+    }
+    private void OnEnable() {
+        if (packDictKeys != null && packDictKeys.Length > 0) {
+            // restore dict
+            packDict = packDictKeys.ToDictionary((kvp) => kvp.Key, (kvp) => kvp.Value);
+        }
+    }
+    private void OnDisable() {
+        packDictKeys = packDict.ToArray();
     }
 
     [ContextMenu("Pack")]
@@ -45,12 +57,14 @@ public class BlockTextureAtlas : MonoBehaviour {
         }
 
         Rect[] rects = atlas.PackTextures(pack, 0, 2048);
-        // atlas.Reinitialize(atlasWidth, atlasWidth, TextureFormat.RGBA32, true);
-        // atlas.Apply();
+        int iwidth = atlas.width;
+        int iheight = atlas.height;
         ResizeTexture(atlas, atlasSize, atlasSize);
         for (int i = 0; i < pack.Length; i++) {
             Texture2D tex = pack[i];
-            Vector2Int texStartPos = Vector2Int.FloorToInt(rects[i].min / textureResolution);
+            Vector2 coord = rects[i].xMin * iwidth * Vector2.right + rects[i].yMin * iheight * Vector2.up;
+            Vector2Int texStartPos = Vector2Int.FloorToInt(coord / textureResolution);
+            // Debug.Log($"'{tex.name}' {texStartPos} r:{rects[i].min}");
             packDict.Add(tex.name, texStartPos);
         }
     }

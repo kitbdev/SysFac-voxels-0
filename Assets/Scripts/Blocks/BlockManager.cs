@@ -58,6 +58,19 @@ public class BlockManager : Singleton<BlockManager> {
             return null;
         }
     }
+    public Vector2Int GetBlockTexCoord(BlockType blockType) {
+        if (blockType.id == 0) {
+            // air has no texture
+            return Vector2Int.zero;
+        } else if (blockTextureAtlas.packDict.ContainsKey(blockType.idname)) {
+            Vector2 coord = blockTextureAtlas.packDict[blockType.idname];
+            Debug.Log($"found {blockType} coord {coord}");
+            return Vector2Int.FloorToInt(coord);
+        } else {
+            Debug.LogWarning($"Texture for block {blockType}({blockType.idname}) not found!");
+            return Vector2Int.zero;
+        }
+    }
 
     [ContextMenu("reload")]
     void LoadData() {

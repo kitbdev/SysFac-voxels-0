@@ -7,6 +7,7 @@ public class BlockType {
     public string displayName;
     public Voxel.VoxelShape shape;
     public int textureId;
+	public bool isTransparent = false;
     [Min(0)]
     public int maxStack;
     public int itemid;
