@@ -166,6 +166,31 @@ public class VoxelWorld : MonoBehaviour {
         Vector3Int npos = start.chunkPos + dir;
         return GetChunkAt(npos);
     }
+    public Vector3Int ChunkPosWithBlock(Vector3 blockpos) {
+        return Vector3Int.FloorToInt(blockpos / chunkSize);
+    }
+    public VoxelChunk GetChunkWithBlock(Vector3Int blockpos) {
+        return GetChunkAt(ChunkPosWithBlock(blockpos));
+    }
+    Vector3Int BlockPosToVoxelPos(Vector3Int blockpos, Vector3Int chunkpos) {
+        return blockpos - chunkpos * defaultChunkResolution;
+    }
+    public BlockType GetBlockTypeAt(Vector3Int blockpos) {
+        VoxelChunk chunk = GetChunkWithBlock(blockpos);
+        if (chunk) {
+            Voxel voxel = chunk.GetLocalVoxelAt(BlockPosToVoxelPos(blockpos, chunk.chunkPos));
+            if (voxel == null) {
+                Debug.LogWarning($"Error getting block type cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
+                return null;
+            }
+            return BlockManager.Instance?.GetBlockTypeAtIndex(voxel.blockId) ?? null;
+        } else {
+            return null;
+        }
+    }
+    public BlockType GetBlockAt(Vector3Int blockpos) {
+        return default;
+    }
 
     public Vector3 ChunkposToWorldpos(Vector3 cpos) {
         Vector3 wpos = cpos * chunkSize;
@@ -180,5 +205,10 @@ public class VoxelWorld : MonoBehaviour {
         wpos = transform.InverseTransformPoint(wpos);
         Vector3Int cpos = Vector3Int.FloorToInt(wpos / chunkSize);
         return cpos;
+    }
+    public Vector3Int WorldposToBlockpos(Vector3 wpos) {
+        wpos = transform.InverseTransformPoint(wpos);
+        Vector3Int bpos = Vector3Int.FloorToInt(wpos / voxelSize);
+        return bpos;
     }
 }
