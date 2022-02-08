@@ -629,7 +629,7 @@ MonoBehaviour:
   voxelSize: 1
   defaultChunkResolution: 16
   enableCollision: 1
-  useBoxColliders: 1
+  useBoxColliders: 0
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
   _activeChunks: []
   genOnStart: 1
@@ -663,7 +663,7 @@ MonoBehaviour:
   world: {fileID: 1191201396}
   targets:
   - transform: {fileID: 1264246707}
-    radius: 23.57
+    radius: 20
   validChunks: []
 --- !u!114 &1191201399
 MonoBehaviour:
@@ -694,6 +694,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1264246707}
+  - component: {fileID: 1264246708}
   m_Layer: 0
   m_Name: testloader
   m_TagString: Untagged
@@ -716,6 +717,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1264246708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1264246706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fd5551a5757a464399bd00983fbf2c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 0}
+  followPosition: 1
+  followRotation: 0
+  followScale: 0
+  smoothPositionRate: 0
+  smoothRotationRate: 0
+  targetMainCam: 0
+  useExistingPosOffset: 0
+  useExistingRotOffset: 0
+  positionOffset: {x: 0, y: 0, z: 0}
+  rotationOffset: {x: 0, y: 0, z: 0, w: 1}
+  rotationOffsetEuler: {x: 0, y: 0, z: 0}
+  scaleOffset: {x: 1, y: 1, z: 1}
+  useUpdate: 1
+  useFixedUpdate: 0
+  useLateUpdate: 0
 --- !u!1 &1626189374
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,10 +39,10 @@ public class PlayerBlockInteraction : MonoBehaviour {
         Debug.DrawRay(camRay.origin, camRay.direction * maxRayDist, Color.black, 0.1f);
         if (Physics.Raycast(camRay, out var hit, maxRayDist, blockMask, QueryTriggerInteraction.Ignore)) {
             Vector3Int blockPos = world.WorldposToBlockpos(hit.collider.bounds.center);
-            Debug.Log($"hit {hit.collider.name} bp:{blockPos}");
+            // Debug.Log($"hit {hit.collider.name} bp:{blockPos}");
             BlockType blockType = world.GetBlockTypeAt(blockPos);
             if (blockType != null) {
-                Debug.Log($" {blockType}");
+                // Debug.Log($" {blockType}");
             }
         }
     }
