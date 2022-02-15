@@ -626,8 +626,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b386b9fb75644c544a7164d412e14d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  voxelSize: 1
-  defaultChunkResolution: 16
+  voxelSize: 0.5
+  defaultChunkResolution: 32
   enableCollision: 1
   useBoxColliders: 0
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
@@ -664,6 +664,7 @@ MonoBehaviour:
   targets:
   - transform: {fileID: 1264246707}
     radius: 20
+  showDebug: 0
   validChunks: []
 --- !u!114 &1191201399
 MonoBehaviour:

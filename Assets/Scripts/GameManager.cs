@@ -4,6 +4,7 @@ using Kutil;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VoxelSystem;
 
 [DefaultExecutionOrder(-5)]
 public class GameManager : Singleton<GameManager> {

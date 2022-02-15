@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Kutil;
+using VoxelSystem;
 
 public class WorldGen : MonoBehaviour {
 
@@ -58,7 +59,7 @@ public class WorldGen : MonoBehaviour {
             }
         }
         chunk.SetData(data);
-        chunk.SetVoxel(chunk.IndexAt(new Vector3Int(8, 8, 8)), new Voxel(blockManager.GetBlockTypeAtIndex(2)));
+        // chunk.SetVoxel(chunk.IndexAt(new Vector3Int(8, 8, 8)), new Voxel(blockManager.GetBlockTypeAtIndex(2)));
         chunk.Refresh();
     }
 
