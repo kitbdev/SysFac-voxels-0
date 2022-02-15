@@ -12,7 +12,7 @@ public class GameManager : Singleton<GameManager> {
     public VoxelWorld _mainWorld;
 
     public VoxelWorld mainWorld { get => _mainWorld; private set => _mainWorld = value; }
-    private void Awake() {
-        // mainWorld
+    protected override void Awake() {
+        base.Awake();
     }
 }

@@ -37,7 +37,7 @@ namespace VoxelSystem {
                 //     var mr = gameObject.AddComponent<MeshRenderer>();
                 visuals = gameObject.AddComponent<VoxelRenderer>();
             }
-            if (world.enableCollision) {
+            if (world.enableCollision) { // todo: only colliders on some chunks
                 if (!world.useBoxColliders) {
                     if (!gameObject.TryGetComponent<MeshCollider>(out _)) {
                         gameObject.AddComponent<MeshCollider>();
@@ -116,7 +116,7 @@ namespace VoxelSystem {
             }
         }
         public void LocalRefresh(Vector3Int pos, int size) {
-
+            visuals.UpdateMeshAt(pos);
         }
 
         private void AddBoxColliders() {

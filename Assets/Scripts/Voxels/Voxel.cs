@@ -77,7 +77,23 @@ namespace VoxelSystem {
         new Vector3Int(1,1,0),//5
         new Vector3Int(1,1,1),//6
         new Vector3Int(0,1,1),//7
-    };
+        };
+        public readonly static Vector3Int[] dirTangents = new Vector3Int[6] {
+        new Vector3Int(0,0,1),
+        new Vector3Int(-1,0,0),
+        new Vector3Int(1,0,0),
+        new Vector3Int(0,0,-1),
+        new Vector3Int(1,0,0),
+        new Vector3Int(1,0,0),
+        };
+        public readonly static Vector3[] vOffsets = new Vector3[6] {
+        new Vector3(1,0,0),
+        new Vector3(1,0,1),
+        new Vector3(0,1,0),
+        new Vector3(0,0,1),
+        new Vector3(0,0,0),
+        new Vector3(0,0,1),
+        };
     }
     [System.Serializable]
     public class FatVoxel {
