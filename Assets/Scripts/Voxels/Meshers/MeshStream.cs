@@ -30,7 +30,6 @@ namespace VoxelSystem.Mesher {
         NativeArray<Vertex> stream0;
         [NativeDisableContainerSafetyRestriction]
         NativeArray<TriangleUInt16> triangles;
-        // NativeArray<int3> triangles;
 
         public void Setup(Mesh.MeshData meshData, Bounds bounds, int vertexCount, int indexCount) {
             var descriptor = new NativeArray<VertexAttributeDescriptor>(
@@ -62,15 +61,7 @@ namespace VoxelSystem.Mesher {
 
             stream0 = meshData.GetVertexData<Vertex>();
             triangles = meshData.GetIndexData<ushort>().Reinterpret<TriangleUInt16>(2);
-            // tsize size(int) = 4
-            // usize size(int3) = 3*4 = 12
-            // bytelen = len * tsize = 64 * 4 = 256
-            // ulen = bytelen/usize = 256/12 = 64/3 = 21 (rounded)
-            // ulen * usize = 21 * 12 = 252
-            // ulen * usize == bytelen
-            // ... so num triangles must be divisible by 3?
-            // todo look at this again
-            // triangles = meshData.GetIndexData<int>().Reinterpret<int3>(4);
+            // Debug.Log($"mesh setup verts{vertexCount} indexcount{indexCount} bounds{bounds}");
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetVertex(int index, Vertex vertex) => stream0[index] = new Vertex {
@@ -81,7 +72,15 @@ namespace VoxelSystem.Mesher {
         };
         public void SetTriangle(int index, int3 triangle) => triangles[index] = triangle;
 
-        public void SetFace(int vIndex, int tIndex, float3 center, float2 extents, float3 normal, float4 tangent, float2 uvfrom, float2 uvto) {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetFaceCentered(int vIndex, int tIndex, float3 center, float2 extents, float3 normal, float4 tangent, float2 uvfrom, float2 uvto) {
+            float3 tang = tangent.xyz;
+            float3 bitang = cross(normal, tang) * tangent.w;
+            float3 bottomLeft = center - (extents.x * tang + extents.y * bitang);
+            SetFace(vIndex, tIndex, bottomLeft, extents * 2f, normal, tangent, uvfrom, uvto);
+        }
+        public void SetFace(int vIndex, int tIndex, float3 bottomLeftPos, float2 size, float3 normal, float4 tangent, float2 uvfrom, float2 uvto) {
+            // Debug.Log($"setface {vIndex}/{stream0.Length} {tIndex}/{triangles.Length}");
             // note this wont weld with any others
             // vertex.tangent.xw = float2(1f, -1f);
             // todo make sure this is optimized
@@ -90,18 +89,16 @@ namespace VoxelSystem.Mesher {
             vertex.tangent = tangent;
             float3 tang = tangent.xyz;
             float3 bitang = cross(normal, tang) * tangent.w;
-            float3 halfdiag = extents.x * tang + extents.y * bitang;
-            float3 bottomLeft = center - halfdiag;
-            float3 topRight = center + halfdiag;
+            float3 topRight = bottomLeftPos + (size.x * tang + size.y * bitang);
 
-            vertex.position = bottomLeft;
+            vertex.position = bottomLeftPos;
             vertex.texCoord0 = uvfrom;
             SetVertex(vIndex, vertex);
-            vertex.position = bottomLeft + extents.x * tang * 2;
+            vertex.position = bottomLeftPos + size.x * tang;
             vertex.texCoord0.x = uvto.x;
             vertex.texCoord0.y = uvfrom.y;
             SetVertex(vIndex + 1, vertex);
-            vertex.position = bottomLeft + extents.y * bitang * 2;
+            vertex.position = bottomLeftPos + size.y * bitang;
             vertex.texCoord0.x = uvfrom.x;
             vertex.texCoord0.y = uvto.y;
             SetVertex(vIndex + 2, vertex);

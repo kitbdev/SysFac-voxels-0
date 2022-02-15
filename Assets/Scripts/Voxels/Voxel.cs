@@ -95,6 +95,15 @@ namespace VoxelSystem {
         new Vector3(0,0,1),
         };
     }
+
+    public enum VoxelDirection {
+        RIGHT = 0,
+        FORWARD = 1,
+        UP = 2,
+        LEFT = 3,
+        BACK = 4,
+        DOWN = 5,
+    }
     [System.Serializable]
     public class FatVoxel {
         public int index;

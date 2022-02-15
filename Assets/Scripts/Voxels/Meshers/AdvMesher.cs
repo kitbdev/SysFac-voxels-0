@@ -11,12 +11,12 @@ namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class AdvMesher : VoxelMesher {
 
-
         [System.Serializable]
         struct MeshGenPData {
             public int numVertices;
             public int numTriangles;
             public NativeArray<FaceData> faceDatas;
+            // todo greedy meshing
             [System.Serializable]
             public struct FaceData {
                 public float3 voxelPos;
@@ -32,7 +32,6 @@ namespace VoxelSystem.Mesher {
             base.Initialize(chunk, renderer);
         }
         internal override Mesh ApplyMesh() {
-            // mesh.RecalculateBounds();// ? calc earlier
             return mesh;
         }
 
@@ -49,9 +48,8 @@ namespace VoxelSystem.Mesher {
         }
 
         void GenMesh() {
-            // init meshstream
-            // todo check its really working
             preprocessMeshData = new MeshGenPData();
+            // todo convert preprocess to a job
             // GenMeshPreprocessJob.ScheduleParallel(chunk, preprocessMeshData, default).Complete();
             // new GenMeshPreprocessJob() {
             // chunk = chunk, meshGenPData = preprocessMeshData
@@ -59,13 +57,14 @@ namespace VoxelSystem.Mesher {
             PreprocessExecute(0);
             Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
             Mesh.MeshData meshData = meshDataArray[0];
-            Debug.Log($"faces:{preprocessMeshData.faceDatas.Length} v:{preprocessMeshData.numVertices} t:{preprocessMeshData.numTriangles}");
+            // Debug.Log($"faces:{preprocessMeshData.faceDatas.Length} v:{preprocessMeshData.numVertices} t:{preprocessMeshData.numTriangles}");
             // genmesh execute
-            Bounds meshBounds = new Bounds(Vector3.one * world.chunkSize, Vector3.one * world.chunkSize / 2);
+            Bounds meshBounds = new Bounds(Vector3.one * world.chunkSize / 2f, Vector3.one * world.chunkSize);
             GenMeshJob.ScheduleParallel(meshData, preprocessMeshData, voxelSize, meshBounds, default).Complete();
             preprocessMeshData.faceDatas.Dispose();
             mesh = new Mesh();
             mesh.name = "Chunk Mesh Advanced";
+            mesh.bounds = meshBounds;
             Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
             FinishedMesh();
         }
@@ -112,8 +111,9 @@ namespace VoxelSystem.Mesher {
                 Vector3Int normalDir = Voxel.unitDirs[d];
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                bool renderFace = coverNeighbor != null
-                    && coverNeighbor.isTransparent;
+
+                bool renderFace = coverNeighbor != null && coverNeighbor.isTransparent;
+                // bool renderFace = coverNeighbor == null || coverNeighbor.isTransparent;// also render null walls
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
                     continue;
@@ -131,10 +131,14 @@ namespace VoxelSystem.Mesher {
 
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         struct GenMeshJob : IJobFor {
+
             [ReadOnly]
             MeshGenPData meshGenPData;
             [ReadOnly]
             float voxelSize;
+            // [ReadOnly]
+            const float textureUVScale = 16f / 512;// todo get dynamically
+
             [WriteOnly]
             MeshStream meshStream;
 
@@ -142,37 +146,34 @@ namespace VoxelSystem.Mesher {
                 GenMeshExecute(index);
             }
             public static JobHandle ScheduleParallel(
-                Mesh.MeshData meshData, MeshGenPData meshGenPData, float voxelSize, Bounds meshBounds, 
+                Mesh.MeshData meshData, MeshGenPData meshGenPData, float voxelSize, Bounds meshBounds,
                 JobHandle dependency) {
                 var job = new GenMeshJob();
                 job.meshGenPData = meshGenPData;
                 job.voxelSize = voxelSize;
-                job.meshStream.Setup(meshData, meshBounds, meshGenPData.numVertices, meshGenPData.numTriangles);
+                job.meshStream.Setup(meshData, meshBounds, meshGenPData.numVertices, meshGenPData.numTriangles * 3);
                 int jobLength = 1;
                 return job.ScheduleParallel(jobLength, 1, dependency);
             }
             void GenMeshExecute(int jindex) {
-                Debug.Log("Job start");
+                // Debug.Log($"Job start {jindex)} {meshGenPData.faceDatas.Length}");
                 int vi = 0, ti = 0;
                 for (int i = 0; i < meshGenPData.faceDatas.Length; i++) {
                     MeshGenPData.FaceData faceData = meshGenPData.faceDatas[i];
                     int d = (int)faceData.faceNormal;
-                    Debug.Log($"face {i} dir {d}");
-                    // Debug.Log($"u{unitDirs[d]}");
-                    // Debug.Log($"t{dirTangents[d]}");
-                    // Debug.Log($"o{vOffsets[d]}");
-                    float3 vertexpos = faceData.voxelPos * voxelSize;// - Vector3.one * voxelSize / 2;
-                    vertexpos += vOffsets[d] * voxelSize;
+                    // Debug.Log($"face {i} dir:{d} p:{faceData.voxelPos} uv:{faceData.texcoord} vi:{vi} ti:{ti}");
                     float3 normal = unitDirs[d];
                     float4 tangent = math.float4(dirTangents[d], -1);
-                    // Debug.Log($"ready set");
+                    float3 vertexpos = faceData.voxelPos * voxelSize - math.float3(voxelSize / 2f);
+                    vertexpos += vOffsets[d] * voxelSize;
+                    float2 uvfrom = faceData.texcoord * textureUVScale;
+                    float2 uvto = (faceData.texcoord + float2(1f)) * textureUVScale;
                     meshStream.SetFace(
-                        vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, faceData.texcoord, faceData.texcoord + float2(1f));
-                    // Debug.Log($"set done");
+                        vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto);
                     vi += 4;
                     ti += 2;
                 }
-                Debug.Log("Job end");
+                // Debug.Log("Job end");
             }
             readonly static float3[] unitDirs = new float3[6] {
             math.float3(1,0,0),// right
@@ -199,14 +200,5 @@ namespace VoxelSystem.Mesher {
             math.float3(0,0,1),
             };
         }
-    }
-
-    public enum VoxelDirection {
-        RIGHT = 0,
-        FORWARD = 1,
-        UP = 2,
-        LEFT = 3,
-        BACK = 4,
-        DOWN = 5,
     }
 }

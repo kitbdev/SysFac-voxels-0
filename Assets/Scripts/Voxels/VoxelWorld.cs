@@ -9,6 +9,7 @@ namespace VoxelSystem {
     /// <summary>
     /// handles chunks. all chunks need to be in a world
     /// </summary>
+    [DefaultExecutionOrder(-2)]
     public class VoxelWorld : MonoBehaviour {
 
         public float voxelSize = 1;
@@ -20,7 +21,6 @@ namespace VoxelSystem {
         [SerializeField] GameObject voxelChunkPrefab;
         [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
         [SerializeField] Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
-        [SerializeField] bool genOnStart = false;
 
         UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
@@ -32,6 +32,7 @@ namespace VoxelSystem {
         public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
 
         private void OnEnable() {
+            Clear();
             chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 () => {
                     return Instantiate(voxelChunkPrefab, transform);
@@ -51,11 +52,7 @@ namespace VoxelSystem {
             RemoveAllChunks();
             chunkPool.Dispose();
         }
-        private void Start() {
-            if (Application.isPlaying && genOnStart) {
-                StartGeneration();
-            }
-        }
+
         public void SaveVoxels() {
 
         }
@@ -86,12 +83,6 @@ namespace VoxelSystem {
                 activeChunksDict.Clear();
                 // chunksToPopulate.Clear();
             }
-        }
-        [ContextMenu("ReGen")]
-        public void StartGeneration() {
-            Clear();
-            LoadChunks(Vector3Int.zero);
-            // AddChunksCube(0, 0, 0, startRes.x, startRes.y, startRes.z);
         }
         void GenEmptyChunk(Vector3Int chunkPos) {
             var chunk = CreateChunk(chunkPos);
@@ -146,6 +137,9 @@ namespace VoxelSystem {
                 generateChunkEvent?.Invoke(cp);
                 // GetChunkAt(cp).Refresh();
             }
+        }
+        public void UnloadAllChunks() {
+            UnloadChunks(activeChunksPos.ToArray());
         }
         public void UnloadChunks(params Vector3Int[] chunkposs) {
             foreach (var cp in chunkposs) {

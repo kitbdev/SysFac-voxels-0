@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
+#if INSPECTOR_DEFAULT_UIE_OVERRIDE
 /// <summary>
 /// This is necessary for UIElement Property drawers to function in non-custom Inspectors.
 /// In the future, this should become obsolete.
@@ -29,3 +30,4 @@ public class DefaultEditorDrawer : UnityEditor.Editor {
         return root;
     }
 }
+#endif
