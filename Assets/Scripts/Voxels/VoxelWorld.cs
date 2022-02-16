@@ -14,12 +14,15 @@ namespace VoxelSystem {
 
         public float voxelSize = 1;
         public int defaultChunkResolution = 16;
+        public ImplementsType<Mesher.VoxelMesher> mesher = typeof(Mesher.AdvMesher);
         public bool enableCollision = true;
         public bool useBoxColliders = true;
+        public VoxelMaterialSetSO materialSet;
 
         [Space]
-        [SerializeField] GameObject voxelChunkPrefab;
+        [SerializeField] GameObject voxelChunkPrefab;// todo remove
         [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
+        // todo serialized dict
         [SerializeField] Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
 
         UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
@@ -30,6 +33,9 @@ namespace VoxelSystem {
 
         public List<VoxelChunk> activeChunks { get => _activeChunks; private set => _activeChunks = value; }
         public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
+
+        public ImplementsType<VoxelMaterial> materialType => mesher.CreateInstance().neededMaterial;
+        public List<ImplementsType<VoxelData>> neededData => mesher.CreateInstance().neededDatas.ToList();
 
         private void OnEnable() {
             Clear();
@@ -86,7 +92,8 @@ namespace VoxelSystem {
         }
         void GenEmptyChunk(Vector3Int chunkPos) {
             var chunk = CreateChunk(chunkPos);
-            chunk.SetAll(new Voxel());// todo add data
+            // chunk.SetAll(new Voxel());
+            // todo load from data
             chunk.Refresh();
         }
 
@@ -185,9 +192,9 @@ namespace VoxelSystem {
                 return null;
             }
         }
-        public BlockType GetBlockAt(Vector3Int blockpos) {
-            return default;
-        }
+        // public BlockType GetBlockAt(Vector3Int blockpos) {
+        //     return default;
+        // }
 
         public Vector3 ChunkposToWorldpos(Vector3 cpos) {
             Vector3 wpos = cpos * chunkSize;

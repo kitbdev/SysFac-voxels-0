@@ -53,20 +53,26 @@ namespace VoxelSystem {
                 }
             }
             visuals.Initialize(this);
-            FillVoxelsNew();
+            PopulateVoxels();
         }
-        protected void FillVoxelsNew() {
+        protected void PopulateVoxels() {
             voxels = new Voxel[volume];
+            VoxelMaterialId voxelMaterialId = world.materialSet.GetIdForVoxelMaterial(world.materialType);
+            var neededData = world.neededData;
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
-                Voxel voxel = new Voxel();
+                Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
                 voxels[i] = voxel;
                 // voxel.index = i;
                 // if (WorldPosition(i).y < 2) 
             }
             // visuals.CreateMesh(this);
         }
+        // public void RepopulateVoxels(){
+        //     Clear();
+        //     PopulateVoxels();
+        // }
         public void Clear() {
             voxels = null;
         }

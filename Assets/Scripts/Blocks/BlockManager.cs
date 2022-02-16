@@ -14,7 +14,7 @@ public class BlockManager : Singleton<BlockManager> {
     private const string blocksfilename = "defblocks";
 
     [SerializeField] TextAsset blocksjson;
-    public BlockTextureAtlas blockTextureAtlas;
+    public TextureAtlasPacker blockTextureAtlas;
     public Material defBlockMat;
 
     [SerializeField]

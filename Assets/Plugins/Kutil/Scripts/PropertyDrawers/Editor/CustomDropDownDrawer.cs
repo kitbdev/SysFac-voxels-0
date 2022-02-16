@@ -10,13 +10,16 @@ using System;
 namespace Kutil {
     [CustomPropertyDrawer(typeof(CustomDropDownAttribute))]
     public class CustomDropDownDrawer : PropertyDrawer {
+
         List<string> choices = null;
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
             // GUI.Label(position, "CustomDropDownDrawer");
             CustomDropDownAttribute cddAttribute = (CustomDropDownAttribute)attribute;
 
             string parentPath = property.propertyPath.Replace("." + property.name, "");
             if (parentPath.EndsWith(']')) {
+                // in array element name fix
                 string propertyPath = property.propertyPath;
                 int startIndex = propertyPath.LastIndexOf('[') + 1;
                 // Debug.Log($"array {propertyPath} {startIndex} {parentPath}");
@@ -60,6 +63,7 @@ namespace Kutil {
         public static void SetMenuItemEvent(object data) {
             // Debug.Log("set");
             var clickData = (ClickMenuData)data;
+            // todo int field support too
             clickData.property.stringValue = clickData.value;
             clickData.property.serializedObject.ApplyModifiedProperties();
         }

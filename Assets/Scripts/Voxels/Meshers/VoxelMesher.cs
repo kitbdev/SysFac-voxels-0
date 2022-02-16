@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kutil;
 using UnityEngine;
 
 namespace VoxelSystem.Mesher {
     [System.Serializable]
     public abstract class VoxelMesher {
 
-        [SerializeField] protected VoxelChunk chunk;
-        [SerializeField] protected VoxelWorld world;
-        [SerializeField] protected VoxelRenderer renderer;
+        protected VoxelChunk chunk;
+        protected VoxelWorld world;
+        protected VoxelRenderer renderer;
         protected float voxelSize;
+        public ImplementsType<VoxelMaterial> neededMaterial => null;
+        public ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[0];
 
         public virtual void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
             this.chunk = chunk;

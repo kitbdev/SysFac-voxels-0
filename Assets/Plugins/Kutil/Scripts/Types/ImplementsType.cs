@@ -6,23 +6,85 @@ using System;
 using System.Linq;
 
 namespace Kutil {
+    /// <summary>
+    /// Holds a Type that implements or inherits a base type.
+    /// </summary>
+    /// <typeparam name="T">base type</typeparam>
     [Serializable]
     public class ImplementsType<T> {
-        [CustomDropDown(nameof(choices), 0)]
+        // todo choice to include self?
+
+        [CustomDropDown(nameof(choices), 0, nameof(formatSelectedValueFunc), nameof(formatListFunc))]
         [SerializeField] internal string _selectedName;
         public string selectedName { get => _selectedName; protected set => _selectedName = value; }
 
-        public Type GetSelectedType() {
-            IEnumerable<Type> choicesunsorted = GetAllAssignableTypes(typeof(T));
-            int index = choicesunsorted.Select(t => t.Name).ToList().IndexOf(selectedName);
-            if (index < 0) {
-                // selectedname is not set
-                return null;
+        public int defaultIndex = 0;//? needed
+        // todo do these functions work?
+        public Func<string, string> formatSelectedValueFunc = null;
+        public Func<string, string> formatListFunc = null;
+
+        [NonSerialized]
+        protected IEnumerable<Type> choicesTypes = null;
+
+        public string[] choices {
+            get {
+                CheckCache();
+                // todo sort by hierarchy?
+                return choicesTypes.Select(t => t.Name)
+                    // .OrderBy(s => s.Length > 0 ? s[0] : 0)// alphabetical
+                    // .OrderBy(s => s) 
+                    .ToArray();
             }
-            return choicesunsorted.ElementAt(index);
+        }
+
+        public ImplementsType() {
+            selectedName = choices[0];
+        }
+        public ImplementsType(Type setType, Func<string, string> formatSelectedValueFunc = null, Func<string, string> formatListFunc = null) {
+            SetType(setType);
+            this.formatSelectedValueFunc = formatSelectedValueFunc;
+            this.formatListFunc = formatListFunc;
+        }
+
+        public bool IsTypeValid(Type type) {
+            // if (type.IsAssignableFrom(typeof(T))) {
+            if (typeof(T).IsAssignableFrom(type)) {
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetType(Type type) {
+            if (IsTypeValid(type)) {
+                selectedName = type.Name;
+                choicesTypes = null;
+                return true;
+            }
+            return false;
+        }
+
+        public Type SelectedType {
+            get {
+                CheckCache();
+                int index = choicesTypes.Select(t => t.Name).ToList().IndexOf(selectedName);
+                if (index < 0) {
+                    // selectedname is not set
+                    return null;
+                }
+                return choicesTypes.ElementAt(index);
+            }
+        }
+
+        public T CreateInstance() {
+            Type selType = SelectedType;
+            if (selType != null && !selType.IsAbstract) {
+                return (T)Activator.CreateInstance(selType);
+            }
+            Debug.LogError($"Cannot create {typeof(T).Name} instance of {selType}!");
+            return default;
         }
         public bool TryCreateInstance(out T instance) {
-            Type selType = GetSelectedType();
+            Type selType = SelectedType;
             if (selType != null && !selType.IsAbstract) {
                 instance = (T)Activator.CreateInstance(selType);
                 return true;
@@ -31,26 +93,15 @@ namespace Kutil {
             return false;
         }
 
-        public int defaultIndex = 0;
-        public Func<string, string> formatSelectedValueFunc = null;
-        public Func<string, string> formatListFunc = null;
-
-        public ImplementsType() {
-            selectedName = choices[0];
+        protected void CheckCache() {
+            choicesTypes ??= GetAllAssignableTypes(typeof(T));
         }
-
-        public string[] choices => GetAllAssignableTypes(typeof(T))
-                                    .Select(t => t.Name)
-                                    // todo sort by hierarchy?
-                                    // .OrderBy(s => s.Length > 0 ? s[0] : 0)// alphabetical
-                                    // .OrderBy(s => s) 
-                                    .ToArray();
-
 
         public static IEnumerable<Type> GetAllAssignableTypes(Type type) {
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p));
         }
+        public static implicit operator ImplementsType<T>(Type type) => new ImplementsType<T>(type);
     }
 }

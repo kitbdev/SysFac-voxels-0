@@ -12,7 +12,7 @@ namespace VoxelSystem {
         MeshFilter meshFilter;
 
         public void Initialize(VoxelChunk chunk) {
-            voxelMesher = new AdvMesher();
+            voxelMesher = chunk.world.mesher.CreateInstance();
             voxelMesher.Initialize(chunk, this);
         }
 

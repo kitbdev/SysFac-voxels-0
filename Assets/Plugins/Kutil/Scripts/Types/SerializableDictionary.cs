@@ -14,7 +14,7 @@ namespace Kutil {
         [SerializeField, HideInInspector]
         private List<TKey> keys = new List<TKey>();
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private List<TValue> values = new List<TValue>();
 
         // save the dictionary to lists

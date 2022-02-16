@@ -2,6 +2,7 @@ using UnityEngine;
 using Kutil;
 using System.Linq;
 using System.Collections.Generic;
+using Unity.Collections;
 
 namespace VoxelSystem {
     /// <summary>
@@ -14,11 +15,24 @@ namespace VoxelSystem {
         [SerializeReference]
         VoxelData[] voxelDatas;
 
-        public Voxel() { }
-
-        public Voxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
+        protected Voxel() { }
+        protected Voxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
             this.voxelMaterialId = voxelMaterialId;
             this.voxelDatas = voxelDatas;
+        }
+        public static Voxel CreateVoxel(VoxelWorld world) {
+            VoxelMaterialId voxelMaterialId = world.materialSet.GetIdForVoxelMaterial(world.materialType);
+            return CreateVoxel(voxelMaterialId, world.neededData);
+        }
+        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<ImplementsType<VoxelData>> neededData) {
+            List<VoxelData> voxelDataList = new List<VoxelData>();
+            // todo test voxeldata still have child data
+            neededData.ForEach((nvd) => {
+                voxelDataList.Add(nvd.CreateInstance());
+            });
+            Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
+            voxelDataList.Clear();// native array?
+            return voxel;
         }
 
         // public void AddVoxelData(){}

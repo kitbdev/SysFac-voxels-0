@@ -15,7 +15,34 @@ MonoBehaviour:
   vmats:
     keys: []
     values: []
-  materials: []
+  materials:
+  - {fileID: 2100000, guid: ec38bc7a4fbe85545980a4df9b43255e, type: 2}
+  - {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
   textureResolution: 0
-  impltype:
-    baseTypeName: 
+  mats:
+  - type:
+      _selectedName: CuboidMaterial
+      defaultIndex: 0
+    obj:
+      rid: 4170073050910556181
+  - type:
+      _selectedName: BasicMaterial
+      defaultIndex: 0
+    obj:
+      rid: 4170073050910556183
+  references:
+    version: 2
+    RefIds:
+    - rid: 4170073050910556181
+      type: {class: CuboidMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        cuboids: []
+    - rid: 4170073050910556183
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        textureCoords: {x: 0, y: 0}
+        tint: {r: 0, g: 0, b: 0, a: 0}

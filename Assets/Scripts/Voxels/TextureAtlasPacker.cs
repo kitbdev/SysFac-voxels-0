@@ -5,7 +5,7 @@ using Kutil;
 using System.Linq;
 
 [DefaultExecutionOrder(-20)]
-public class BlockTextureAtlas : MonoBehaviour {
+public class TextureAtlasPacker : MonoBehaviour {
 
     [SerializeField] Texture2D _atlas;
     [SerializeField, ReadOnly] int _textureResolution = 16;

@@ -14,7 +14,7 @@ namespace Kutil {
 
         public void OnValidate() {
             // todo custom inspector to auto call this?
-            Type selType = type.GetSelectedType();
+            Type selType = type.SelectedType;
             if (selType != null && (obj == null || obj.GetType() != selType)) {
                 // todo try to keep parts from old type?
                 type.TryCreateInstance(out obj);
