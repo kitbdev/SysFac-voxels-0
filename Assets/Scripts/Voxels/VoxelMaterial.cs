@@ -10,11 +10,13 @@ namespace VoxelSystem {
     }
     [System.Serializable]
     public class VoxelMaterial {
-        public Rect textureRect;
+        // public Rect textureRect;
+        public int materialIndex;
+        public Material material;
     }
     [System.Serializable]
     public class CuboidMaterial : VoxelMaterial {
-
+        public CuboidData[] cuboids;
     }
     [System.Serializable]
     public struct CuboidData {
@@ -33,7 +35,8 @@ namespace VoxelSystem {
     }
     [System.Serializable]
     public class BasicMaterial : VoxelMaterial {
-
+        public Vector2Int textureCoords;
+        public Color tint;
     }
     // public class Material : VoxelMaterial {
 

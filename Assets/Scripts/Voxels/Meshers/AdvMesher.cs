@@ -26,7 +26,6 @@ namespace VoxelSystem.Mesher {
         }
         [SerializeField] Mesh mesh;
         [SerializeField] MeshGenPData preprocessMeshData;
-        [SerializeField] MeshStream meshStream;
 
         public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
             base.Initialize(chunk, renderer);

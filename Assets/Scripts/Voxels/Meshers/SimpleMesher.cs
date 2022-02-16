@@ -6,13 +6,13 @@ namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class SimpleMesher : VoxelMesher {
 
-        [SerializeField] float textureUVScale = 16f / 512;
+        float textureUVScale = 16f / 512;
 
-        [SerializeField] Mesh mesh;
-        [SerializeField] List<Vector3> vertices;
-        // [SerializeField] List<Vector3> normals;
-        [SerializeField] List<int> triangles;
-        [SerializeField] List<Vector2> uvs;
+        Mesh mesh;
+        List<Vector3> vertices;
+        // List<Vector3> normals;
+        List<int> triangles;
+        List<Vector2> uvs;
 
         public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
             base.Initialize(chunk, renderer);

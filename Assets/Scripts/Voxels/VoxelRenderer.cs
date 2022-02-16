@@ -9,12 +9,10 @@ namespace VoxelSystem {
     public class VoxelRenderer : MonoBehaviour {
 
         [SerializeField] VoxelMesher voxelMesher;
-        [SerializeField] AdvMesher adv;
         MeshFilter meshFilter;
 
         public void Initialize(VoxelChunk chunk) {
             voxelMesher = new AdvMesher();
-            adv = (AdvMesher)voxelMesher;
             voxelMesher.Initialize(chunk, this);
         }
 

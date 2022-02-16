@@ -44,14 +44,19 @@ namespace Kutil {
                 // Debug.LogWarning("TryGetValue path " + memberPath);
                 const string arrayStr = "Array";
                 if (splitpath[1].Contains(arrayStr) && splitpath[1].Split('.', 2)[0].Equals(arrayStr)) {
+                    // this element is an enumerable
                     var newpath = splitpath[1].Split('.', 2)[1];
-                    TryGetValue<IEnumerable<System.Object>>(target, splitpath[0], defFlags, out var ntargets);
+                    bool gotarray = TryGetValue<IEnumerable<System.Object>>(target, splitpath[0], defFlags, out var ntargets);
+                    if (!gotarray) {
+                        Debug.LogWarning($"TryGetValue Failed to get enumerable {memberPath} on {target}");
+                        value = default; return false;
+                    }
                     // "data[" = 5 characters
                     newpath = newpath.Remove(0, 5);
                     var t = newpath.Split(']', 2);
                     int arrayIndex = 0;
                     if (!int.TryParse(t[0], out arrayIndex)) {
-                        Debug.LogWarning("TryGetValue Failed to parse path " + memberPath);
+                        Debug.LogWarning($"TryGetValue Failed to parse path {memberPath} on {target}");
                         value = default; return false;
                     }
                     newpath = t[1];
@@ -65,6 +70,7 @@ namespace Kutil {
                     var ntarget = ntargets.ToArray()[arrayIndex];
                     return TryGetValue<T>(ntarget, newpath, flags, out value);
                 } else {
+                    // get nested object
                     TryGetValue<System.Object>(target, splitpath[0], defFlags, out var ntarget);
                     return TryGetValue<T>(ntarget, splitpath[1], flags, out value);
                 }
