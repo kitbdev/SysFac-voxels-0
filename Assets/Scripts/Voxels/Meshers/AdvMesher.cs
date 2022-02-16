@@ -102,7 +102,8 @@ namespace VoxelSystem.Mesher {
         }
         void CheckVertex(Vector3Int vpos) {
             var voxel = chunk.GetLocalVoxelAt(vpos);
-            if (voxel.shape == Voxel.VoxelShape.none) {
+            var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+            if (mcvd.isTransparent) {// todo seperate for invisible blocks
                 return;
             }
             // check all directions
@@ -110,8 +111,9 @@ namespace VoxelSystem.Mesher {
                 Vector3Int normalDir = Voxel.unitDirs[d];
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
+            var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataType<MeshCacheVoxelData>();
 
-                bool renderFace = coverNeighbor != null && coverNeighbor.isTransparent;
+                bool renderFace = coverNeighbor != null && mcvdcoverNeighbor.isTransparent;
                 // bool renderFace = coverNeighbor == null || coverNeighbor.isTransparent;// also render null walls
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
@@ -121,7 +123,7 @@ namespace VoxelSystem.Mesher {
                 MeshGenPData.FaceData faceData = new MeshGenPData.FaceData() {
                     voxelPos = (Vector3)vpos,
                     faceNormal = ((VoxelDirection)d),
-                    texcoord = (Vector2)voxel.textureCoord
+                    texcoord = (Vector2)mcvd.textureCoord
                 };
                 tlist.Add(faceData);
             }

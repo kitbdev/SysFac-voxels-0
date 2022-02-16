@@ -87,9 +87,11 @@ namespace VoxelSystem.Mesher {
         void CreateBlock(Vector3Int vpos) {
             // get block type
             var voxel = chunk.GetLocalVoxelAt(vpos);
-            // todo cache this instance and do other performance stuff
+            // todo other performance stuff
             // var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
-            if (voxel.shape == Voxel.VoxelShape.none) {
+            
+            var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+            if (mcvd.isTransparent) {// todo
                 return;
             }
 
@@ -97,7 +99,7 @@ namespace VoxelSystem.Mesher {
             Vector3 toVec = Vector3.one * chunk.world.voxelSize;
             Vector2 uvfrom = Vector2.zero;
             Vector2 uvto = Vector2.one;
-            Vector2 texoffset = new Vector2(0, 0) + voxel.textureCoord;
+            Vector2 texoffset = new Vector2(0, 0) + mcvd.textureCoord;
 
             void CreateFace(Vector3 vertexpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
                 int vcount = vertices.Count;
@@ -123,8 +125,9 @@ namespace VoxelSystem.Mesher {
                 Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
+                var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataType<MeshCacheVoxelData>();//todo
                 bool renderFace = coverNeighbor != null
-                    && coverNeighbor.isTransparent;
+                    && mcvdcoverNeighbor.isTransparent;
                 // || coverNeighbor.shape == Voxel.VoxelShape.none
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {

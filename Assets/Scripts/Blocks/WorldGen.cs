@@ -54,7 +54,8 @@ public class WorldGen : MonoBehaviour {
                     // if (blockType.id > 0) {
                     //     Debug.Log(blockType);
                     // }
-                    data[chunk.IndexAt(vlpos)] = new Voxel(blockType);
+                    // todo fix
+                    // data[chunk.IndexAt(vlpos)] = new Voxel(blockType);
                 }
             }
         }

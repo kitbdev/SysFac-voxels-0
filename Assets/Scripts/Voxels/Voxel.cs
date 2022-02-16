@@ -1,24 +1,67 @@
 using UnityEngine;
 using Kutil;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace VoxelSystem {
     /// <summary>
     /// holds data for a single voxel
     /// </summary>
     [System.Serializable]
-    public class NVoxel {
-        
+    public class Voxel {
+
         VoxelMaterialId voxelMaterialId;
         [SerializeReference]
         VoxelData[] voxelDatas;
 
-        public bool GetVoxelDataType<T>(out T voxelData)
+        public Voxel() { }
+
+        public Voxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
+            this.voxelMaterialId = voxelMaterialId;
+            this.voxelDatas = voxelDatas;
+        }
+
+        // public void AddVoxelData(){}
+
+        public bool TryGetVoxelDataType<T>(out T voxelData)
             where T : VoxelData {
+            if (HasVoxelDataType<T>()) {
+                voxelData = GetVoxelDataType<T>();
+                return true;
+            }
             voxelData = null;
             return false;
         }
+        public bool HasVoxelDataType<T>()
+            where T : VoxelData {
+            return voxelDatas.Any(vd => vd.GetType() == typeof(T));
+        }
+        public T GetVoxelDataType<T>()
+            where T : VoxelData {
+            return (T)voxelDatas.FirstOrDefault(vd => vd.GetType() == typeof(T));
+        }
 
+        public VoxelMaterial GetVoxelMaterial() {
+            VoxelMaterialSetSO voxmatset = null;// todo
+            // if (!voxmatset.vmats.Contains(voxelMaterialId)) return null;
+            return voxmatset.vmats[voxelMaterialId];
+        }
+
+        public void ResetToDefaults() {
+            voxelMaterialId = 0;
+            // voxelDatas
+            // todo what are the default voxel datas?
+        }
+        public void CopyValuesFrom(Voxel voxel) {
+            voxelMaterialId = voxel.voxelMaterialId;
+            List<VoxelData> datas = new List<VoxelData>();
+            foreach (var voxelData in voxel.voxelDatas) {
+                // todo deep copy?
+                // keep types?
+                // datas.Add()
+            }
+            voxelDatas = datas.ToArray();
+        }
         public override string ToString() {
             return $"Voxel {voxelMaterialId} datas:{voxelDatas.Length}";
         }
@@ -67,7 +110,7 @@ namespace VoxelSystem {
         };
     }
     [System.Serializable]
-    public class Voxel {
+    public class OldVoxel {
         public enum VoxelShape {
             none,
             cube,
@@ -103,10 +146,10 @@ namespace VoxelSystem {
             textureCoord = Vector2Int.zero;
         }
         // public void CopyValues(Voxel voxel) {
-            // shape = voxel.shape;
-            // blockId = voxel.blockId;
-            // isTransparent = voxel.isTransparent;
-            // textureCoord = voxel.textureCoord;
+        // shape = voxel.shape;
+        // blockId = voxel.blockId;
+        // isTransparent = voxel.isTransparent;
+        // textureCoord = voxel.textureCoord;
         // }
         public override string ToString() {
             return $"Voxel {shape.ToString()} id:{blockId}";
@@ -122,18 +165,18 @@ namespace VoxelSystem {
         BACK = 4,
         DOWN = 5,
     }
-    [System.Serializable]
-    public class FatVoxel {
-        public int index;
-        public Vector3Int position;
-        [SerializeField]
-        public VoxelChunk chunk;
+    // [System.Serializable]
+    // public class FatVoxel {
+    //     public int index;
+    //     public Vector3Int position;
+    //     [SerializeField]
+    //     public VoxelChunk chunk;
 
-        public Voxel.VoxelShape shape;
-        public int textureId;
+    //     public Voxel.VoxelShape shape;
+    //     public int textureId;
 
-        public override string ToString() {
-            return $"Voxel {index} {position} c{chunk.chunkPos}";
-        }
-    }
+    //     public override string ToString() {
+    //         return $"Voxel {index} {position} c{chunk.chunkPos}";
+    //     }
+    // }
 }

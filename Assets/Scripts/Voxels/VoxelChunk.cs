@@ -60,8 +60,7 @@ namespace VoxelSystem {
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
-                Voxel voxel = new Voxel { };
-                voxel.shape = Voxel.VoxelShape.cube;
+                Voxel voxel = new Voxel();
                 voxels[i] = voxel;
                 // voxel.index = i;
                 // if (WorldPosition(i).y < 2) 
@@ -80,11 +79,11 @@ namespace VoxelSystem {
             // Refresh(true);
         }
         public void SetVoxel(int index, Voxel voxel) {
-            voxels[index].CopyValues(voxel);
+            voxels[index].CopyValuesFrom(voxel);
         }
         public void SetAll(Voxel voxel) {
             for (int i = 0; i < volume; i++) {
-                voxels[i].CopyValues(voxel);
+                voxels[i].CopyValuesFrom(voxel);
             }
         }
         public void SetData(Voxel[] data) {
@@ -93,7 +92,7 @@ namespace VoxelSystem {
                 return;
             }
             for (int i = 0; i < volume; i++) {
-                voxels[i].CopyValues(data[i]);
+                voxels[i].CopyValuesFrom(data[i]);
             }
         }
         public void Refresh(bool andNeighbors = false) {
@@ -126,9 +125,9 @@ namespace VoxelSystem {
             List<Bounds> surfaceVoxels = new List<Bounds>();
             for (int i = 0; i < volume; i++) {
                 Vector3Int vpos = GetLocalPos(i);
-                // todo blockdata for collision on/off
                 Voxel voxel = GetLocalVoxelAt(i);
-                if (voxel.blockId == 0) {
+                var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+                if (mcvd.isTransparent) {// todo seperate collider data?
                     continue;
                 }
                 bool hidden = IsVoxelHidden(vpos);
@@ -181,7 +180,8 @@ namespace VoxelSystem {
             bool hidden = true;
             foreach (Vector3Int dir in Voxel.unitDirs) {
                 Voxel voxel = GetVoxelN(vpos + dir);
-                if (voxel != null && voxel.isTransparent) {
+                var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+                if (voxel != null && mcvd.isTransparent) {
                     hidden = false;
                     break;
                 }

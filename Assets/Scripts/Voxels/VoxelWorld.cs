@@ -86,7 +86,7 @@ namespace VoxelSystem {
         }
         void GenEmptyChunk(Vector3Int chunkPos) {
             var chunk = CreateChunk(chunkPos);
-            chunk.SetAll(new Voxel { blockId = 0 });
+            chunk.SetAll(new Voxel());// todo add data
             chunk.Refresh();
         }
 
@@ -178,7 +178,9 @@ namespace VoxelSystem {
                     Debug.LogWarning($"Error getting block type cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
                     return null;
                 }
-                return BlockManager.Instance?.GetBlockTypeAtIndex(voxel.blockId) ?? null;
+                // todo remove all this block stuff
+                return null;
+                // return BlockManager.Instance?.GetBlockTypeAtIndex(voxel.blockId) ?? null;
             } else {
                 return null;
             }
