@@ -9,6 +9,6 @@ namespace VoxelSystem {
         public Material[] materials;
         public float textureResolution;
         public ImplementsType<VoxelMaterial> impltype;
-        public ImplementsType<VoxelMaterial>[] impltypes;
+        public List<ImplementsType<VoxelMaterial>> impltypes;
     }
 }

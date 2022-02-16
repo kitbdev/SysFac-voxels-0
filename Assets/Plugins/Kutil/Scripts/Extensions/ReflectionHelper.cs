@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -36,15 +37,33 @@ namespace Kutil {
                 value = default;
                 return false;
             }
-            // todo deal with arrays to
             if (memberPath.Contains('.')) {
                 // nested
                 string[] splitpath = memberPath.Split('.', 2);
                 // get child target and try again on that
-                if (splitpath[0].Contains("[]")) {
-                    Debug.LogWarning("TryGetValue does not support arrays!");
-                    value = default;
-                    return false;
+                // Debug.LogWarning("TryGetValue path " + memberPath);
+                const string arrayStr = "Array";
+                if (splitpath[1].Contains(arrayStr) && splitpath[1].Split('.', 2)[0].Equals(arrayStr)) {
+                    var newpath = splitpath[1].Split('.', 2)[1];
+                    TryGetValue<IEnumerable<System.Object>>(target, splitpath[0], defFlags, out var ntargets);
+                    // "data[" = 5 characters
+                    newpath = newpath.Remove(0, 5);
+                    var t = newpath.Split(']', 2);
+                    int arrayIndex = 0;
+                    if (!int.TryParse(t[0], out arrayIndex)) {
+                        Debug.LogWarning("TryGetValue Failed to parse path " + memberPath);
+                        value = default; return false;
+                    }
+                    newpath = t[1];
+                    if (newpath.Contains('.')) {
+                        // no more path inside of array
+                        newpath = newpath.Remove(0, 1);
+                    } else {
+                        Debug.LogWarning("TryGetValue array base member check");
+                        // value = default; return false;
+                    }
+                    var ntarget = ntargets.ToArray()[arrayIndex];
+                    return TryGetValue<T>(ntarget, newpath, flags, out value);
                 } else {
                     TryGetValue<System.Object>(target, splitpath[0], defFlags, out var ntarget);
                     return TryGetValue<T>(ntarget, splitpath[1], flags, out value);

@@ -10,9 +10,10 @@ using System.Linq;
 namespace Kutil {
     [CustomPropertyDrawer(typeof(ImplementsType<>))]
     public class ImplementsTypeDrawer : PropertyDrawer {
-        // public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-
-        // }
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+            SerializedProperty selNameProp = property.FindPropertyRelative(nameof(ImplementsType<int>._selectedName));
+            EditorGUI.PropertyField(position, selNameProp, label, false);
+        }
         public override VisualElement CreatePropertyGUI(SerializedProperty property) {
             VisualElement root = new VisualElement();
             // Label label = new Label(property.displayName);
