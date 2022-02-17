@@ -27,11 +27,11 @@ namespace VoxelSystem {
             return CreateVoxel(voxelMaterialId, world.neededData);
         }
         public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<TypeChoice<VoxelData>> neededData) {
-            List<VoxelData> voxelDataList = new List<VoxelData>();
             // todo test voxeldata still have child data
-            // neededData.ForEach((nvd) => {
-            //     voxelDataList.Add(nvd.CreateInstance());
-            // }); 
+            List<VoxelData> voxelDataList = new List<VoxelData>();
+            foreach (var nvd in neededData) {
+                voxelDataList.Add(nvd.CreateInstance());
+            }
             Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
             voxelDataList.Clear();// native array?
             return voxel;

@@ -23,6 +23,21 @@ namespace VoxelSystem {
         public Dictionary<VoxelMaterialId, VoxelMaterial> voxelMatDict { get => _voxelMatDict; }
         public Material[] allUsedMaterials { get => _allUsedMaterials; protected set => _allUsedMaterials = value; }
 
+        private void OnValidate() {
+            foreach (var vm in voxelMats) {
+                if (vm.objvalue is BasicMaterial bvm) {
+                    // bvm.textureCoord = GetBlockTexCoord(bvm.texname);
+                    bvm.textureOverrides.choices = textureAtlas.allTextureNames;
+                }
+            }
+        }
+        [ContextMenu("Re Init VMats")]
+        private void ReInitVMats() {
+            foreach (var vm in voxelMats) {
+                vm.objvalue.Initialize(this);
+            }
+        }
+
         private void Awake() {// todo move?
             // Debug.Log("VoxelMaterialSetSO awake " + voxelMats.Length);
             UpdateVMatDict();
@@ -36,6 +51,7 @@ namespace VoxelSystem {
         private void OnEnable() {
             // Debug.Log("VoxelMaterialSetSO enable");
             UpdateVMatDict();
+            UpdateMatTextures();
             textureAtlas.finishedPackingEvent += UpdateMatTextures;
         }
         private void OnDisable() {
@@ -62,7 +78,7 @@ namespace VoxelSystem {
                 return vm.objvalue;
             });
         }
-        [ContextMenu("Update mat")]
+        [ContextMenu("Update mat textures")]
         private void UpdateMatTextures() {
             allUsedMaterials.ToList().ForEach(mat => {
                 if (textureAtlas?.atlas != null) {
@@ -71,8 +87,7 @@ namespace VoxelSystem {
             });
         }
 
-
-        public Vector2Int GetBlockTexCoord(string texname) {
+        public Vector2Int GetTexCoordForName(string texname) {
             if (texname == "" || texname == "none") {
                 // no texture, return default
                 return Vector2Int.zero;
@@ -121,9 +136,7 @@ namespace VoxelSystem {
                 }
                 newVoxMat.materialIndex = allUsedMaterials.ToList().IndexOf(newVoxMat.material);
             }
-            if (newVoxMat is BasicMaterial bvm) {
-                bvm.textureCoord = GetBlockTexCoord(bvm.texname);
-            }
+            newVoxMat.Initialize(this);
             UpdateVMatDict();
             return GetIdForVoxelMaterial(tsMat);
         }

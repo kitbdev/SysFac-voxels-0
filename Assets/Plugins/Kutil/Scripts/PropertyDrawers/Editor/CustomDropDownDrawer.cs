@@ -12,10 +12,17 @@ namespace Kutil {
     public class CustomDropDownDrawer : PropertyDrawer {
 
         List<string> choices = null;
+        int numLines = 1;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
             // GUI.Label(position, "CustomDropDownDrawer");
-            CustomDropDownAttribute cddAttribute = (CustomDropDownAttribute)attribute;
+            CustomDropDownAttribute dropdownAtt = (CustomDropDownAttribute)attribute;
+
+            if (fieldInfo.FieldType != typeof(string)) {
+                Debug.LogError($"CustomDropDownAttribute must be on a string");
+                base.OnGUI(position, property, label);
+                return;
+            }
 
             string parentPath = property.propertyPath.Replace("." + property.name, "");
             if (parentPath.EndsWith(']')) {
@@ -28,26 +35,68 @@ namespace Kutil {
             }
 
             using (var scope = new EditorGUI.PropertyScope(position, label, property)) {
+                choices ??= GetChoices(dropdownAtt, property);
+                choices ??= GetChoicesRef(dropdownAtt, property);
+                if (choices == null || choices.Count == 0) {
+                    numLines = 2;
+                    position.height /= 2;
+                    Rect labelrect = EditorGUI.IndentedRect(position);
+                    if (choices == null) {
+                        string warningText;
+                        if (dropdownAtt.errorText != null) {
+                            warningText = dropdownAtt.errorText + property.propertyPath;
+                        } else {
+                            warningText = $"{property.propertyPath} not found. Set choicesListSourceField to a string array!";
+                        }
+                        // GUI.Label(labelrect, text);
+                        EditorGUI.HelpBox(labelrect, warningText, MessageType.Warning);
+                        // Debug.LogWarning(text);
+                    } else {
+                        string warningText = dropdownAtt.noElementsText ?? "No choices found!";
+                        EditorGUI.HelpBox(labelrect, warningText, MessageType.Warning);
+                        // GUI.Label(labelrect, text);
+                        // Debug.LogWarning(text);
+                    }
+                    // backup textfield
+                    position.y += EditorGUIUtility.singleLineHeight;
+                    EditorGUI.PropertyField(position, property, label);
+                    return;
+                }
+                numLines = 1;
                 Rect dropdownrect = EditorGUI.PrefixLabel(position, scope.content);
-                choices ??= GetChoices(cddAttribute, property);
-                choices ??= GetChoicesRef(cddAttribute, property);
-                if (choices == null) {
-                    GUI.Label(position, (cddAttribute.errorText ?? 
-                        "Set choicesListSourceField to a string array! ") + property.propertyPath);
-                    // backup textfield?
-                    return;
-                }
-                if (choices.Count == 0) {
-                    GUI.Label(position, cddAttribute.noElementsText ?? "No choices found!");
-                    return;
-                }
-                Func<string, string> selValFunc = GetFunc(cddAttribute.formatSelectedValueFuncField, property);
-                Func<string, string> listFormatFunc = GetFunc(cddAttribute.formatListFuncField, property);
+                Func<string, string> selValFunc = GetFunc(dropdownAtt.formatSelectedValueFuncField, property);
+                Func<string, string> listFormatFunc = GetFunc(dropdownAtt.formatListFuncField, property);
                 // create dropdown button
                 GUIContent buttonContent = new GUIContent(property.stringValue);
                 if (EditorGUI.DropdownButton(dropdownrect, buttonContent, FocusType.Passive)) {
                     // Debug.Log("clicked");
                     GenericMenu dmenu = new GenericMenu();
+                    if (dropdownAtt.includeNullChoice) {
+                        bool isSet = ReferenceEquals(property.stringValue, null);
+                        // bool isSet = property.stringValue == null;
+                        string content = "none";
+                        if (isSet && selValFunc != null) {
+                            content = selValFunc(content);
+                        }
+                        dmenu.AddItem(new GUIContent(content), isSet, SetMenuItemEvent, new ClickMenuData() {
+                            property = property, value = null
+                        });
+                        if (!dropdownAtt.includeEmptyChoice) {
+                            dmenu.AddSeparator("");
+                        }
+                    }
+                    if (dropdownAtt.includeEmptyChoice) {
+                        bool isSet = ReferenceEquals(property.stringValue, "");
+                        // bool isSet = property.stringValue == "";
+                        string content = " (empty)";
+                        if (isSet && selValFunc != null) {
+                            content = selValFunc(content);
+                        }
+                        dmenu.AddItem(new GUIContent(content), isSet, SetMenuItemEvent, new ClickMenuData() {
+                            property = property, value = ""
+                        });
+                        dmenu.AddSeparator("");
+                    }
                     foreach (var choice in choices) {
                         bool isSet = property.stringValue == choice;
                         string content = listFormatFunc != null ? listFormatFunc(choice) : choice;
@@ -62,6 +111,11 @@ namespace Kutil {
                 }
             }
         }
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+            // int numLines = (choices == null || choices.Count <= 0 ? 2 : 1);
+            return EditorGUIUtility.singleLineHeight * numLines;
+            // return base.GetPropertyHeight(property, label);
+        }
 
         public class ClickMenuData {
             public SerializedProperty property;
@@ -70,7 +124,7 @@ namespace Kutil {
         public static void SetMenuItemEvent(object data) {
             // Debug.Log("set");
             var clickData = (ClickMenuData)data;
-            // todo int field support too
+            // todo int field support too, and objects?
             clickData.property.stringValue = clickData.value;
             clickData.property.serializedObject.ApplyModifiedProperties();
         }
@@ -83,7 +137,7 @@ namespace Kutil {
             var choices = GetChoices(cddAttribute, property);
             choices ??= GetChoicesRef(cddAttribute, property);
             if (choices == null) {
-                root.Add(new Label((cddAttribute.errorText ?? 
+                root.Add(new Label((cddAttribute.errorText ??
                         "Set choicesListSourceField to a string array! ") + property.propertyPath));
                 // backup string field
                 TextField textField = new TextField(property.displayName);
@@ -96,7 +150,7 @@ namespace Kutil {
                 return root;
             }
             DropdownField dropdownField = new DropdownField(property.displayName, choices,
-                cddAttribute.defaultIndex,
+                property.stringValue,
                 GetFunc(cddAttribute.formatSelectedValueFuncField, property),
                 GetFunc(cddAttribute.formatListFuncField, property));
             dropdownField.BindProperty(property);
@@ -118,6 +172,9 @@ namespace Kutil {
             }
             if (sourcePropertyValue == null) {
                 sourcePropertyValue = property.serializedObject.FindProperty(cddAttribute.choicesListSourceField);
+            }
+            if (sourcePropertyValue == null) {
+                sourcePropertyValue = property.FindPropertyRelative(cddAttribute.choicesListSourceField);
             }
             if (sourcePropertyValue != null) {
                 // Debug.Log($"has value {sourcePropertyValue.ToString()}");

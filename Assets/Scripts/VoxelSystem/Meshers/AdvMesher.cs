@@ -128,7 +128,7 @@ namespace VoxelSystem.Mesher {
                 MeshGenPData.FaceData faceData = new MeshGenPData.FaceData() {
                     voxelPos = (Vector3)vpos,
                     faceNormal = ((VoxelDirection)d),
-                    texcoord = (Vector2)voxelMat.textureCoord
+                    texcoord = (Vector2)voxelMat.textureOverrides.textureCoords[d]
                 };
                 tlist.Add(faceData);
             }

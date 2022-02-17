@@ -103,7 +103,7 @@ namespace VoxelSystem.Mesher {
             Vector3 toVec = Vector3.one * chunk.world.voxelSize;
             Vector2 uvfrom = Vector2.zero;
             Vector2 uvto = Vector2.one;
-            Vector2 texoffset = new Vector2(0, 0) + voxelMat.textureCoord;
+            Vector2 texoffset = voxelMat.textureCoord;
 
             void CreateFace(Vector3 vertexpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
                 int vcount = vertices.Count;
@@ -131,12 +131,13 @@ namespace VoxelSystem.Mesher {
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
                 BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
-                bool renderFace = coverNeighbor != null && neimat.isTransparent;
-                // bool renderFace = coverNeighbor == null || neimat.isTransparent;// render null sides
+                // bool renderFace = coverNeighbor != null && neimat.isTransparent;
+                bool renderFace = coverNeighbor == null || neimat.isTransparent;// render null sides
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
                     continue;
                 }
+                texoffset = voxelMat.textureOverrides.textureCoords[d];
                 // add face
                 Vector3 vertexpos = (Vector3)vpos * voxelSize - Vector3.one * voxelSize / 2;
                 vertexpos += Voxel.vOffsets[d] * voxelSize;

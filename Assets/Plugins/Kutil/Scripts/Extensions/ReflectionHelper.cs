@@ -12,6 +12,8 @@ namespace Kutil {
                                                     | BindingFlags.NonPublic
                                                     | BindingFlags.Instance
                                                     | BindingFlags.Static;
+
+
         /// <summary>
         /// Attempts to get a value on an object at a given path (supports nesting)
         /// </summary>

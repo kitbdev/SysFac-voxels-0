@@ -11,6 +11,7 @@ namespace Kutil {
         public bool showAsParent = false;// probably really dumb
         // todo? multiple children?
         // todo? keep label
+        // todo? show as all children
 
         public ShowAsChildAttribute(string choicesListSourceField, bool showAsParent = false) {
             this.childSourceField = choicesListSourceField;

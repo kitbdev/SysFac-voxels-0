@@ -536,7 +536,7 @@ MonoBehaviour:
   voxelSize: 1
   defaultChunkResolution: 16
   mesher:
-    _selectedName: SimpleMesher
+    _selectedName: AdvMesher
     onlyIncludeConcreteTypes: 1
   enableCollision: 1
   useBoxColliders: 0

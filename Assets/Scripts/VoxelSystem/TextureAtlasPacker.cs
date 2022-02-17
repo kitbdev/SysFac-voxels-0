@@ -15,6 +15,7 @@ public class TextureAtlasPacker : ScriptableObject {
     [SerializeField, ReadOnly] int _textureResolution = 16;
     public int atlasSize = 512;
     [SerializeField] Texture2D[] topack;
+
     [System.Serializable] public class DictionaryStringVector2Int : SerializableDictionary<string, Vector2Int> { }
     [SerializeField, HideInInspector] protected DictionaryStringVector2Int _packDict = new DictionaryStringVector2Int();
 
@@ -22,6 +23,7 @@ public class TextureAtlasPacker : ScriptableObject {
     public DictionaryStringVector2Int packDict { get => _packDict; protected set => _packDict = value; }
     public int textureResolution { get => _textureResolution; protected set => _textureResolution = value; }
     public float textureBlockScale => ((float)textureResolution) / atlasSize;
+    public string[] allTextureNames => packDict?.Keys.ToArray();
 
     public event System.Action finishedPackingEvent;
 
