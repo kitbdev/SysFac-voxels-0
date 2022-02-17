@@ -62,7 +62,9 @@ namespace VoxelSystem.Mesher {
             // Debug.Log($"faces:{preprocessMeshData.faceDatas.Length} v:{preprocessMeshData.numVertices} t:{preprocessMeshData.numTriangles}");
             // genmesh execute
             Bounds meshBounds = new Bounds(Vector3.one * world.chunkSize / 2f, Vector3.one * world.chunkSize);
-            GenMeshJob.ScheduleParallel(meshData, preprocessMeshData, voxelSize, meshBounds, default).Complete();
+            GenMeshJob.ScheduleParallel(
+                    meshData, preprocessMeshData, voxelSize, meshBounds, materialSet.textureScale,
+                    default).Complete();
             preprocessMeshData.faceDatas.Dispose();
             mesh = new Mesh();
             mesh.name = "Chunk Mesh Advanced";
@@ -140,8 +142,8 @@ namespace VoxelSystem.Mesher {
             MeshGenPData meshGenPData;
             [Unity.Collections.ReadOnly]
             float voxelSize;
-            // [ReadOnly]
-            const float textureUVScale = 16f / 512;// todo get dynamically
+            [Unity.Collections.ReadOnly]
+            float textureUVScale;
 
             [WriteOnly]
             MeshStream meshStream;
@@ -151,10 +153,12 @@ namespace VoxelSystem.Mesher {
             }
             public static JobHandle ScheduleParallel(
                 Mesh.MeshData meshData, MeshGenPData meshGenPData, float voxelSize, Bounds meshBounds,
+                float textureUVScale,
                 JobHandle dependency) {
                 var job = new GenMeshJob();
                 job.meshGenPData = meshGenPData;
                 job.voxelSize = voxelSize;
+                job.textureUVScale = textureUVScale;
                 job.meshStream.Setup(meshData, meshBounds, meshGenPData.numVertices, meshGenPData.numTriangles * 3);
                 int jobLength = 1;
                 return job.ScheduleParallel(jobLength, 1, dependency);

@@ -177,7 +177,7 @@ namespace VoxelSystem {
         Vector3Int BlockPosToVoxelPos(Vector3Int blockpos, Vector3Int chunkpos) {
             return blockpos - chunkpos * defaultChunkResolution;
         }
-        public BlockType GetBlockTypeAt(Vector3Int blockpos) {
+        public Voxel GetVoxelAt(Vector3Int blockpos) {
             VoxelChunk chunk = GetChunkWithBlock(blockpos);
             if (chunk) {
                 Voxel voxel = chunk.GetLocalVoxelAt(BlockPosToVoxelPos(blockpos, chunk.chunkPos));
@@ -185,16 +185,11 @@ namespace VoxelSystem {
                     Debug.LogWarning($"Error getting block type cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
                     return null;
                 }
-                // todo remove all this block stuff
-                return null;
-                // return BlockManager.Instance?.GetBlockTypeAtIndex(voxel.blockId) ?? null;
+                return voxel;
             } else {
                 return null;
             }
         }
-        // public BlockType GetBlockAt(Vector3Int blockpos) {
-        //     return default;
-        // }
 
         public Vector3 ChunkposToWorldpos(Vector3 cpos) {
             Vector3 wpos = cpos * chunkSize;

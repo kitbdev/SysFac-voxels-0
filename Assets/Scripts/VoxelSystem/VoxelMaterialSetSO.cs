@@ -11,6 +11,7 @@ namespace VoxelSystem {
         public SerializableDictionary<VoxelMaterialId, VoxelMaterial> vmats;
         public Material[] materials;
         public float textureResolution = 512f;
+        public float textureScale = 16f/512f;
         // todo use SOs vor mats?
         public TypeSelector<VoxelMaterial>[] mats;
 

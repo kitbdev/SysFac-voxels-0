@@ -11,7 +11,7 @@ namespace VoxelSystem.Mesher {
         // public override TypeChoice<VoxelData>[] neededDatas => new TypeChoice<VoxelData>[] {
         //                 typeof(MeshCacheVoxelData) };
 
-        float textureUVScale = 16f / 512;// todo
+        float textureUVScale = 16f / 512;
 
         Mesh mesh;
         List<Vector3> vertices;
@@ -22,7 +22,7 @@ namespace VoxelSystem.Mesher {
         public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
             base.Initialize(chunk, renderer);
             SetupMesh();
-            textureUVScale = BlockManager.Instance.blockTextureAtlas.textureBlockScale;
+            textureUVScale = materialSet.textureScale;
         }
 
         public override void ClearMesh() {

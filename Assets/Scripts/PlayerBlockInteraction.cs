@@ -9,8 +9,8 @@ public class PlayerBlockInteraction : MonoBehaviour {
     public float maxRayDist = 10;
     public LayerMask blockMask = Physics.DefaultRaycastLayers;
 
-    public float blockBreakDuration = 0.5f;
-    float blockBreakTimer = 0;
+    // public float blockBreakDuration = 0.5f;
+    // float blockBreakTimer = 0;
 
     public VoxelWorld world;
     Transform cam;
@@ -41,10 +41,11 @@ public class PlayerBlockInteraction : MonoBehaviour {
         if (Physics.Raycast(camRay, out var hit, maxRayDist, blockMask, QueryTriggerInteraction.Ignore)) {
             Vector3Int blockPos = world.WorldposToBlockpos(hit.collider.bounds.center);
             // Debug.Log($"hit {hit.collider.name} bp:{blockPos}");
-            BlockType blockType = world.GetBlockTypeAt(blockPos);
-            if (blockType != null) {
+            Voxel voxel = world.GetVoxelAt(blockPos);
+            // BlockType blockType = BlockManager.Instance?.GetBlockTypeAtIndex(voxel) ?? null;
+            // if (blockType != null) {
                 // Debug.Log($" {blockType}");
-            }
+            // }
         }
     }
 }
