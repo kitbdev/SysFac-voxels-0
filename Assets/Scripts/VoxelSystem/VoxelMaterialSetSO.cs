@@ -25,10 +25,7 @@ namespace VoxelSystem {
 
         private void OnValidate() {
             foreach (var vm in voxelMats) {
-                if (vm.objvalue is BasicMaterial bvm) {
-                    // bvm.textureCoord = GetBlockTexCoord(bvm.texname);
-                    bvm.textureOverrides.choices = textureAtlas.allTextureNames;
-                }
+                vm.objvalue.OnValidate(this);
             }
         }
         [ContextMenu("Re Init VMats")]

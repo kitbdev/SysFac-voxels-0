@@ -13,6 +13,7 @@ namespace VoxelSystem {
         // public Rect textureRect;
         public int materialIndex;
         public Material material;
+        public virtual void OnValidate(VoxelMaterialSetSO voxelMaterialSet) { }
         public virtual void Initialize(VoxelMaterialSetSO voxelMaterialSet) { }
     }
     [System.Serializable]
@@ -84,7 +85,7 @@ namespace VoxelSystem {
             texcoordLeft = GetTexCoord(texnameLeft, voxelMaterialSet, defTexCoord);
 
             Vector2Int GetTexCoord(string texname, VoxelMaterialSetSO voxelMaterialSet, Vector2Int defTexCoord) {
-                return (texname != null && texname != "") ? 
+                return (texname != null && texname != "") ?
                     voxelMaterialSet.GetTexCoordForName(texname) : defTexCoord;
             }
             // dont want to set names to base name because that will update the SO
@@ -117,6 +118,11 @@ namespace VoxelSystem {
         public Vector2Int textureCoord;
         public TextureOverrides textureOverrides;
         // public Color tint = Color.white;
+        public override void OnValidate(VoxelMaterialSetSO voxelMaterialSet) {
+            base.OnValidate(voxelMaterialSet);
+            textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
+            textureOverrides.Initialize(voxelMaterialSet, textureCoord);
+        }
         public override void Initialize(VoxelMaterialSetSO voxelMaterialSet) {
             base.Initialize(voxelMaterialSet);
             textureCoord = voxelMaterialSet.GetTexCoordForName(texname);

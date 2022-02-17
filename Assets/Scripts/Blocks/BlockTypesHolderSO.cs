@@ -18,6 +18,7 @@ public class BlockTypesHolderSO : ScriptableObject {
             //     blockTypes[i].displayName = blockTypes[i].idname;
             // }
         }
+        blockTypeToAdd.vmat.objvalue.OnValidate(voxelMaterialSet);
     }
 
     public BlockType GetBlockTypeAtIndex(int index) {

@@ -193,23 +193,33 @@ namespace Kutil {
             return null;
         }
 
-        public List<string> GetChoicesRef(CustomDropDownAttribute cddAttribute, SerializedProperty property) {
+        public static List<string> GetChoicesRef(CustomDropDownAttribute cddAttribute, SerializedProperty property) {
+            // return GetValueOnProp<List<string>>(cddAttribute.choicesListSourceField, property);
             UnityEngine.Object targetObject = property.serializedObject.targetObject;
             string path = property.propertyPath.Replace(property.name, cddAttribute.choicesListSourceField);
             // Type parentType = targetObject.GetType();
             // Debug.Log($"getting choices field '{path}' on {targetObject} t:{parentType} p:{property.propertyPath}");
             if (ReflectionHelper.TryGetValue<string[]>(targetObject, path, out var val)) {
-                return val.ToList();
+                return val?.ToList();
             }
             return null;
         }
-        public Func<string, string> GetFunc(string fieldname, SerializedProperty property) {
+        public static Func<string, string> GetFunc(string fieldname, SerializedProperty property) {
+            return GetValueOnProp<Func<string, string>>(fieldname, property);
+            // UnityEngine.Object targetObject = property.serializedObject.targetObject;
+            // string path = property.propertyPath.Replace(property.name, fieldname);
+            // if (ReflectionHelper.TryGetValue<Func<string, string>>(targetObject, path, out var val)) {
+            //     return val;
+            // }
+            // return null;
+        }
+        public static T GetValueOnProp<T>(string fieldname, SerializedProperty property) {
             UnityEngine.Object targetObject = property.serializedObject.targetObject;
             string path = property.propertyPath.Replace(property.name, fieldname);
-            if (ReflectionHelper.TryGetValue<Func<string, string>>(targetObject, path, out var val)) {
+            if (ReflectionHelper.TryGetValue<T>(targetObject, path, out var val)) {
                 return val;
             }
-            return null;
+            return default;
         }
 
     }
