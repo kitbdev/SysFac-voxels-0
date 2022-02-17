@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
-// using UnityEngine.UIElements;
-// using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,8 +13,13 @@ public class BlockTypeEditor : EditorWindow {
         window.titleContent = new GUIContent("BlockType");
         window.Show();
     }
+    private void OnEnable() {
+        // setup window
+        VisualElement container = new VisualElement();
+        rootVisualElement.Add(container);
 
-    private void OnGUI() {
+        // container.Add();
         
     }
+
 }

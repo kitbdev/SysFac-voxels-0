@@ -70,6 +70,7 @@ namespace Kutil {
                     // json
                     contentStr = JsonUtility.ToJson(content, serializeType == SerializeType.JSONPRETTY);
                     // } else if (serializeType == SerializeType.TEXT) {
+                    // } else if (serializeType == SerializeType.BINARY) {
                     // todo
                 } else {
                     Debug.LogError($"Save failed unsupported serialization type {serializeType.ToString()}");
@@ -103,7 +104,11 @@ namespace Kutil {
                 }
                 // save
                 string saveFullPath = savepath + incrementer + fileExtension;
-                File.WriteAllText(saveFullPath, contentStr, encoding);
+                if (serializeType == SerializeType.BINARY) {
+                    // File.WriteAllBytes(saveFullPath, );
+                } else {
+                    File.WriteAllText(saveFullPath, contentStr, encoding);
+                }
                 Debug.Log($"Saved to '{saveFullPath}'");
 #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.Refresh();
@@ -157,6 +162,11 @@ namespace Kutil {
             public SaveBuilder InPersistentDataPath(string filename) {
                 this.filename = filename;
                 this.filepath = persistentPath;
+                return this;
+            }
+            public SaveBuilder InCustomPath(string filepath, string filename) {
+                this.filename = filename;
+                this.filepath = filepath;
                 return this;
             }
             public SaveBuilder AsJSON(bool prettyFormat = false) {

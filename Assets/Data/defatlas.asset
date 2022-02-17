@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ff5e74d842eca649a41b765397d7304, type: 3}
+  m_Name: defatlas
+  m_EditorClassIdentifier: 
+  atlasName: defatlastex
+  _atlas: {fileID: 0}
+  saveAtlas: 1
+  _textureResolution: 16
+  atlasSize: 512
+  topack:
+  - {fileID: 2800000, guid: 9192069bb16e2c9489ec53c352bfd86f, type: 3}
+  - {fileID: 2800000, guid: dcfeed63b3b6da64cbc871ff450438f9, type: 3}
+  - {fileID: 2800000, guid: 78a655f1c92972145ae7f1c98cb39eb1, type: 3}
+  - {fileID: 2800000, guid: f35848c094cdec64289d4bb6e9030669, type: 3}
+  - {fileID: 2800000, guid: 4f1d4ef32a8bb9549853fe9bbfe07595, type: 3}
+  - {fileID: 2800000, guid: 22c05209d1cdea448a3852a32b941850, type: 3}
+  - {fileID: 2800000, guid: ac91759907bdce441a35232f6daf4b3c, type: 3}
+  - {fileID: 2800000, guid: 7d08f58daa1d48045bfdafe5579b1a45, type: 3}
+  - {fileID: 2800000, guid: 4e00b34cdd87e95468b5e147f0a7775d, type: 3}
+  - {fileID: 2800000, guid: a8ce5439399f91f4fad8e8b79b6c490b, type: 3}
+  - {fileID: 2800000, guid: 8496d7e80585ca7458c92058cf82ea18, type: 3}
+  - {fileID: 2800000, guid: 04adc00021e7fb14abf99a0ef67c5f72, type: 3}
+  _packDict:
+    keys:
+    - debug
+    - dirt
+    - diamond_ore
+    - furnace_front
+    - furnace_front_on
+    - furnace_side
+    - furnace_top
+    - glass
+    - grass_block_side
+    - stone
+    - stone_bricks
+    - gravel
+    values:
+    - {x: 0, y: 0}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    - {x: 3, y: 0}
+    - {x: 0, y: 1}
+    - {x: 0, y: 2}
+    - {x: 0, y: 3}
+    - {x: 1, y: 1}
+    - {x: 2, y: 1}
+    - {x: 3, y: 1}
+    - {x: 1, y: 2}
+    - {x: 1, y: 3}

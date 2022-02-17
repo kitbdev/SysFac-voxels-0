@@ -56,8 +56,24 @@ namespace Kutil {
             }
             if (sourcePropertyValue != null) {
                 return CheckPropertyType(condHAtt, sourcePropertyValue);
+            } else {
+                // use reflection instead, should support arrays and nesting
+                string path = property.propertyPath.Replace(property.name, condHAtt.conditionalSourceField);
+                Object targetObject = property.serializedObject.targetObject;
+                if (ReflectionHelper.TryGetValue<bool>(targetObject, path, out var value)) {
+                    return value;
+                } else if (ReflectionHelper.TryGetValue<System.Enum>(targetObject, path, out var evalue)) {
+                    if (condHAtt.enumIndices == null || condHAtt.enumIndices.Length == 0) {
+                        return false;
+                    }
+                    if (System.Enum.GetUnderlyingType(typeof(System.Enum)) != typeof(int)) {
+                        return true;
+                    } 
+                    // todo test this
+                    int eintval = (int)System.Convert.ChangeType(evalue, typeof(int));
+                    return condHAtt.enumIndices.Contains(eintval);
+                }
             }
-
             return true;
         }
 

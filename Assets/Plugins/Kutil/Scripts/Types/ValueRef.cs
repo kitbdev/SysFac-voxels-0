@@ -130,6 +130,7 @@ namespace Kutil {
                 return false;
             }
         }
+        // todo use new reflection helper
         /// <summary>
         /// Try to get the value of the reference. Must be valid
         /// </summary>

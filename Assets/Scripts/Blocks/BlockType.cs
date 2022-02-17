@@ -4,12 +4,12 @@ using VoxelSystem;
 
 [System.Serializable]
 public class BlockType {
+
     public int id;
     public string idname;
-    public VoxelMaterialId voxelMaterialId;
     public string displayName;
-    public string textureNameOverride;
-    // public VoxelSystem.Voxel.VoxelShape shape;
+    [ShowAsChild(nameof(VoxelMaterialId.id))]
+    public VoxelMaterialId voxelMaterialId;
     public bool isTransparent = false;
     [Min(0)]
     public int maxStack;

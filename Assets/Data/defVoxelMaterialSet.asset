@@ -12,42 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f60f955209edf45b1dae2420e4d037, type: 3}
   m_Name: defVoxelMaterialSet
   m_EditorClassIdentifier: 
-  vmats:
-    keys: []
-    values: []
-  materials:
+  _allVMatMaterials:
   - {fileID: 2100000, guid: ec38bc7a4fbe85545980a4df9b43255e, type: 2}
   - {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
-  textureResolution: 0
-  mats:
-  - type:
-      _selectedName: BasicMaterial
-      defaultIndex: 0
-    obj:
-      rid: 4170073055502008320
-  - type:
-      _selectedName: BasicMaterial
-      defaultIndex: 0
-    obj:
-      rid: 4170073050910556183
+  textureAtlas: {fileID: 11400000, guid: 8329e17f7f1688d4e84c4d723008c2c6, type: 2}
+  activeType:
+    _selectedName: BasicMaterial
+    defaultIndex: 0
+  _mats: []
   references:
     version: 2
-    RefIds:
-    - rid: 4170073050910556183
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
-      data:
-        materialIndex: 0
-        material: {fileID: 0}
-        isInvisible: 0
-        isTransparent: 0
-        textureCoord: {x: 0, y: 0}
-        tint: {r: 0, g: 0, b: 0, a: 0}
-    - rid: 4170073055502008320
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
-      data:
-        materialIndex: 0
-        material: {fileID: 0}
-        isInvisible: 1
-        isTransparent: 1
-        textureCoord: {x: 0, y: 0}
-        tint: {r: 0, g: 0, b: 0, a: 0}
+    RefIds: []

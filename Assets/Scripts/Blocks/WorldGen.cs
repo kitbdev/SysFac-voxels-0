@@ -6,9 +6,13 @@ using VoxelSystem;
 
 public class WorldGen : MonoBehaviour {
 
+    [ShowAsChild(nameof(BlockTypeRef.idname))]
     public BlockTypeRef airBlockref = new BlockTypeRef("air");
+    [ShowAsChild(nameof(BlockTypeRef.idname))]
     public BlockTypeRef stoneBlockRef = new BlockTypeRef("stone");
+    [ShowAsChild(nameof(BlockTypeRef.idname))]
     public BlockTypeRef grassBlockRef = new BlockTypeRef("grass");
+    [ShowAsChild(nameof(BlockTypeRef.idname))]
     public BlockTypeRef dirtBlockRef = new BlockTypeRef("dirt");
 
     VoxelWorld world;
