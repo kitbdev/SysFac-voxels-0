@@ -11,7 +11,9 @@ namespace Kutil {
     /// </summary>
     /// <typeparam name="T">base type</typeparam>
     [Serializable]
-    public class ImplementsType<T> {
+    public class TypeChoice<T> {
+    // alternate names: ImplementsType, childtype, typeholder, TypeSubclass, 
+    // SubType, TypeMatcher, TypeInterface, TypeImplementer, TypeInheritChoice
         // todo choice to include self?
 
         [CustomDropDown(nameof(choices), 0, formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc))]
@@ -37,10 +39,10 @@ namespace Kutil {
             }
         }
 
-        public ImplementsType() {
+        public TypeChoice() {
             selectedName = choices[0];
         }
-        public ImplementsType(Type setType, Func<string, string> formatSelectedValueFunc = null, Func<string, string> formatListFunc = null) {
+        public TypeChoice(Type setType, Func<string, string> formatSelectedValueFunc = null, Func<string, string> formatListFunc = null) {
             SetType(setType);
             this.formatSelectedValueFunc = formatSelectedValueFunc;
             this.formatListFunc = formatListFunc;
@@ -102,6 +104,6 @@ namespace Kutil {
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p));
         }
-        public static implicit operator ImplementsType<T>(Type type) => new ImplementsType<T>(type);
+        public static implicit operator TypeChoice<T>(Type type) => new TypeChoice<T>(type);
     }
 }

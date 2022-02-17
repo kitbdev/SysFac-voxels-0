@@ -3,23 +3,27 @@ using System;
 
 namespace Kutil {
     /// <summary>
-    /// Choose an inherited class and configure it. must be hooked up to onvalidate to work
+    /// Choose an inherited class and configure it
     /// </summary>
     /// <typeparam name="T">base type</typeparam>
     [Serializable]
     public class TypeSelector<T> {
-        public ImplementsType<T> type;
+        [UnityEngine.Serialization.FormerlySerializedAs("type")]
+        private TypeChoice<T> _type;
         [SerializeReference]
         public T obj;
 
-        public void OnValidate() {
-            // todo custom inspector to auto call this?
-            Type selType = type.SelectedType;
-            if (selType != null && (obj == null || obj.GetType() != selType)) {
-                // todo try to keep parts from old type?
-                type.TryCreateInstance(out obj);
+        public TypeChoice<T> type {
+            get => _type; set {
+                _type = value;
+                Type selType = type.SelectedType;
+                if (selType != null && (obj == null || obj.GetType() != selType)) {
+                    // todo? try to keep parts from old type? would need reflaction
+                    type.TryCreateInstance(out obj);
+                }
             }
         }
+
     }
 
 }

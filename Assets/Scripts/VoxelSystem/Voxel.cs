@@ -26,7 +26,7 @@ namespace VoxelSystem {
             VoxelMaterialId voxelMaterialId = world.materialSet.GetIdForVoxelMaterial(world.materialType);
             return CreateVoxel(voxelMaterialId, world.neededData);
         }
-        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<ImplementsType<VoxelData>> neededData) {
+        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<TypeChoice<VoxelData>> neededData) {
             List<VoxelData> voxelDataList = new List<VoxelData>();
             // todo test voxeldata still have child data
             // neededData.ForEach((nvd) => {

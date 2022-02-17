@@ -14,7 +14,7 @@ namespace VoxelSystem {
 
         public float voxelSize = 1;
         public int defaultChunkResolution = 16;
-        public ImplementsType<Mesher.VoxelMesher> mesher = typeof(Mesher.AdvMesher);
+        public TypeChoice<Mesher.VoxelMesher> mesher = typeof(Mesher.AdvMesher);
         public bool enableCollision = true;
         public bool useBoxColliders = true;
         public VoxelMaterialSetSO materialSet;
@@ -34,8 +34,8 @@ namespace VoxelSystem {
         public List<VoxelChunk> activeChunks { get => _activeChunks; private set => _activeChunks = value; }
         public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
 
-        public ImplementsType<VoxelMaterial> materialType => mesher.CreateInstance().neededMaterial;
-        public List<ImplementsType<VoxelData>> neededData => mesher.CreateInstance().neededDatas.ToList();
+        public TypeChoice<VoxelMaterial> materialType => mesher.CreateInstance().neededMaterial;
+        public List<TypeChoice<VoxelData>> neededData => mesher.CreateInstance().neededDatas.ToList();
 
         private void OnEnable() {
             Clear();

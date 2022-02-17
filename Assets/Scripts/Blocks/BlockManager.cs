@@ -89,7 +89,8 @@ public class BlockManager : Singleton<BlockManager> {
         // string content = JsonUtility.ToJson(allBlocks);
         // blocksjson = new TextAsset(content);
         // blocksjson.name = "Data/blocks.asset";
-        SaveSystem.TrySaveLocal(blocksjson.name, allBlocks, true);
+        SaveSystem.StartSave().AsJSON().InLocalDataPath(blocksjson.name).Content(allBlocks).CanOverwrite().TrySave();
+        // SaveSystem.TrySaveLocal(blocksjson.name, allBlocks, true);
     }
 
 }

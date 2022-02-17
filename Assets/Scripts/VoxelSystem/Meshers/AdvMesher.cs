@@ -12,9 +12,7 @@ namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class AdvMesher : VoxelMesher {
 
-        public override Kutil.ImplementsType<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
-        public override ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[] { 
-                        typeof(MeshCacheVoxelData) };
+        public override Kutil.TypeChoice<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
 
         [System.Serializable]
         struct MeshGenPData {
@@ -107,8 +105,8 @@ namespace VoxelSystem.Mesher {
         }
         void CheckVertex(Vector3Int vpos) {
             var voxel = chunk.GetLocalVoxelAt(vpos);
-            var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
-            if (mcvd.isTransparent) {// todo seperate for invisible blocks
+            BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
+            if (voxelMat.isInvisible) {
                 return;
             }
             // check all directions
@@ -116,9 +114,9 @@ namespace VoxelSystem.Mesher {
                 Vector3Int normalDir = Voxel.unitDirs[d];
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataFor<MeshCacheVoxelData>();
+                BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
 
-                bool renderFace = coverNeighbor != null && mcvdcoverNeighbor.isTransparent;
+                bool renderFace = coverNeighbor != null && neimat.isTransparent;
                 // bool renderFace = coverNeighbor == null || coverNeighbor.isTransparent;// also render null walls
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
@@ -128,7 +126,7 @@ namespace VoxelSystem.Mesher {
                 MeshGenPData.FaceData faceData = new MeshGenPData.FaceData() {
                     voxelPos = (Vector3)vpos,
                     faceNormal = ((VoxelDirection)d),
-                    texcoord = (Vector2)mcvd.textureCoord
+                    texcoord = (Vector2)voxelMat.textureCoord
                 };
                 tlist.Add(faceData);
             }

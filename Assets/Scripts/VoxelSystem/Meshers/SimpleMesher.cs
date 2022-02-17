@@ -7,12 +7,11 @@ namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class SimpleMesher : VoxelMesher {
 
-        public override ImplementsType<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
-        public override ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[] {
-                        typeof(MeshCacheVoxelData) };
+        public override TypeChoice<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
+        // public override TypeChoice<VoxelData>[] neededDatas => new TypeChoice<VoxelData>[] {
+        //                 typeof(MeshCacheVoxelData) };
 
         float textureUVScale = 16f / 512;// todo
-        VoxelMaterialSetSO materialSet => world.materialSet;
 
         Mesh mesh;
         List<Vector3> vertices;
@@ -95,12 +94,12 @@ namespace VoxelSystem.Mesher {
             var voxel = chunk.GetLocalVoxelAt(vpos);
             // todo other performance stuff
             // var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
-            BasicMaterial basicMaterial = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
+            BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
             // var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
             // if (mcvd.isTransparent) {// todo
             //     return;
             // }
-            if (basicMaterial.isInvisible) {
+            if (voxelMat.isInvisible) {
                 return;
             }
 
@@ -108,7 +107,7 @@ namespace VoxelSystem.Mesher {
             Vector3 toVec = Vector3.one * chunk.world.voxelSize;
             Vector2 uvfrom = Vector2.zero;
             Vector2 uvto = Vector2.one;
-            Vector2 texoffset = new Vector2(0, 0) + basicMaterial.textureCoord;
+            Vector2 texoffset = new Vector2(0, 0) + voxelMat.textureCoord;
 
             void CreateFace(Vector3 vertexpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
                 int vcount = vertices.Count;

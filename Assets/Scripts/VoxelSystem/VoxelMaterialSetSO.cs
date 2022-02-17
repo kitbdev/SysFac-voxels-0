@@ -14,9 +14,6 @@ namespace VoxelSystem {
         // todo use SOs vor mats?
         public TypeSelector<VoxelMaterial>[] mats;
 
-        private void OnValidate() {
-            mats.ToList().ForEach(m => { m.OnValidate(); });
-        }
         private void Awake() {
             Debug.Log("VoxelMaterialSetSO awake " + mats.Length);
             vmats = new SerializableDictionary<VoxelMaterialId, VoxelMaterial>();
@@ -26,7 +23,7 @@ namespace VoxelSystem {
             // }
             // vmats.Add()
         }
-        public VoxelMaterialId GetIdForVoxelMaterial(ImplementsType<VoxelMaterial> voxelMaterialType) {
+        public VoxelMaterialId GetIdForVoxelMaterial(TypeChoice<VoxelMaterial> voxelMaterialType) {
             // todo use hash for ids?
             int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });
             return vmat;
