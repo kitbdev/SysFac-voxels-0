@@ -11,9 +11,11 @@ namespace VoxelSystem {
     [System.Serializable]
     public class Voxel {
 
-        VoxelMaterialId voxelMaterialId;
-        [SerializeReference]
-        VoxelData[] voxelDatas;
+        [SerializeField] VoxelMaterialId _voxelMaterialId;
+        [SerializeReference] [SerializeField] VoxelData[] _voxelDatas;
+
+        public VoxelMaterialId voxelMaterialId { get => _voxelMaterialId; protected set => _voxelMaterialId = value; }
+        public VoxelData[] voxelDatas { get => _voxelDatas; protected set => _voxelDatas = value; }
 
         protected Voxel() { }
         protected Voxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
@@ -27,38 +29,97 @@ namespace VoxelSystem {
         public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<ImplementsType<VoxelData>> neededData) {
             List<VoxelData> voxelDataList = new List<VoxelData>();
             // todo test voxeldata still have child data
-            neededData.ForEach((nvd) => {
-                voxelDataList.Add(nvd.CreateInstance());
-            });
+            // neededData.ForEach((nvd) => {
+            //     voxelDataList.Add(nvd.CreateInstance());
+            // }); 
             Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
             voxelDataList.Clear();// native array?
             return voxel;
         }
-
-        // public void AddVoxelData(){}
+        public void Initialize(VoxelChunk chunk) {
+            // NotifyVoxelDataMaterialUpdate(GetVoxelMaterial(chunk.world.materialSet));
+        }
 
         public bool TryGetVoxelDataType<T>(out T voxelData)
             where T : VoxelData {
-            if (HasVoxelDataType<T>()) {
-                voxelData = GetVoxelDataType<T>();
+            if (HasVoxelDataFor<T>()) {
+                voxelData = GetVoxelDataFor<T>();
                 return true;
             }
             voxelData = null;
             return false;
         }
-        public bool HasVoxelDataType<T>()
-            where T : VoxelData {
+        public bool HasVoxelDataFor<T>() where T : VoxelData {
             return voxelDatas.Any(vd => vd.GetType() == typeof(T));
         }
-        public T GetVoxelDataType<T>()
-            where T : VoxelData {
+        public bool HasVoxelDataFor(System.Type type) {
+            return voxelDatas.Any(vd => vd.GetType() == type);
+        }
+        public T GetVoxelDataFor<T>() where T : VoxelData {
             return (T)voxelDatas.FirstOrDefault(vd => vd.GetType() == typeof(T));
         }
+        public void SetVoxelDataFor<T>(T data) where T : VoxelData {
+            int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == typeof(T));
+            voxelDatas[v] = data;
+        }
+        public void SetVoxelDataFor(TypeSelector<VoxelData> data) {
+            int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.SelectedType);
+            voxelDatas[v] = data.obj;
+        }
+        public void SetVoxelDataMany(params TypeSelector<VoxelData>[] datas) {
+            foreach (var data in datas) {
+                if (HasVoxelDataFor(data.type.SelectedType)) {
+                    SetVoxelDataFor(data);
+                }
+            }
+        }
+        public void AddVoxelDataMany(bool orSet = false, params TypeSelector<VoxelData>[] datas) {
+            // hopefully this should work
+            List<VoxelData> newVoxelDatas = voxelDatas.ToList();
+            foreach (var data in datas) {
+                if (!HasVoxelDataFor(data.type.SelectedType)) {
+                    newVoxelDatas.Add(data.obj);
+                } else {
+                    SetVoxelDataFor(data);
+                }
+            }
+            voxelDatas = newVoxelDatas.ToArray();
+        }
+        public void AddVoxelDataFor<T>(T data, bool orSet = false) where T : VoxelData {
+            if (HasVoxelDataFor<T>()) {
+                if (orSet) {
+                    SetVoxelDataFor<T>(data);
+                } else {
+                    Debug.LogWarning($"Voxel {this} alrady has {typeof(T).Name} data, cannot add {data}");
+                }
+            } else {
+                List<VoxelData> newVoxelDatas = voxelDatas.ToList();
+                newVoxelDatas.Add(data);
+                voxelDatas = newVoxelDatas.ToArray();
+            }
+        }
+        public void SetOrAddVoxelDataFor<T>(T data) where T : VoxelData {
+            AddVoxelDataFor<T>(data, true);
+        }
 
-        public VoxelMaterial GetVoxelMaterial() {
-            VoxelMaterialSetSO voxmatset = null;// todo
-            // if (!voxmatset.vmats.Contains(voxelMaterialId)) return null;
-            return voxmatset.vmats[voxelMaterialId];
+        public VoxelMaterial GetVoxelMaterial(VoxelMaterialSetSO voxmatset) {
+            return voxmatset.GetVoxelMaterial(voxelMaterialId);
+        }
+        public T GetVoxelMaterial<T>(VoxelMaterialSetSO voxmatset) where T : VoxelMaterial {
+            return voxmatset.GetVoxelMaterial<T>(voxelMaterialId);
+        }
+        public void SetVoxelMaterialId(VoxelMaterialSetSO voxmatset, VoxelMaterialId newVoxelMaterialId) {
+            voxelMaterialId = newVoxelMaterialId;
+            // note notifies all data in case they need to update 
+            // todo really only meshdatacache updates, have that caching somewhere else? 
+            // VoxelMaterial voxelMaterial = GetVoxelMaterial(voxmatset);
+            // NotifyVoxelDataMaterialUpdate(voxelMaterial);
+        }
+
+        private void NotifyVoxelDataMaterialUpdate(VoxelMaterial voxelMaterial) {
+            foreach (var vdata in voxelDatas) {
+                vdata.OnMaterialChange(this, voxelMaterial);
+            }
         }
 
         public void ResetToDefaults() {
@@ -79,6 +140,8 @@ namespace VoxelSystem {
         public override string ToString() {
             return $"Voxel {voxelMaterialId} datas:{voxelDatas.Length}";
         }
+
+        // static stuff
 
         public static Vector3Int[] GetUnitNeighbors(Vector3Int pos, bool includeSelf = false) {
             var neighbors = unitDirs.Select((v) => { return v + pos; });
@@ -122,6 +185,7 @@ namespace VoxelSystem {
         new Vector3(0,0,0),
         new Vector3(0,0,1),
         };
+
     }
     [System.Serializable]
     public class OldVoxel {

@@ -1,12 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kutil;
 using UnityEngine;
 
 namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class SimpleMesher : VoxelMesher {
 
-        float textureUVScale = 16f / 512;
+        public override ImplementsType<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
+        public override ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[] {
+                        typeof(MeshCacheVoxelData) };
+
+        float textureUVScale = 16f / 512;// todo
+        VoxelMaterialSetSO materialSet => world.materialSet;
 
         Mesh mesh;
         List<Vector3> vertices;
@@ -89,9 +95,12 @@ namespace VoxelSystem.Mesher {
             var voxel = chunk.GetLocalVoxelAt(vpos);
             // todo other performance stuff
             // var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
-            
-            var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
-            if (mcvd.isTransparent) {// todo
+            BasicMaterial basicMaterial = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
+            // var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
+            // if (mcvd.isTransparent) {// todo
+            //     return;
+            // }
+            if (basicMaterial.isInvisible) {
                 return;
             }
 
@@ -99,7 +108,7 @@ namespace VoxelSystem.Mesher {
             Vector3 toVec = Vector3.one * chunk.world.voxelSize;
             Vector2 uvfrom = Vector2.zero;
             Vector2 uvto = Vector2.one;
-            Vector2 texoffset = new Vector2(0, 0) + mcvd.textureCoord;
+            Vector2 texoffset = new Vector2(0, 0) + basicMaterial.textureCoord;
 
             void CreateFace(Vector3 vertexpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
                 int vcount = vertices.Count;
@@ -125,9 +134,10 @@ namespace VoxelSystem.Mesher {
                 Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataType<MeshCacheVoxelData>();//todo
+                // var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataFor<MeshCacheVoxelData>();//todo
+                BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
                 bool renderFace = coverNeighbor != null
-                    && mcvdcoverNeighbor.isTransparent;
+                    && neimat.isTransparent;
                 // || coverNeighbor.shape == Voxel.VoxelShape.none
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {

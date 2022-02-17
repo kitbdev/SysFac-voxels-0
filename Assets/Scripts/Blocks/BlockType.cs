@@ -1,10 +1,12 @@
 using Kutil;
 using UnityEngine;
+using VoxelSystem;
 
 [System.Serializable]
 public class BlockType {
     public int id;
     public string idname;
+    public VoxelMaterialId voxelMaterialId;
     public string displayName;
     public string textureNameOverride;
     // public VoxelSystem.Voxel.VoxelShape shape;

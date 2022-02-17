@@ -630,9 +630,9 @@ MonoBehaviour:
   voxelSize: 1
   defaultChunkResolution: 16
   mesher:
-    _selectedName: AdvMesher
+    _selectedName: SimpleMesher
     defaultIndex: 0
-  enableCollision: 1
+  enableCollision: 0
   useBoxColliders: 0
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
@@ -876,6 +876,8 @@ MonoBehaviour:
   _blockTypes:
   - id: 0
     idname: air
+    voxelMaterialId:
+      id: 0
     displayName: Air
     textureNameOverride: 
     isTransparent: 1
@@ -883,6 +885,8 @@ MonoBehaviour:
     itemid: 0
   - id: 1
     idname: stone
+    voxelMaterialId:
+      id: 1
     displayName: Stone
     textureNameOverride: 
     isTransparent: 0
@@ -890,6 +894,8 @@ MonoBehaviour:
     itemid: 0
   - id: 2
     idname: dirt
+    voxelMaterialId:
+      id: 1
     displayName: dirt
     textureNameOverride: 
     isTransparent: 0
@@ -897,6 +903,8 @@ MonoBehaviour:
     itemid: 0
   - id: 3
     idname: grass
+    voxelMaterialId:
+      id: 1
     displayName: grass
     textureNameOverride: grass_block_side
     isTransparent: 0

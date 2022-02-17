@@ -29,13 +29,17 @@ public class WorldGen : MonoBehaviour {
         if (!world.HasChunkActiveAt(cpos)) {
             return;
         }
+        StartCoroutine(GenChunkCo(cpos));
+    }
+    IEnumerator GenChunkCo(Vector3Int cpos) {
         Debug.Log($"Generating chunk {cpos}");
         VoxelChunk chunk = world.GetChunkAt(cpos);
         float[] heightmap = new float[chunk.floorArea];
         for (int i = 0; i < chunk.floorArea; i++) {
             heightmap[i] = 2;
         }
-        Voxel[] data = new Voxel[chunk.volume];
+        VoxelMaterialId[] matData = new VoxelMaterialId[chunk.volume];
+        // DensityVoxelData[] data = new DensityVoxelData[chunk.volume];
         for (int x = 0; x < chunk.resolution; x++) {
             for (int z = 0; z < chunk.resolution; z++) {
                 int hmid = x * chunk.resolution + z;
@@ -54,12 +58,14 @@ public class WorldGen : MonoBehaviour {
                     // if (blockType.id > 0) {
                     //     Debug.Log(blockType);
                     // }
+                    VoxelMaterialId matid = blockType.voxelMaterialId;
                     // todo fix
-                    // data[chunk.IndexAt(vlpos)] = new Voxel(blockType);
+                    matData[chunk.IndexAt(vlpos)] = matid;
                 }
             }
+            yield return null;
         }
-        chunk.SetData(data);
+        chunk.SetVoxelMaterials(matData);
         // chunk.SetVoxel(chunk.IndexAt(new Vector3Int(8, 8, 8)), new Voxel(blockManager.GetBlockTypeAtIndex(2)));
         chunk.Refresh();
     }

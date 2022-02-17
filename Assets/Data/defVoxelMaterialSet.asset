@@ -21,10 +21,10 @@ MonoBehaviour:
   textureResolution: 0
   mats:
   - type:
-      _selectedName: CuboidMaterial
+      _selectedName: BasicMaterial
       defaultIndex: 0
     obj:
-      rid: 4170073050910556181
+      rid: 4170073055502008320
   - type:
       _selectedName: BasicMaterial
       defaultIndex: 0
@@ -33,16 +33,21 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 4170073050910556181
-      type: {class: CuboidMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
-      data:
-        materialIndex: 0
-        material: {fileID: 0}
-        cuboids: []
     - rid: 4170073050910556183
       type: {class: BasicMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
       data:
         materialIndex: 0
         material: {fileID: 0}
-        textureCoords: {x: 0, y: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0, y: 0}
+        tint: {r: 0, g: 0, b: 0, a: 0}
+    - rid: 4170073055502008320
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: Assembly-CSharp}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        isInvisible: 1
+        isTransparent: 1
+        textureCoord: {x: 0, y: 0}
         tint: {r: 0, g: 0, b: 0, a: 0}

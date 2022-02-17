@@ -11,8 +11,8 @@ namespace VoxelSystem.Mesher {
         protected VoxelWorld world;
         protected VoxelRenderer renderer;
         protected float voxelSize;
-        public ImplementsType<VoxelMaterial> neededMaterial => null;
-        public ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[0];
+        public virtual ImplementsType<VoxelMaterial> neededMaterial => null;
+        public virtual ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[0];
 
         public virtual void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
             this.chunk = chunk;

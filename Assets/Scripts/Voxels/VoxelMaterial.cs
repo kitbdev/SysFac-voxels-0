@@ -35,7 +35,9 @@ namespace VoxelSystem {
     }
     [System.Serializable]
     public class BasicMaterial : VoxelMaterial {
-        public Vector2Int textureCoords;
+        public bool isInvisible;// dont mesh
+        public bool isTransparent;
+        public Vector2Int textureCoord;
         public Color tint;
     }
     // public class Material : VoxelMaterial {
@@ -46,5 +48,6 @@ namespace VoxelSystem {
         public int id;
         public static implicit operator int(VoxelMaterialId vmid) => vmid.id;
         public static implicit operator VoxelMaterialId(int nid) => new VoxelMaterialId() { id = nid };
+        public override string ToString() => ((int)id).ToString();
     }
 }

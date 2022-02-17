@@ -14,7 +14,7 @@ namespace Kutil {
     public class ImplementsType<T> {
         // todo choice to include self?
 
-        [CustomDropDown(nameof(choices), 0, nameof(formatSelectedValueFunc), nameof(formatListFunc))]
+        [CustomDropDown(nameof(choices), 0, formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc))]
         [SerializeField] internal string _selectedName;
         public string selectedName { get => _selectedName; protected set => _selectedName = value; }
 

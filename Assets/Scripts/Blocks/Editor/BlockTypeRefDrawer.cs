@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[CustomPropertyDrawer(typeof(BlockTypeRef))]
+// [CustomPropertyDrawer(typeof(BlockTypeRef))]
 public class BlockTypeRefDrawer : PropertyDrawer {
     public override VisualElement CreatePropertyGUI(SerializedProperty property) {
         // return base.CreatePropertyGUI(property);

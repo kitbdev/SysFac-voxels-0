@@ -6,10 +6,15 @@ using Unity.Jobs;
 using static Unity.Mathematics.math;
 using Unity.Collections;
 using Unity.Mathematics;
+using Kutil;
 
 namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class AdvMesher : VoxelMesher {
+
+        public override Kutil.ImplementsType<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
+        public override ImplementsType<VoxelData>[] neededDatas => new ImplementsType<VoxelData>[] { 
+                        typeof(MeshCacheVoxelData) };
 
         [System.Serializable]
         struct MeshGenPData {
@@ -102,7 +107,7 @@ namespace VoxelSystem.Mesher {
         }
         void CheckVertex(Vector3Int vpos) {
             var voxel = chunk.GetLocalVoxelAt(vpos);
-            var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+            var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
             if (mcvd.isTransparent) {// todo seperate for invisible blocks
                 return;
             }
@@ -111,7 +116,7 @@ namespace VoxelSystem.Mesher {
                 Vector3Int normalDir = Voxel.unitDirs[d];
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-            var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataType<MeshCacheVoxelData>();
+                var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataFor<MeshCacheVoxelData>();
 
                 bool renderFace = coverNeighbor != null && mcvdcoverNeighbor.isTransparent;
                 // bool renderFace = coverNeighbor == null || coverNeighbor.isTransparent;// also render null walls
@@ -133,9 +138,9 @@ namespace VoxelSystem.Mesher {
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         struct GenMeshJob : IJobFor {
 
-            [ReadOnly]
+            [Unity.Collections.ReadOnly]
             MeshGenPData meshGenPData;
-            [ReadOnly]
+            [Unity.Collections.ReadOnly]
             float voxelSize;
             // [ReadOnly]
             const float textureUVScale = 16f / 512;// todo get dynamically

@@ -9,10 +9,10 @@ namespace VoxelSystem {
     /// </summary>
     public class VoxelChunk : MonoBehaviour {
 
+        [SerializeField, ReadOnly] VoxelWorld _world;
         [SerializeField, ReadOnly] Vector3Int _chunkPos;
         int _resolution;
-        [SerializeField, HideInInspector] Voxel[] _voxels;
-        [SerializeField, HideInInspector] VoxelWorld _world;
+        [SerializeField, ReadOnly] Voxel[] _voxels;
 
         private VoxelRenderer visuals;
 
@@ -63,11 +63,11 @@ namespace VoxelSystem {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
-                voxels[i] = voxel;
-                // voxel.index = i;
-                // if (WorldPosition(i).y < 2) 
+                voxels[i] = voxel; 
             }
-            // visuals.CreateMesh(this);
+            // foreach (var vox in voxels) {
+            //     vox.Initialize(this);
+            // }
         }
         // public void RepopulateVoxels(){
         //     Clear();
@@ -83,23 +83,6 @@ namespace VoxelSystem {
                 voxels[i].ResetToDefaults();
             }
             // Refresh(true);
-        }
-        public void SetVoxel(int index, Voxel voxel) {
-            voxels[index].CopyValuesFrom(voxel);
-        }
-        public void SetAll(Voxel voxel) {
-            for (int i = 0; i < volume; i++) {
-                voxels[i].CopyValuesFrom(voxel);
-            }
-        }
-        public void SetData(Voxel[] data) {
-            if (data.Length != volume) {
-                Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
-                return;
-            }
-            for (int i = 0; i < volume; i++) {
-                voxels[i].CopyValuesFrom(data[i]);
-            }
         }
         public void Refresh(bool andNeighbors = false) {
             visuals.UpdateMesh();
@@ -132,7 +115,7 @@ namespace VoxelSystem {
             for (int i = 0; i < volume; i++) {
                 Vector3Int vpos = GetLocalPos(i);
                 Voxel voxel = GetLocalVoxelAt(i);
-                var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+                var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
                 if (mcvd.isTransparent) {// todo seperate collider data?
                     continue;
                 }
@@ -154,6 +137,37 @@ namespace VoxelSystem {
                 } else {
                     DestroyImmediate(transform.GetChild(0).gameObject);
                 }
+            }
+        }
+
+
+        public void SetVoxelMaterial(int index, VoxelMaterialId voxelMaterialId) {
+            voxels[index].SetVoxelMaterialId(world.materialSet, voxelMaterialId);
+        }
+        public void SetVoxelDataTake<T>(int index, T data) where T : VoxelData {
+            voxels[index].SetVoxelDataFor<T>(data);
+        }
+        /// <summary>
+        /// Sets the voxel data for that datatype. Copys values
+        /// </summary>
+        public void SetVoxelData<T>(int index, T data) where T : VoxelData {
+            voxels[index].GetVoxelDataFor<T>().CopyValuesFrom(data);
+        }
+        public void SetVoxelMaterials(VoxelMaterialId voxelMaterialId) {
+            VoxelMaterialSetSO materialSet = world.materialSet;
+            for (int i = 0; i < volume; i++) {
+                voxels[i].SetVoxelMaterialId(materialSet, voxelMaterialId);
+            }
+        }
+        public void SetVoxelMaterials(VoxelMaterialId[] data) {
+            if (data.Length != volume) {
+                Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
+                return;
+            }
+            VoxelMaterialSetSO materialSet = world.materialSet;
+            for (int i = 0; i < volume; i++) {
+                // if (voxels[i] == null) Debug.LogWarning($"voxel {i} is null!");
+                voxels[i].SetVoxelMaterialId(materialSet, data[i]);
             }
         }
 
@@ -186,7 +200,7 @@ namespace VoxelSystem {
             bool hidden = true;
             foreach (Vector3Int dir in Voxel.unitDirs) {
                 Voxel voxel = GetVoxelN(vpos + dir);
-                var mcvd = voxel.GetVoxelDataType<MeshCacheVoxelData>();
+                var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
                 if (voxel != null && mcvd.isTransparent) {
                     hidden = false;
                     break;
