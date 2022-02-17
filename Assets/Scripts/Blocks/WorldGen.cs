@@ -42,6 +42,7 @@ public class WorldGen : MonoBehaviour {
         for (int i = 0; i < chunk.floorArea; i++) {
             heightmap[i] = 2;
         }
+        // todo any datas?
         VoxelMaterialId[] matData = new VoxelMaterialId[chunk.volume];
         // DensityVoxelData[] data = new DensityVoxelData[chunk.volume];
         for (int x = 0; x < chunk.resolution; x++) {
@@ -63,7 +64,6 @@ public class WorldGen : MonoBehaviour {
                     //     Debug.Log(blockType);
                     // }
                     VoxelMaterialId matid = blockType.voxelMaterialId;
-                    // todo fix
                     matData[chunk.IndexAt(vlpos)] = matid;
                 }
             }

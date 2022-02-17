@@ -3,7 +3,7 @@ using Kutil;
 using UnityEngine;
 
 // just refers to a blocktype
-[System.Serializable][ShowAsChild(nameof(idname))]
+[System.Serializable]
 public class BlockTypeRef {
     [CustomDropDown(nameof(choices), missingText:"No Types! check BlockManager")]
     public string idname = "air";

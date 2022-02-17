@@ -9,30 +9,37 @@ namespace Kutil {
                 NONE,
                 JSON, JSONPRETTY,
                 TEXT,
-                // TODO
                 BINARY,
-                XML, YAML
+                // TODO
+                // CUSTOM,
+                XML,
+                YAML,
             }
-            public SerializeType serializeType;
-            public string filepath;
-            public string filename;
-            public string fileExtension;
-            [SerializeReference]
-            public System.Object content;
-            public string contentStr;
-            public bool createDirIfDoesntExistOnSave = false;
-            public bool saveOverwrite = false;
-            public bool saveIncrement = false;
-            public System.Text.Encoding encoding = System.Text.Encoding.Default;
+            [System.Serializable]
+            public class SaveBuilderData {
+                public SerializeType serializeType;
+                public string filepath;
+                public string filename;
+                public string fileExtension;
+                // [SerializeReference]
+                public System.Object content;
+                public string contentStr;
+                public byte[] contentBytes;
+                public bool createDirIfDoesntExistOnSave = false;
+                public bool saveOverwrite = false;
+                public bool saveIncrement = false;
+                public System.Text.Encoding encoding = System.Text.Encoding.Default;
+            }
+            public SaveBuilderData data = new SaveBuilderData();
             // todo encryption
 
-            string fullPath => filepath + filename + fileExtension;
+            string fullPath => data.filepath + data.filename + data.fileExtension;
 
             public SaveBuilder() { }
 
             private bool TryLoadText() {
                 if (File.Exists(fullPath)) {
-                    contentStr = File.ReadAllText(fullPath);
+                    data.contentStr = File.ReadAllText(fullPath);
                     Debug.Log($"Loaded '{fullPath}'");
                     return true;
                 }
@@ -41,14 +48,14 @@ namespace Kutil {
             }
             private bool TryConvertFromJSON<T>(out T tContent) {
                 try {
-                    tContent = JsonUtility.FromJson<T>(contentStr);
+                    tContent = JsonUtility.FromJson<T>(data.contentStr);
                     if (tContent == null) {
-                        Debug.LogWarning($"failed to convert '{contentStr}' JSON to {typeof(T).Name}");
+                        Debug.LogWarning($"failed to convert '{data.contentStr}' JSON to {typeof(T).Name}");
                         return false;
                     }
                     return true;
                 } catch (System.Exception e) {
-                    Debug.LogWarning($"failed to convert '{contentStr}' JSON to {typeof(T).Name}. \nError: {e.ToString()}");
+                    Debug.LogWarning($"failed to convert '{data.contentStr}' JSON to {typeof(T).Name}. \nError: {e.ToString()}");
                     tContent = default;
                     return false;
                 }
@@ -59,55 +66,68 @@ namespace Kutil {
             /// </summary>
             /// <returns>True if successful</returns>
             public bool TrySave() {
-                if (filepath == null || filename == null || fileExtension == null || content == null
-                    || serializeType == SerializeType.NONE) {
+                if (data.filepath == null || data.filename == null || data.fileExtension == null
+                    || data.serializeType == SerializeType.NONE) {
                     Debug.LogWarning("Some SaveBuilder data not set");
                     return false;
                 }
                 // actually save
                 // serialize content
-                if (serializeType == SerializeType.JSON || serializeType == SerializeType.JSONPRETTY) {
+                if (data.serializeType == SerializeType.JSON || data.serializeType == SerializeType.JSONPRETTY) {
+                    if (data.content == null) {
+                        Debug.LogWarning("object content not set!");
+                        return false;
+                    }
                     // json
-                    contentStr = JsonUtility.ToJson(content, serializeType == SerializeType.JSONPRETTY);
-                    // } else if (serializeType == SerializeType.TEXT) {
-                    // } else if (serializeType == SerializeType.BINARY) {
+                    data.contentStr = JsonUtility.ToJson(data.content, data.serializeType == SerializeType.JSONPRETTY);
+                } else if (data.serializeType == SerializeType.BINARY) {
+                    if (data.contentBytes == null) {
+                        Debug.LogWarning("Binary content bytes not set");
+                        return false;
+                    }
+                } else if (data.serializeType == SerializeType.TEXT) {
+                    if (data.contentStr == null) {
+                        Debug.LogWarning("string content not set!");
+                        return false;
+                    }
+                    // } else if (data.serializeType == SerializeType.XML) {
                     // todo
                 } else {
-                    Debug.LogError($"Save failed unsupported serialization type {serializeType.ToString()}");
+                    Debug.LogError($"Save failed unsupported serialization type {data.serializeType.ToString()}");
                     return false;
                 }
                 // check directory
-                if (!Directory.Exists(filepath)) {
-                    if (createDirIfDoesntExistOnSave) {
-                        Directory.CreateDirectory(filepath);
+                if (!Directory.Exists(data.filepath)) {
+                    if (data.createDirIfDoesntExistOnSave) {
+                        Directory.CreateDirectory(data.filepath);
                     } else {
-                        Debug.LogError($"Save failed directory '{filepath}' does not exist");
+                        Debug.LogError($"Save failed directory '{data.filepath}' does not exist");
                         return false;
                     }
                 }
                 // check overwrite
-                string savepath = filepath + filename;
+                string savepath = data.filepath + data.filename;
                 string incrementer = "";
                 bool baseFileExists = File.Exists(fullPath);
-                if (baseFileExists && !saveOverwrite && !saveIncrement) {
+                if (baseFileExists && !data.saveOverwrite && !data.saveIncrement) {
                     Debug.LogWarning($"File '{fullPath}' already exists");
                     return false;
                 }
                 // increment
-                if (baseFileExists && saveIncrement && !saveOverwrite) {
+                if (baseFileExists && data.saveIncrement && !data.saveOverwrite) {
                     int saveNum = 1;
                     incrementer = "_" + saveNum;
-                    while (File.Exists(savepath + incrementer + fileExtension)) {
+                    while (File.Exists(savepath + incrementer + data.fileExtension)) {
                         saveNum++;
                         incrementer = "_" + saveNum;
                     }
                 }
                 // save
-                string saveFullPath = savepath + incrementer + fileExtension;
-                if (serializeType == SerializeType.BINARY) {
-                    // File.WriteAllBytes(saveFullPath, );
+                string saveFullPath = savepath + incrementer + data.fileExtension;
+                if (data.serializeType == SerializeType.BINARY) {
+                    File.WriteAllBytes(saveFullPath, data.contentBytes);
                 } else {
-                    File.WriteAllText(saveFullPath, contentStr, encoding);
+                    File.WriteAllText(saveFullPath, data.contentStr, data.encoding);
                 }
                 Debug.Log($"Saved to '{saveFullPath}'");
 #if UNITY_EDITOR
@@ -120,98 +140,111 @@ namespace Kutil {
             /// </summary>
             /// <returns>True if successful</returns>
             public bool TryLoad<T>(out T loadContent) {
-                if (filepath == null || filename == null || fileExtension == null
-                    || serializeType == SerializeType.NONE) {
+                if (data.filepath == null || data.filename == null || data.fileExtension == null
+                    || data.serializeType == SerializeType.NONE) {
                     Debug.LogWarning("Some SaveBuilder data not set!");
                     loadContent = default;
                     return false;
                 }
                 if (TryLoadText()) {
-                    if (serializeType == SerializeType.JSON || serializeType == SerializeType.JSONPRETTY) {
+                    if (data.serializeType == SerializeType.JSON || data.serializeType == SerializeType.JSONPRETTY) {
                         if (TryConvertFromJSON<T>(out loadContent)) {
                             // loaded and converted successfully
                             return true;
                         }
                         // } else if (serializeType == SerializeType.TEXT) {
                     } else {
-                        Debug.LogError($"Load failed unsupported serialization type {serializeType.ToString()}");
+                        Debug.LogError($"Load failed unsupported serialization type {data.serializeType.ToString()}");
                     }
                 }
                 loadContent = default;
                 return false;
             }
 
+            public SaveBuilder Clear() {
+                this.data = new SaveBuilderData();
+                return this;
+            }
             public SaveBuilder Content(Object saveObject) {
-                this.content = saveObject;
+                this.data.content = saveObject;
                 return this;
             }
-            public SaveBuilder Content<T>(T saveObject) {
-                this.content = (object)saveObject;// todo test
-                return this;
+            public SaveBuilder Content(byte[] contentBytes) {
+                this.data.contentBytes = contentBytes;
+                return this.As(SerializeType.BINARY);
             }
-            public SaveBuilder InLocalPath(string filename) {
-                this.filename = filename;
-                this.filepath = localPath;
-                return this;
-            }
-            public SaveBuilder InLocalDataPath(string filename) {
-                this.filename = filename;
-                this.filepath = localDataPath;
-                return this;
-            }
-            public SaveBuilder InPersistentDataPath(string filename) {
-                this.filename = filename;
-                this.filepath = persistentPath;
-                return this;
-            }
-            public SaveBuilder InCustomPath(string filepath, string filename) {
-                this.filename = filename;
-                this.filepath = filepath;
-                return this;
-            }
-            public SaveBuilder AsJSON(bool prettyFormat = false) {
-                this.fileExtension ??= ".json";
-                this.serializeType = prettyFormat ? SerializeType.JSONPRETTY : SerializeType.JSON;
-                return this;
-            }
-            public SaveBuilder AsText() {
-                this.serializeType = SerializeType.TEXT;
-                this.fileExtension ??= ".txt";
-                return this;
-            }
-            public SaveBuilder As(SerializeType serializeType) {
-                this.serializeType = serializeType;
-                if (serializeType == SerializeType.JSON || serializeType == SerializeType.JSONPRETTY) {
-                    this.fileExtension ??= ".json";
-                } else if (serializeType == SerializeType.TEXT) {
-                    this.fileExtension ??= ".txt";
-                } else if (serializeType == SerializeType.BINARY) {
-                    this.fileExtension ??= ".bin";
-                } else if (serializeType == SerializeType.XML) {
-                    this.fileExtension ??= ".xml";
-                } else if (serializeType == SerializeType.YAML) {
-                    this.fileExtension ??= ".yaml";
+            public SaveBuilder Content(string contentStr) {
+                this.data.contentStr = contentStr;
+                if (this.data.serializeType == SerializeType.NONE) {
+                    return this.AsText();
                 }
                 return this;
             }
-            public SaveBuilder WithCustomExtension(string extension = "txt") {
-                this.fileExtension = "." + extension;
+            public SaveBuilder Content<T>(T saveObject) {
+                this.data.content = (object)saveObject;// todo test
+                return this;
+            }
+            public SaveBuilder InLocalPath(string filename) {
+                this.data.filename = filename;
+                this.data.filepath = localPath;
+                return this;
+            }
+            public SaveBuilder InLocalDataPath(string filename) {
+                this.data.filename = filename;
+                this.data.filepath = localDataPath;
+                return this;
+            }
+            public SaveBuilder InPersistentDataPath(string filename) {
+                this.data.filename = filename;
+                this.data.filepath = persistentPath;
+                return this;
+            }
+            public SaveBuilder InCustomPath(string filepath, string filename) {
+                this.data.filename = filename;
+                this.data.filepath = filepath;
+                return this;
+            }
+            public SaveBuilder AsJSON(bool prettyFormat = false) {
+                this.data.fileExtension ??= ".json";
+                this.data.serializeType = prettyFormat ? SerializeType.JSONPRETTY : SerializeType.JSON;
+                return this;
+            }
+            public SaveBuilder AsText() {
+                return this.As(SerializeType.TEXT);
+            }
+            public SaveBuilder As(SerializeType serializeType) {
+                this.data.serializeType = serializeType;
+                if (serializeType == SerializeType.JSON || serializeType == SerializeType.JSONPRETTY) {
+                    this.data.fileExtension ??= ".json";
+                } else if (serializeType == SerializeType.TEXT) {
+                    this.data.fileExtension ??= ".txt";
+                } else if (serializeType == SerializeType.BINARY) {
+                    this.data.fileExtension ??= ".bin";
+                } else if (serializeType == SerializeType.XML) {
+                    this.data.fileExtension ??= ".xml";
+                } else if (serializeType == SerializeType.YAML) {
+                    this.data.fileExtension ??= ".yaml";
+                }
+                return this;
+            }
+            public SaveBuilder CustomExtension(string extension = "txt") {
+                this.data.fileExtension = "." + extension;
                 return this;
             }
             public SaveBuilder CanOverwrite(bool canOverwrite = true) {
-                this.saveOverwrite = canOverwrite;
+                this.data.saveOverwrite = canOverwrite;
                 return this;
             }
             public SaveBuilder IncrementIfExists(bool increment = true) {
-                this.saveIncrement = increment;
+                this.data.saveIncrement = increment;
                 return this;
             }
             public SaveBuilder CreateDirIfDoesntExist(bool createIfDoesntExist = true) {
-                this.createDirIfDoesntExistOnSave = createIfDoesntExist;
+                this.data.createDirIfDoesntExistOnSave = createIfDoesntExist;
                 return this;
             }
             public SaveBuilder SetEncoding(System.Text.Encoding encoding) {
-                this.encoding = encoding;
+                this.data.encoding = encoding;
                 return this;
             }
         }

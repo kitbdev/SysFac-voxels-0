@@ -20,10 +20,9 @@ namespace VoxelSystem {
         public VoxelMaterialSetSO materialSet;
 
         [Space]
-        [SerializeField] GameObject voxelChunkPrefab;// todo remove
+        [SerializeField] GameObject voxelChunkPrefab;// todo? remove
         [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
-        // todo serialized dict
-        [SerializeField] Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
+        Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
 
         UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
@@ -37,8 +36,10 @@ namespace VoxelSystem {
         public TypeChoice<VoxelMaterial> materialType => mesher.CreateInstance().neededMaterial;
         public List<TypeChoice<VoxelData>> neededData => mesher.CreateInstance().neededDatas.ToList();
 
-        private void OnEnable() {
+        private void Awake() {
             Clear();
+        }
+        private void OnEnable() {
             chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 () => {
                     return Instantiate(voxelChunkPrefab, transform);
@@ -53,14 +54,66 @@ namespace VoxelSystem {
                     }
                 },
                 true, 50, 1000);
+            // fix active chunks dict
+            activeChunksDict = activeChunks?.ToDictionary(vc => vc.chunkPos);
         }
         private void OnDisable() {
             RemoveAllChunks();
             chunkPool.Dispose();
         }
 
-        public void SaveVoxels() {
+        [System.Serializable]
+        public struct WorldSaveData {
+            public float voxelSize;
+            public int defaultChunkResolution;
+            public TypeChoice<Mesher.VoxelMesher> mesher;
+            public bool enableCollision;
+            public bool useBoxColliders;
+            public VoxelMaterialSetSO materialSet;
+            public ChunkSaveData[] chunks;
+        }
+        [System.Serializable]
+        public struct ChunkSaveData {
+            public Vector3Int chunkPos;
+            public Voxel[] voxels;
+        }
+        public WorldSaveData GetWorldSaveData() {
+            WorldSaveData worldSaveData = new WorldSaveData();
+            worldSaveData.voxelSize = voxelSize;
+            worldSaveData.defaultChunkResolution = defaultChunkResolution;
+            worldSaveData.mesher = mesher;
+            worldSaveData.enableCollision = enableCollision;
+            worldSaveData.useBoxColliders = useBoxColliders;
+            worldSaveData.materialSet = materialSet;
+            for (int i = 0; i < activeChunks.Count; i++) {
+                VoxelChunk voxelChunk = activeChunks[i];
+                worldSaveData.chunks[i] = GetChunkSaveData(voxelChunk);
+            }
+            return worldSaveData;
+        }
+        ChunkSaveData GetChunkSaveData(VoxelChunk voxelChunk) {
+            return new ChunkSaveData() {
+                chunkPos = Vector3Int.FloorToInt(voxelChunk.chunkPos),
+                voxels = voxelChunk.voxels,
+            };
+        }
+        public void LoadWorldSaveData(WorldSaveData worldSaveData) {
+            Debug.Log("Loading WorldSaveData...", this);
+            Clear();
+            voxelSize = worldSaveData.voxelSize;
+            defaultChunkResolution = worldSaveData.defaultChunkResolution;
+            mesher = worldSaveData.mesher;
+            enableCollision = worldSaveData.enableCollision;
+            useBoxColliders = worldSaveData.useBoxColliders;
+            materialSet = worldSaveData.materialSet;
+            for (int i = 0; i < worldSaveData.chunks.Length; i++) {
+                ChunkSaveData chunkSaveData = worldSaveData.chunks[i];
+                CreateChunk(chunkSaveData);
+            }
+            RefreshAll();
+        }
 
+        public void SaveVoxels() {
         }
         public void LoadVoxels() {
 
@@ -97,12 +150,17 @@ namespace VoxelSystem {
             chunk.Refresh();
         }
 
-        VoxelChunk CreateChunk(Vector3Int chunkPos) {
+        VoxelChunk CreateChunk(ChunkSaveData chunkSaveData) {
+            VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
+            voxelChunk.OverrideVoxels(chunkSaveData.voxels);
+            return voxelChunk;
+        }
+        VoxelChunk CreateChunk(Vector3Int chunkPos, bool populate = true) {
             GameObject chunkgo = chunkPool.Get();
             chunkgo.transform.localPosition = (Vector3)chunkPos * chunkSize;
             chunkgo.name = $"chunk {chunkPos.x},{chunkPos.y},{chunkPos.z}";
             VoxelChunk chunk = chunkgo.GetComponent<VoxelChunk>();
-            chunk.Initialize(this, chunkPos, defaultChunkResolution);
+            chunk.Initialize(this, chunkPos, defaultChunkResolution, populate);
             activeChunks.Add(chunk);
             activeChunksDict.Add(chunkPos, chunk);
             return chunk;

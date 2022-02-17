@@ -4,15 +4,16 @@ using System.Collections;
 
 namespace Kutil {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property,
-    //| AttributeTargets.Class | AttributeTargets.Struct,//todo support class and struct targets (not just string)
+    //todo? support class and struct targets (not just string) is is possible?
+    //| AttributeTargets.Class | AttributeTargets.Struct,
          Inherited = true)]
     public class CustomDropDownAttribute : PropertyAttribute {
         public string choicesListSourceField;
         public int defaultIndex = 0;
         public string formatSelectedValueFuncField = null;
         public string formatListFuncField = null;
-        public string noElementsText = "";// todo use this
-        public string missingText = "";
+        public string noElementsText = null;
+        public string errorText = null;
 
         public CustomDropDownAttribute(string choicesListSourceField) {
             this.choicesListSourceField = choicesListSourceField;

@@ -25,6 +25,7 @@ namespace Kutil {
 
         // Automatically increment the version number for each unity build. Particularly useful so you can push Unity Cloud Build projects to prod with a peace of mind.
         // todo toggle
+        // #if AUTO_INCREMENT_BUILDVERSION
         // [PostProcessBuildAttribute (0)]
         public static void OnPostprocessBuild(BuildTarget buildTarget, string path) {
 

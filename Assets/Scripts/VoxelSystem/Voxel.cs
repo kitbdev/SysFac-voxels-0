@@ -63,12 +63,12 @@ namespace VoxelSystem {
             voxelDatas[v] = data;
         }
         public void SetVoxelDataFor(TypeSelector<VoxelData> data) {
-            int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.SelectedType);
+            int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.selectedType);
             voxelDatas[v] = data.obj;
         }
         public void SetVoxelDataMany(params TypeSelector<VoxelData>[] datas) {
             foreach (var data in datas) {
-                if (HasVoxelDataFor(data.type.SelectedType)) {
+                if (HasVoxelDataFor(data.type.selectedType)) {
                     SetVoxelDataFor(data);
                 }
             }
@@ -77,7 +77,7 @@ namespace VoxelSystem {
             // hopefully this should work
             List<VoxelData> newVoxelDatas = voxelDatas.ToList();
             foreach (var data in datas) {
-                if (!HasVoxelDataFor(data.type.SelectedType)) {
+                if (!HasVoxelDataFor(data.type.selectedType)) {
                     newVoxelDatas.Add(data.obj);
                 } else {
                     SetVoxelDataFor(data);
@@ -131,9 +131,9 @@ namespace VoxelSystem {
             voxelMaterialId = voxel.voxelMaterialId;
             List<VoxelData> datas = new List<VoxelData>();
             foreach (var voxelData in voxel.voxelDatas) {
-                // todo deep copy?
-                // keep types?
-                // datas.Add()
+                VoxelData nvoxl = ((TypeChoice<VoxelData>)voxelData.GetType()).CreateInstance();
+                nvoxl.CopyValuesFrom(voxelData);
+                datas.Add(nvoxl);
             }
             voxelDatas = datas.ToArray();
         }

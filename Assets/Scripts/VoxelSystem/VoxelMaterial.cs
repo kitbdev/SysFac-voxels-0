@@ -38,7 +38,12 @@ namespace VoxelSystem {
         public bool isInvisible;// dont mesh
         public bool isTransparent;
         public Vector2Int textureCoord;
-        public Color tint;
+        public Color tint = Color.white;
+    }
+    [System.Serializable]
+    public class AnimatedMaterial : BasicMaterial {
+        public float animDuration;
+        public Vector2Int[] frameCoords;// ? auto set using texture?
     }
     // public class Material : VoxelMaterial {
 

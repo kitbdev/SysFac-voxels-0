@@ -8,12 +8,12 @@ namespace Kutil {
     /// </summary>
     public class ObjectPoolObject : MonoBehaviour {
 
-        ObjectPool pool;
+        KObjectPool pool;
         int typeId;
         MultiObjectPool multiObjectPool;
 
         public int TypeId => typeId;
-        public void Init(ObjectPool pool) {
+        public void Init(KObjectPool pool) {
             this.pool = pool;
         }
         public void Init(MultiObjectPool pool, int typeId) {

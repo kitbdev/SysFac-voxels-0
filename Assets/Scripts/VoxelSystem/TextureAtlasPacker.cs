@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Kutil;
 using System.Linq;
-using UnityEngine;
 
 [DefaultExecutionOrder(-20)]
 [CreateAssetMenu(fileName = "TextureAtlasPacker", menuName = "VoxelSystem/TextureAtlasPacker", order = 0)]
@@ -15,11 +14,11 @@ public class TextureAtlasPacker : ScriptableObject {
     [SerializeField, ReadOnly] int _textureResolution = 16;
     public int atlasSize = 512;
     [SerializeField] Texture2D[] topack;
-    [System.Serializable] public class DictionaryStringVector2 : SerializableDictionary<string, Vector2> { }
-    [SerializeField, HideInInspector] protected DictionaryStringVector2 _packDict = new DictionaryStringVector2();
+    [System.Serializable] public class DictionaryStringVector2Int : SerializableDictionary<string, Vector2Int> { }
+    [SerializeField, HideInInspector] protected DictionaryStringVector2Int _packDict = new DictionaryStringVector2Int();
 
     public Texture2D atlas { get => _atlas; protected set => _atlas = value; }
-    public DictionaryStringVector2 packDict { get => _packDict; protected set => _packDict = value; }
+    public DictionaryStringVector2Int packDict { get => _packDict; protected set => _packDict = value; }
     public int textureResolution { get => _textureResolution; protected set => _textureResolution = value; }
     public float textureBlockScale => ((float)textureResolution) / atlasSize;
 
@@ -68,12 +67,14 @@ public class TextureAtlasPacker : ScriptableObject {
             packDict.Add(tex.name, texStartPos);
         }
         if (saveAtlas) {
-            string path = Application.dataPath + "/data/" + atlasName + ".png";
-            System.IO.File.WriteAllBytes(path, atlas.EncodeToPNG());
-            Debug.Log($"Saving to '{path}'");
-#if UNITY_EDITOR
-            UnityEditor.AssetDatabase.Refresh();
-#endif
+            SaveSystem.StartSave()
+                .Content(atlas.EncodeToPNG()).CustomExtension("png").InLocalDataPath(atlasName).TrySave();
+//             string path = Application.dataPath + "/data/" + atlasName + ".png";
+//             System.IO.File.WriteAllBytes(path, atlas.EncodeToPNG());
+//             Debug.Log($"Saving to '{path}'");
+// #if UNITY_EDITOR
+//             UnityEditor.AssetDatabase.Refresh();
+// #endif
         }
     }
     static void ResizeTexture(Texture2D texture, int width, int height) {

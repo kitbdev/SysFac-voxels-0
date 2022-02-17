@@ -8,7 +8,7 @@ namespace Kutil {
     /// <summary>
     /// For holding a pool of GameObjects, to reuse them instead of often destroying and instantiating them
     /// </summary>
-    public class ObjectPool : MonoBehaviour {
+    public class KObjectPool : MonoBehaviour {
 
         [Min(0)]
         public int initpoolSize = 0;

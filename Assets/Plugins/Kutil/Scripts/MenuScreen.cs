@@ -66,7 +66,7 @@ namespace Kutil {
                 anim.SetBool(animTag, isShown);
             }
             if (canvasGroup) {
-                // todo lerp option (with unscaledtime)
+                // todo? lerp option (with unscaledtime)
                 canvasGroup.alpha = isShown ? 1f : 0f;
                 canvasGroup.interactable = isShown;
                 canvasGroup.blocksRaycasts = isShown;

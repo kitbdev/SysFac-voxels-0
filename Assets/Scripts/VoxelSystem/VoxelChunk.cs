@@ -26,7 +26,7 @@ namespace VoxelSystem {
         public int floorArea => resolution * resolution;
         public int volume => resolution * resolution * resolution;
 
-        public void Initialize(VoxelWorld world, Vector3Int chunkPos, int resolution) {
+        public void Initialize(VoxelWorld world, Vector3Int chunkPos, int resolution, bool populate = true) {
             this.world = world;
             this.chunkPos = chunkPos;
             this.resolution = resolution;
@@ -38,22 +38,17 @@ namespace VoxelSystem {
                 visuals = gameObject.AddComponent<VoxelRenderer>();
             }
             if (world.enableCollision) { // todo: only colliders on some chunks
-                if (!world.useBoxColliders) {
-                    if (!gameObject.TryGetComponent<MeshCollider>(out _)) {
-                        gameObject.AddComponent<MeshCollider>();
-                    }
-                } else {
-                    if (gameObject.TryGetComponent<MeshCollider>(out var mcol)) {
-                        if (Application.isPlaying) {
-                            Destroy(mcol);
-                        } else {
-                            DestroyImmediate(mcol);
-                        }
-                    }
-                }
+                AddColliders();
             }
+
             visuals.Initialize(this);
-            PopulateVoxels();
+            if (populate) {
+                PopulateVoxels();
+            }
+        }
+        public void OverrideVoxels(Voxel[] voxels){
+            this.voxels = voxels;
+            //? initialize
         }
         protected void PopulateVoxels() {
             voxels = new Voxel[volume];
@@ -63,7 +58,7 @@ namespace VoxelSystem {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
-                voxels[i] = voxel; 
+                voxels[i] = voxel;
             }
             // foreach (var vox in voxels) {
             //     vox.Initialize(this);
@@ -86,12 +81,7 @@ namespace VoxelSystem {
         }
         public void Refresh(bool andNeighbors = false) {
             visuals.UpdateMesh();
-            RemoveBoxColliders();
-            if (world.enableCollision) {
-                if (world.useBoxColliders) {
-                    AddBoxColliders();
-                }
-            }
+            UpdateColliders();
             if (andNeighbors) {
                 // updates the 7 neighbors behind, below, and left (otherwise recursion?)
                 for (int i = 1; i < Voxel.cubePositions.Length; i++) {
@@ -107,6 +97,40 @@ namespace VoxelSystem {
             visuals.UpdateMeshAt(pos);
         }
 
+        private void UpdateColliders() {
+            RemoveBoxColliders();
+            if (world.enableCollision) {
+                if (world.useBoxColliders) {
+                    AddBoxColliders();
+                }
+            }
+        }
+        public void AddColliders() {
+            // todo? cache this useBoxColliders
+            // if (!world.enableCollision) return;
+            if (world.useBoxColliders) {
+                RemoveMeshCollider();
+                AddBoxColliders();
+            } else {
+                RemoveBoxColliders();
+                if (!gameObject.TryGetComponent<MeshCollider>(out _)) {
+                    gameObject.AddComponent<MeshCollider>();
+                }
+            }
+        }
+        public void RemoveColliders() {
+            RemoveBoxColliders();
+            RemoveMeshCollider();
+        }
+        private void RemoveMeshCollider() {
+            if (gameObject.TryGetComponent<MeshCollider>(out var mcol)) {
+                if (Application.isPlaying) {
+                    Destroy(mcol);
+                } else {
+                    DestroyImmediate(mcol);
+                }
+            }
+        }
         private void AddBoxColliders() {
             var collgo = new GameObject($"chunk {chunkPos} col");
             collgo.transform.parent = transform;
@@ -115,8 +139,8 @@ namespace VoxelSystem {
             for (int i = 0; i < volume; i++) {
                 Vector3Int vpos = GetLocalPos(i);
                 Voxel voxel = GetLocalVoxelAt(i);
-                var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
-                if (mcvd.isTransparent) {// todo seperate collider data?
+                var vmat = voxel.GetVoxelMaterial<BasicMaterial>(world.materialSet);
+                if (vmat.isInvisible) {// todo? seperate collider data?
                     continue;
                 }
                 bool hidden = IsVoxelHidden(vpos);
@@ -200,8 +224,8 @@ namespace VoxelSystem {
             bool hidden = true;
             foreach (Vector3Int dir in Voxel.unitDirs) {
                 Voxel voxel = GetVoxelN(vpos + dir);
-                var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
-                if (voxel != null && mcvd.isTransparent) {
+                var vmat = voxel?.GetVoxelMaterial<BasicMaterial>(world.materialSet);
+                if (voxel != null && vmat.isTransparent) {
                     hidden = false;
                     break;
                 }

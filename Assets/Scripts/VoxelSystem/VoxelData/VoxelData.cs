@@ -18,29 +18,29 @@ namespace VoxelSystem {
             }
         }
     }
-    [System.Serializable]
-    public class MeshCacheVoxelData : VoxelData {
-        [System.NonSerialized]
-        public bool isTransparent;
-        [System.NonSerialized]
-        public Vector2Int textureCoord;
-        // neighbors?
+    // [System.Serializable]
+    // public class MeshCacheVoxelData : VoxelData {
+    //     [System.NonSerialized]
+    //     public bool isTransparent;
+    //     [System.NonSerialized]
+    //     public Vector2Int textureCoord;
+    //     // neighbors?
 
-        public override void CopyValuesFrom(VoxelData from) {
-            if (from is MeshCacheVoxelData vd) {
-                this.isTransparent = vd.isTransparent;
-                this.textureCoord = vd.textureCoord;
-            } else {
-                base.CopyValuesFrom(from);
-            }
-        }
-        public override void OnMaterialChange(Voxel voxel, VoxelMaterial voxelMaterial) {
-            if (voxelMaterial is BasicMaterial bmat){
-                isTransparent = bmat.isTransparent;
-                textureCoord = bmat.textureCoord;
-            }
-            // if (voxel.TryGetVoxelDataType<MeshCacheVoxelData>(out var mcvd)) {
-            // }
-        }
-    }
+    //     public override void CopyValuesFrom(VoxelData from) {
+    //         if (from is MeshCacheVoxelData vd) {
+    //             this.isTransparent = vd.isTransparent;
+    //             this.textureCoord = vd.textureCoord;
+    //         } else {
+    //             base.CopyValuesFrom(from);
+    //         }
+    //     }
+    //     public override void OnMaterialChange(Voxel voxel, VoxelMaterial voxelMaterial) {
+    //         if (voxelMaterial is BasicMaterial bmat){
+    //             isTransparent = bmat.isTransparent;
+    //             textureCoord = bmat.textureCoord;
+    //         }
+    //         // if (voxel.TryGetVoxelDataType<MeshCacheVoxelData>(out var mcvd)) {
+    //         // }
+    //     }
+    // }
 }

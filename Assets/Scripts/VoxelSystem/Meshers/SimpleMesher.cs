@@ -36,7 +36,7 @@ namespace VoxelSystem.Mesher {
         }
 
         public override void UpdateMeshAt(Vector3Int vpos) {
-            // todo
+            // todo?
             UpdateMesh();
         }
 

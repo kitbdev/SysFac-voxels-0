@@ -23,7 +23,7 @@ namespace Kutil {
                 string propertyPath = property.propertyPath;
                 int startIndex = propertyPath.LastIndexOf('[') + 1;
                 // Debug.Log($"array {propertyPath} {startIndex} {parentPath}");
-                // todo shouldnt have to do this right?
+                // todo? shouldnt have to do this right?
                 label.text = "Element " + propertyPath.Substring(startIndex, propertyPath.LastIndexOf(']') - startIndex);
             }
 
@@ -32,14 +32,17 @@ namespace Kutil {
                 choices ??= GetChoices(cddAttribute, property);
                 choices ??= GetChoicesRef(cddAttribute, property);
                 if (choices == null) {
-                    GUI.Label(position, "Set choicesListSourceField to a string array! " + property.propertyPath);
+                    GUI.Label(position, (cddAttribute.errorText ?? 
+                        "Set choicesListSourceField to a string array! ") + property.propertyPath);
                     // backup textfield?
                     return;
                 }
                 if (choices.Count == 0) {
-                    GUI.Label(position, "No choices found!");
+                    GUI.Label(position, cddAttribute.noElementsText ?? "No choices found!");
                     return;
                 }
+                Func<string, string> selValFunc = GetFunc(cddAttribute.formatSelectedValueFuncField, property);
+                Func<string, string> listFormatFunc = GetFunc(cddAttribute.formatListFuncField, property);
                 // create dropdown button
                 GUIContent buttonContent = new GUIContent(property.stringValue);
                 if (EditorGUI.DropdownButton(dropdownrect, buttonContent, FocusType.Passive)) {
@@ -47,7 +50,11 @@ namespace Kutil {
                     GenericMenu dmenu = new GenericMenu();
                     foreach (var choice in choices) {
                         bool isSet = property.stringValue == choice;
-                        dmenu.AddItem(new GUIContent(choice), isSet, SetMenuItemEvent, new ClickMenuData() {
+                        string content = listFormatFunc != null ? listFormatFunc(choice) : choice;
+                        if (isSet && selValFunc != null) {
+                            content = selValFunc(content);
+                        }
+                        dmenu.AddItem(new GUIContent(content), isSet, SetMenuItemEvent, new ClickMenuData() {
                             property = property, value = choice
                         });
                     }
@@ -76,7 +83,8 @@ namespace Kutil {
             var choices = GetChoices(cddAttribute, property);
             choices ??= GetChoicesRef(cddAttribute, property);
             if (choices == null) {
-                root.Add(new Label("Set choicesListSourceField to a string array! " + property.propertyPath));
+                root.Add(new Label((cddAttribute.errorText ?? 
+                        "Set choicesListSourceField to a string array! ") + property.propertyPath));
                 // backup string field
                 TextField textField = new TextField(property.displayName);
                 textField.BindProperty(property);
@@ -84,7 +92,7 @@ namespace Kutil {
                 return root;
             }
             if (choices.Count == 0) {
-                root.Add(new Label("No choices found"));
+                root.Add(new Label(cddAttribute.noElementsText ?? "No choices found"));
                 return root;
             }
             DropdownField dropdownField = new DropdownField(property.displayName, choices,
@@ -115,7 +123,6 @@ namespace Kutil {
                 // Debug.Log($"has value {sourcePropertyValue.ToString()}");
                 // check the type
                 if (sourcePropertyValue.isArray) {
-                    // todo check if list counts
                     if (sourcePropertyValue.arrayElementType == typeof(string).ToString()) {
                         IEnumerator enumerator = sourcePropertyValue.GetEnumerator();
                         List<string> nlist = new List<string>();

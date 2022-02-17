@@ -54,6 +54,21 @@ namespace VoxelSystem {
             });
         }
 
+
+        public Vector2Int GetBlockTexCoord(string texname) {
+            if (texname == "" || texname == "none") {
+                // no texture, return default
+                return Vector2Int.zero;
+            } else if (textureAtlas.packDict.ContainsKey(texname)) {
+                Vector2Int coord = textureAtlas.packDict[texname];
+                // Debug.Log($"found {texname} coord {coord}"); 
+                return coord;
+            } else {
+                Debug.LogWarning($"Texture for '{texname}' not found!");
+                return Vector2Int.zero;
+            }
+        }
+
         public VoxelMaterialId GetIdForVoxelMaterial(TypeChoice<VoxelMaterial> voxelMaterialType) {
             // todo use hash for ids?
             int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });

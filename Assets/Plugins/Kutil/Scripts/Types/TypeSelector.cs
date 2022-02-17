@@ -40,9 +40,10 @@ namespace Kutil {
         }
 
         private void UpdateObjectType() {
-            Type selType = type.SelectedType;
+            type.UpdateTypeList();
+            Type selType = type.selectedType;
             if (selType != null && (obj == null || obj.GetType() != selType)) {
-                // todo? try to keep parts from old type? would need reflaction
+                // todo? try to keep parts from old type? would need reflection
                 type.TryCreateInstance(out _obj);
             }
         }
@@ -50,6 +51,7 @@ namespace Kutil {
         int ticker = 0;
         public void OnBeforeSerialize() {
 #if UNITY_EDITOR
+            // todo? auto update in drawer instead
             // very janky way to reduce number of calls in inspector
             // at least it will only update when viewed
             if (!Application.isPlaying) {
@@ -59,6 +61,7 @@ namespace Kutil {
                 if (ticker >= frametarget) {
                     UpdateObjectType();
                     ticker = 0;
+                    // Debug.Log($"o:{obj?.GetType().FullName} t:{type.selectedType} {type}");
                 }
             }
 #endif

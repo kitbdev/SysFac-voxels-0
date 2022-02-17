@@ -18,7 +18,7 @@ namespace Kutil {
         [Space]
         public AudioMixerGroup defaultGroup;
         [SerializeField] GameObject audioPrefab;
-        [SerializeField] ObjectPool objectPool;
+        [SerializeField] KObjectPool objectPool;
 
 
         private void Start() {
