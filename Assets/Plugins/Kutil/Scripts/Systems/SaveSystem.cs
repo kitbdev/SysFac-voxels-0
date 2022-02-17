@@ -115,12 +115,7 @@ namespace Kutil {
                 }
                 // increment
                 if (baseFileExists && data.saveIncrement && !data.saveOverwrite) {
-                    int saveNum = 1;
-                    incrementer = "_" + saveNum;
-                    while (File.Exists(savepath + incrementer + data.fileExtension)) {
-                        saveNum++;
-                        incrementer = "_" + saveNum;
-                    }
+                    incrementer = GetIncrementInfix(savepath, data.fileExtension);
                 }
                 // save
                 string saveFullPath = savepath + incrementer + data.fileExtension;
@@ -135,6 +130,29 @@ namespace Kutil {
 #endif
                 return true;
             }
+
+            private string GetIncrementInfix(string savepath, string fileExtension) {
+                string incrementer;
+                int saveNum = 1;
+                incrementer = "_" + saveNum;
+                // savepath = RemoveIncrementerInfix(savepath); //?
+                while (File.Exists(savepath + incrementer + fileExtension)) {
+                    saveNum++;
+                    incrementer = "_" + saveNum;
+                }
+                return incrementer;
+            }
+            private static string RemoveIncrementerInfix(string fullpath) {
+                int from = fullpath.LastIndexOf('_');
+                int to = fullpath.LastIndexOf('.') - 1;
+                if (from >= 0 && to > 0) {
+                    return fullpath.Remove(from, to - from);
+                } else {
+                    // no incrementor found
+                    return fullpath;
+                }
+            }
+
             /// <summary>
             /// Actually load content
             /// </summary>

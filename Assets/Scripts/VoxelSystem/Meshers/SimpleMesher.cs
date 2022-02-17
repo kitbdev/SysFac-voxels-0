@@ -95,10 +95,6 @@ namespace VoxelSystem.Mesher {
             // todo other performance stuff
             // var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
             BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
-            // var mcvd = voxel.GetVoxelDataFor<MeshCacheVoxelData>();
-            // if (mcvd.isTransparent) {// todo
-            //     return;
-            // }
             if (voxelMat.isInvisible) {
                 return;
             }
@@ -111,7 +107,8 @@ namespace VoxelSystem.Mesher {
 
             void CreateFace(Vector3 vertexpos, Vector3 normal, Vector3 rightTangent, Vector3 upTangent) {
                 int vcount = vertices.Count;
-                // vertices
+                // Debug.Log($"Creating face pos:{vertexpos} n:{normal} uv:{texoffset}");
+                // vertices 
                 vertices.Add(vertexpos + fromVec);
                 vertices.Add(vertexpos + fromVec + Vector3.Scale(rightTangent, toVec));
                 vertices.Add(vertexpos + fromVec + Vector3.Scale(upTangent, toVec));
@@ -133,11 +130,9 @@ namespace VoxelSystem.Mesher {
                 Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                // var mcvdcoverNeighbor = coverNeighbor.GetVoxelDataFor<MeshCacheVoxelData>();//todo
                 BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
-                bool renderFace = coverNeighbor != null
-                    && neimat.isTransparent;
-                // || coverNeighbor.shape == Voxel.VoxelShape.none
+                bool renderFace = coverNeighbor != null && neimat.isTransparent;
+                // bool renderFace = coverNeighbor == null || neimat.isTransparent;// render null sides
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
                     continue;

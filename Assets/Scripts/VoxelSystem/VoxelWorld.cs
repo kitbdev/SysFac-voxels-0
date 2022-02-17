@@ -58,6 +58,8 @@ namespace VoxelSystem {
             activeChunksDict = activeChunks?.ToDictionary(vc => vc.chunkPos);
         }
         private void OnDisable() {
+        }
+        private void OnDestroy() {
             RemoveAllChunks();
             chunkPool.Dispose();
         }
@@ -158,7 +160,7 @@ namespace VoxelSystem {
         VoxelChunk CreateChunk(Vector3Int chunkPos, bool populate = true) {
             GameObject chunkgo = chunkPool.Get();
             chunkgo.transform.localPosition = (Vector3)chunkPos * chunkSize;
-            chunkgo.name = $"chunk {chunkPos.x},{chunkPos.y},{chunkPos.z}";
+            chunkgo.name = $"chunk {chunkPos.x},{chunkPos.y},{chunkPos.z}{(populate ? "" : " (loaded)")}";
             VoxelChunk chunk = chunkgo.GetComponent<VoxelChunk>();
             chunk.Initialize(this, chunkPos, defaultChunkResolution, populate);
             activeChunks.Add(chunk);

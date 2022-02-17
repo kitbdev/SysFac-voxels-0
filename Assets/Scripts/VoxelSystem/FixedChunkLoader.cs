@@ -9,15 +9,21 @@ namespace VoxelSystem {
 
         [SerializeField] VoxelWorld world;
         [SerializeField] Vector3Int[] chunksToLoad;
+        [SerializeField] bool callOnStart = true;
+        [SerializeField] bool callOnEnable = false;
 
         private void Awake() {
             world ??= GetComponent<VoxelWorld>();
         }
         private void OnEnable() {
-            LoadChunks();
+            if (callOnEnable) {
+                LoadChunks();
+            }
         }
         private void Start() {
-            // LoadChunks();
+            if (callOnStart) {
+                LoadChunks();
+            }
         }
         [ContextMenu("Reset chunks to load")]
         void SetChunksToLoadOrigin() {

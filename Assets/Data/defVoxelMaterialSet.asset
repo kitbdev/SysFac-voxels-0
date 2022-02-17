@@ -12,14 +12,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f60f955209edf45b1dae2420e4d037, type: 3}
   m_Name: defVoxelMaterialSet
   m_EditorClassIdentifier: 
-  _allVMatMaterials:
+  _allUsedMaterials:
   - {fileID: 2100000, guid: ec38bc7a4fbe85545980a4df9b43255e, type: 2}
-  - {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
   textureAtlas: {fileID: 11400000, guid: 8329e17f7f1688d4e84c4d723008c2c6, type: 2}
   activeType:
     _selectedName: BasicMaterial
-    defaultIndex: 0
-  _mats: []
+    onlyIncludeConcreteTypes: 1
+  _voxelMats:
+  - _type:
+      _selectedName: BasicMaterial
+      onlyIncludeConcreteTypes: 1
+    _objvalue:
+      rid: 4170073068073385993
+  - _type:
+      _selectedName: BasicMaterial
+      onlyIncludeConcreteTypes: 1
+    _objvalue:
+      rid: 4170073068073385995
+  - _type:
+      _selectedName: BasicMaterial
+      onlyIncludeConcreteTypes: 1
+    _objvalue:
+      rid: 4170073068073385997
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 4170073068073385993
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        isInvisible: 1
+        isTransparent: 1
+        texname: air
+        textureCoord: {x: 0, y: 0}
+        tint: {r: 1, g: 1, b: 1, a: 1}
+    - rid: 4170073068073385995
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        texname: grass_block_side
+        textureCoord: {x: 2, y: 1}
+        tint: {r: 1, g: 1, b: 1, a: 1}
+    - rid: 4170073068073385997
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        texname: dirt
+        textureCoord: {x: 1, y: 0}
+        tint: {r: 1, g: 1, b: 1, a: 1}

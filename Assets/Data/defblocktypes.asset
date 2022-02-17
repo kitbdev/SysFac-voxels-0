@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63a403a76d9672c468451a6f47961c02, type: 3}
+  m_Name: defblocktypes
+  m_EditorClassIdentifier: 
+  voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  blockTypes:
+  - id: 0
+    idname: air
+    displayName: Air
+    voxelMaterialId:
+      id: 0
+    maxStack: 0
+    itemid: 0
+  - id: 1
+    idname: grass
+    displayName: grass
+    voxelMaterialId:
+      id: 1
+    maxStack: 0
+    itemid: 0
+  - id: 2
+    idname: dirt
+    displayName: dirt
+    voxelMaterialId:
+      id: 2
+    maxStack: 0
+    itemid: 0
+  blockTypeToAdd:
+    displayName: 
+    vmat:
+      _type:
+        _selectedName: BasicMaterial
+        onlyIncludeConcreteTypes: 1
+      _objvalue:
+        rid: 4170073068073385996
+  references:
+    version: 2
+    RefIds:
+    - rid: 4170073068073385996
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        texname: 
+        textureCoord: {x: 0, y: 0}
+        tint: {r: 1, g: 1, b: 1, a: 1}

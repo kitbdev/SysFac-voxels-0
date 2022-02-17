@@ -26,6 +26,29 @@ namespace VoxelSystem {
         public Rect[] textureRects;
     }
     [System.Serializable]
+    public class BlockShape {
+        public string textureNameFront;
+        public string textureNameBack;
+        public string textureNameLeft;
+        public string textureNameRight;
+        public string textureNameUp;
+        public string textureNameDown;
+        public Vector3 blockFrom;
+        public Vector3 blockTo;
+        public Vector2 uvFrom;
+        public Vector2 uvTo;
+        [System.Serializable]
+        public class BlockRotation {
+            public Vector3 origin;
+            public enum Axis {
+                X, Y, Z
+            }
+            public Axis axis;
+            public float angle;
+        }
+        public BlockRotation rotation;
+    }
+    [System.Serializable]
     public struct SimpleCuboidData {
         public Vector3Int center;
         public Vector3Int size;
@@ -37,6 +60,7 @@ namespace VoxelSystem {
     public class BasicMaterial : VoxelMaterial {
         public bool isInvisible;// dont mesh
         public bool isTransparent;
+        public string texname;
         public Vector2Int textureCoord;
         public Color tint = Color.white;
     }
@@ -44,15 +68,5 @@ namespace VoxelSystem {
     public class AnimatedMaterial : BasicMaterial {
         public float animDuration;
         public Vector2Int[] frameCoords;// ? auto set using texture?
-    }
-    // public class Material : VoxelMaterial {
-
-    // }
-    [System.Serializable]
-    public struct VoxelMaterialId {
-        public int id;
-        public static implicit operator int(VoxelMaterialId vmid) => vmid.id;
-        public static implicit operator VoxelMaterialId(int nid) => new VoxelMaterialId() { id = nid };
-        public override string ToString() => ((int)id).ToString();
     }
 }

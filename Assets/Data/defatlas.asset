@@ -15,6 +15,7 @@ MonoBehaviour:
   atlasName: defatlastex
   _atlas: {fileID: 0}
   saveAtlas: 1
+  saveIncrement: 0
   _textureResolution: 16
   atlasSize: 512
   topack:

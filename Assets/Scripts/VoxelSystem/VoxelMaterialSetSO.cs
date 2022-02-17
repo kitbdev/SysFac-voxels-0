@@ -7,24 +7,24 @@ namespace VoxelSystem {
     [CreateAssetMenu(fileName = "VoxelMaterialSet", menuName = "VoxelSystem/VoxelMaterialSet", order = 0)]
     public partial class VoxelMaterialSetSO : ScriptableObject {
 
-        Dictionary<VoxelMaterialId, VoxelMaterial> vmats;
+        Dictionary<VoxelMaterialId, VoxelMaterial> _voxelMatDict;
         [SerializeField]
-        private Material[] _allVMatMaterials;
+        private Material[] _allUsedMaterials;
         public TextureAtlasPacker textureAtlas;
         // todo use SOs for mats?
         public TypeChoice<VoxelMaterial> activeType = typeof(BasicMaterial);
         [SerializeField]
-        private TypeSelector<VoxelMaterial>[] _mats;
+        private TypeSelector<VoxelMaterial>[] _voxelMats;
 
         public float textureResolution => textureAtlas.textureResolution;
         public float textureScale => textureAtlas.textureBlockScale; //16f / 512f;
 
-        public TypeSelector<VoxelMaterial>[] mats { get => _mats; set => _mats = value; }
-        public Dictionary<VoxelMaterialId, VoxelMaterial> voxelMatDict { get => vmats; }
-        public Material[] allVMatMaterials { get => _allVMatMaterials; protected set => _allVMatMaterials = value; }
+        public TypeSelector<VoxelMaterial>[] voxelMats { get => _voxelMats; set => _voxelMats = value; }
+        public Dictionary<VoxelMaterialId, VoxelMaterial> voxelMatDict { get => _voxelMatDict; }
+        public Material[] allUsedMaterials { get => _allUsedMaterials; protected set => _allUsedMaterials = value; }
 
         private void Awake() {// todo move?
-            Debug.Log("VoxelMaterialSetSO awake " + mats.Length);
+            // Debug.Log("VoxelMaterialSetSO awake " + voxelMats.Length);
             UpdateVMatDict();
             UpdateMatTextures();
             // foreach (var item in collection)
@@ -34,23 +34,40 @@ namespace VoxelSystem {
             // vmats.Add()
         }
         private void OnEnable() {
+            // Debug.Log("VoxelMaterialSetSO enable");
             UpdateVMatDict();
+            textureAtlas.finishedPackingEvent += UpdateMatTextures;
         }
+        private void OnDisable() {
+            // Debug.Log("VoxelMaterialSetSO disable");
+            textureAtlas.finishedPackingEvent -= UpdateMatTextures;
+        }
+        // public void OnDestroy() {
+        //     Debug.Log("VoxelMaterialSetSO OnDestroy");
+        // }
 
+        public void ClearVoxelMats() {
+            voxelMats = new TypeSelector<VoxelMaterial>[0];
+        }
+        public void ClearMats() {
+            allUsedMaterials = new Material[0];
+        }
         private void UpdateVMatDict() {
             int i = -1;
             //(SerializableDictionary<VoxelMaterialId, VoxelMaterial>)
-            vmats = mats.ToDictionary(vm => {
+            _voxelMatDict = voxelMats.ToDictionary(vm => {
                 i++;
                 return (VoxelMaterialId)i;
             }, vm => {
-                return vm.obj;
+                return vm.objvalue;
             });
         }
         [ContextMenu("Update mat")]
         private void UpdateMatTextures() {
-            allVMatMaterials.ToList().ForEach(mat => {
-                mat.mainTexture = textureAtlas?.atlas;
+            allUsedMaterials.ToList().ForEach(mat => {
+                if (textureAtlas?.atlas != null) {
+                    mat.mainTexture = textureAtlas.atlas;
+                }
             });
         }
 
@@ -69,38 +86,52 @@ namespace VoxelSystem {
             }
         }
 
-        public VoxelMaterialId GetIdForVoxelMaterial(TypeChoice<VoxelMaterial> voxelMaterialType) {
+        public VoxelMaterialId GetDefaultId() {
+            // id of first element //? or uninitialized -1
+            return 0;
+        }
+        public VoxelMaterialId GetIdForVoxelMaterial(TypeSelector<VoxelMaterial> voxelMaterial) {
             // todo use hash for ids?
-            int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });
-            return vmat;
+            // int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });
+            int id = voxelMats.ToList().IndexOf(voxelMaterial);
+            return id;
         }
         public VoxelMaterial GetVoxelMaterial(VoxelMaterialId id) {
-            return mats[id].obj;
+            return voxelMats[id].objvalue;
         }
         public T GetVoxelMaterial<T>(VoxelMaterialId id) where T : VoxelMaterial {
             // if (!vmats.ContainsKey(id)) {
-            if (id < 0 || id >= mats.Length) {
+            if (id < 0 || id >= voxelMats.Length) {
                 Debug.LogWarning($"VoxelMaterial {id} not found!");
                 return null;
             }
-            return (T)mats[id].obj;
+            // if (!voxelMats[id].type.CanBeAssignedTo(typeof(T))){
+            //     Debug.LogWarning($"VoxelMaterial {id} is {voxelMats[id].type} and not of type {typeof(T)}!");
+            //     // return null;
+            // }
+            return (T)voxelMats[id].objvalue;
         }
 
-        public void AddVoxelMaterial(VoxelMaterial newVoxMat) {
-            mats.Append(new TypeSelector<VoxelMaterial>(newVoxMat));
+        public VoxelMaterialId AddVoxelMaterial(VoxelMaterial newVoxMat) {
+            TypeSelector<VoxelMaterial> tsMat = new TypeSelector<VoxelMaterial>(newVoxMat);
+            voxelMats = voxelMats.Append(tsMat).ToArray();
             if (newVoxMat.material != null) {
-                if (!allVMatMaterials.Contains(newVoxMat.material)) {
-                    allVMatMaterials.Append(newVoxMat.material);
+                if (!allUsedMaterials.Contains(newVoxMat.material)) {
+                    allUsedMaterials.Append(newVoxMat.material);
                 }
-                newVoxMat.materialIndex = allVMatMaterials.ToList().IndexOf(newVoxMat.material);
+                newVoxMat.materialIndex = allUsedMaterials.ToList().IndexOf(newVoxMat.material);
+            }
+            if (newVoxMat is BasicMaterial bvm) {
+                bvm.textureCoord = GetBlockTexCoord(bvm.texname);
             }
             UpdateVMatDict();
+            return GetIdForVoxelMaterial(tsMat);
         }
         public TypeSelector<VoxelMaterial> AddNewVoxelMaterial(TypeChoice<VoxelMaterial> type) {
             // TypeSelector<VoxelMaterial> newMat = new TypeSelector<VoxelMaterial>(type);
             VoxelMaterial voxelMaterial = type.CreateInstance();
             AddVoxelMaterial(voxelMaterial);
-            return mats.Last();
+            return voxelMats.Last();
         }
     }
 }

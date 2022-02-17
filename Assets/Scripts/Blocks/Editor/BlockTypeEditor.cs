@@ -7,7 +7,7 @@ using System.Linq;
 
 public class BlockTypeEditor : EditorWindow {
 
-    [MenuItem("SysFac/BlockType")]
+    [MenuItem("SysFac/BlockTypeEditor")]
     private static void ShowWindow() {
         var window = GetWindow<BlockTypeEditor>();
         window.titleContent = new GUIContent("BlockType");

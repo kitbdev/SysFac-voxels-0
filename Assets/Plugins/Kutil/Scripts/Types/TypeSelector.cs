@@ -15,7 +15,7 @@ namespace Kutil {
         [SerializeField]
         [SerializeReference]
         [ContextMenuItem("Update Object", nameof(UpdateObjectType))]
-        internal T _obj;
+        internal T _objvalue;
 
         public TypeChoice<T> type {
             get => _type; set {
@@ -23,9 +23,9 @@ namespace Kutil {
                 UpdateObjectType();
             }
         }
-        public T obj {
-            get => _obj;
-            set => _obj = value;
+        public T objvalue {
+            get => _objvalue;
+            set => _objvalue = value;
             // protected set => _obj = value;
         }
 
@@ -33,7 +33,7 @@ namespace Kutil {
         public TypeSelector() { }
         public TypeSelector(T objectData) {
             this._type = objectData.GetType();
-            this.obj = objectData;
+            this.objvalue = objectData;
         }
         public TypeSelector(TypeChoice<T> type) {
             this.type = type;
@@ -42,9 +42,9 @@ namespace Kutil {
         private void UpdateObjectType() {
             type.UpdateTypeList();
             Type selType = type.selectedType;
-            if (selType != null && (obj == null || obj.GetType() != selType)) {
+            if (selType != null && (objvalue == null || objvalue.GetType() != selType)) {
                 // todo? try to keep parts from old type? would need reflection
-                type.TryCreateInstance(out _obj);
+                type.TryCreateInstance(out _objvalue);
             }
         }
 
@@ -67,6 +67,7 @@ namespace Kutil {
 #endif
         }
         public void OnAfterDeserialize() { }
+
     }
 
 }

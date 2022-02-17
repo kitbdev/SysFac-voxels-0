@@ -9,8 +9,9 @@ using System.Linq;
 public class TextureAtlasPacker : ScriptableObject {
 
     [SerializeField] string atlasName;
-    [SerializeField, ReadOnly] Texture2D _atlas;
+    [SerializeField] Texture2D _atlas;
     [SerializeField] bool saveAtlas = true;
+    [SerializeField] bool saveIncrement = false;
     [SerializeField, ReadOnly] int _textureResolution = 16;
     public int atlasSize = 512;
     [SerializeField] Texture2D[] topack;
@@ -21,6 +22,8 @@ public class TextureAtlasPacker : ScriptableObject {
     public DictionaryStringVector2Int packDict { get => _packDict; protected set => _packDict = value; }
     public int textureResolution { get => _textureResolution; protected set => _textureResolution = value; }
     public float textureBlockScale => ((float)textureResolution) / atlasSize;
+
+    public event System.Action finishedPackingEvent;
 
     // private void Awake() {
     //     Pack();
@@ -67,15 +70,16 @@ public class TextureAtlasPacker : ScriptableObject {
             packDict.Add(tex.name, texStartPos);
         }
         if (saveAtlas) {
-            SaveSystem.StartSave()
-                .Content(atlas.EncodeToPNG()).CustomExtension("png").InLocalDataPath(atlasName).TrySave();
-//             string path = Application.dataPath + "/data/" + atlasName + ".png";
-//             System.IO.File.WriteAllBytes(path, atlas.EncodeToPNG());
-//             Debug.Log($"Saving to '{path}'");
-// #if UNITY_EDITOR
-//             UnityEditor.AssetDatabase.Refresh();
-// #endif
+            var savebuilder = SaveSystem.StartSave()
+                .Content(atlas.EncodeToPNG()).CustomExtension("png").InLocalDataPath(atlasName);
+            if (saveIncrement) {
+                savebuilder.IncrementIfExists();
+            } else {
+                savebuilder.CanOverwrite();
+            }
+            savebuilder.TrySave();
         }
+        finishedPackingEvent?.Invoke();
     }
     static void ResizeTexture(Texture2D texture, int width, int height) {
         Color[] colors = texture.GetPixels();

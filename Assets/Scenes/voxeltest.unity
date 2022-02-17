@@ -537,8 +537,8 @@ MonoBehaviour:
   defaultChunkResolution: 16
   mesher:
     _selectedName: SimpleMesher
-    defaultIndex: 0
-  enableCollision: 0
+    onlyIncludeConcreteTypes: 1
+  enableCollision: 1
   useBoxColliders: 0
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
@@ -611,6 +611,8 @@ MonoBehaviour:
   world: {fileID: 0}
   chunksToLoad:
   - {x: 0, y: 0, z: 0}
+  callOnStart: 1
+  callOnEnable: 0
 --- !u!1 &1264246706
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,47 +780,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blocksjson: {fileID: 4900000, guid: e73ebd0b37794ec48b1d9b29bf35ac7b, type: 3}
   voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
-  _blockTypes:
-  - id: 0
-    idname: air
-    displayName: Air
-    voxelMaterialId:
-      id: 0
-    isTransparent: 1
-    maxStack: 0
-    itemid: 0
-  - id: 1
-    idname: stone
-    displayName: Stone
-    voxelMaterialId:
-      id: 1
-    isTransparent: 0
-    maxStack: 0
-    itemid: 0
-  - id: 2
-    idname: dirt
-    displayName: dirt
-    voxelMaterialId:
-      id: 1
-    isTransparent: 0
-    maxStack: 0
-    itemid: 0
-  - id: 3
-    idname: grass
-    displayName: grass
-    voxelMaterialId:
-      id: 1
-    isTransparent: 0
-    maxStack: 0
-    itemid: 0
-  - id: 4
-    idname: grass2
-    displayName: grass
-    voxelMaterialId:
-      id: 1
-    isTransparent: 0
-    maxStack: 0
-    itemid: 0
+  blockTypesHolder: {fileID: 11400000, guid: abe00bda14087fb49b071c0421f7dec5, type: 2}
 --- !u!4 &1936110999
 Transform:
   m_ObjectHideFlags: 0

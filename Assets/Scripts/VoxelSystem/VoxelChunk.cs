@@ -52,7 +52,7 @@ namespace VoxelSystem {
         }
         protected void PopulateVoxels() {
             voxels = new Voxel[volume];
-            VoxelMaterialId voxelMaterialId = world.materialSet.GetIdForVoxelMaterial(world.materialType);
+            VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
             var neededData = world.neededData;
             for (int i = 0; i < volume; i++) {
                 // y,z,x

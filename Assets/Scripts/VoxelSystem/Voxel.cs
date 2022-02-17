@@ -23,7 +23,7 @@ namespace VoxelSystem {
             this.voxelDatas = voxelDatas;
         }
         public static Voxel CreateVoxel(VoxelWorld world) {
-            VoxelMaterialId voxelMaterialId = world.materialSet.GetIdForVoxelMaterial(world.materialType);
+            VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
             return CreateVoxel(voxelMaterialId, world.neededData);
         }
         public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<TypeChoice<VoxelData>> neededData) {
@@ -64,7 +64,7 @@ namespace VoxelSystem {
         }
         public void SetVoxelDataFor(TypeSelector<VoxelData> data) {
             int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.selectedType);
-            voxelDatas[v] = data.obj;
+            voxelDatas[v] = data.objvalue;
         }
         public void SetVoxelDataMany(params TypeSelector<VoxelData>[] datas) {
             foreach (var data in datas) {
@@ -78,7 +78,7 @@ namespace VoxelSystem {
             List<VoxelData> newVoxelDatas = voxelDatas.ToList();
             foreach (var data in datas) {
                 if (!HasVoxelDataFor(data.type.selectedType)) {
-                    newVoxelDatas.Add(data.obj);
+                    newVoxelDatas.Add(data.objvalue);
                 } else {
                     SetVoxelDataFor(data);
                 }

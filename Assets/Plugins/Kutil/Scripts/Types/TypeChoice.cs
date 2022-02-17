@@ -65,6 +65,9 @@ namespace Kutil {
                 return selTypeCache;
             }
         }
+        public Type GetBaseType() {
+            return typeof(T);
+        }
 
         public TypeChoice() {
             selectedName = choices[0];
@@ -76,11 +79,10 @@ namespace Kutil {
         }
 
         public bool IsTypeValid(Type type) {
-            // if (type.IsAssignableFrom(typeof(T))) {
-            if (typeof(T).IsAssignableFrom(type)) {
-                return true;
-            }
-            return false;
+            return typeof(T).IsAssignableFrom(type);
+        }
+        public bool CanBeAssignedTo(Type type) {
+            return type.IsAssignableFrom(typeof(T));
         }
 
         public bool SetType(Type type) {
@@ -142,5 +144,6 @@ namespace Kutil {
             return null;
         }
         public static implicit operator TypeChoice<T>(Type type) => new TypeChoice<T>(type);
+        public static explicit operator Type(TypeChoice<T> typechoice) => typechoice.selectedType;
     }
 }
