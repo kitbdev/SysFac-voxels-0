@@ -280,5 +280,8 @@ namespace VoxelSystem {
             Vector3Int bpos = Vector3Int.FloorToInt(wpos / voxelSize);
             return bpos;
         }
+        public Vector3 BlockposToWorldPos(Vector3Int bpos) {
+            return transform.TransformPoint(bpos) * voxelSize;
+        }
     }
 }

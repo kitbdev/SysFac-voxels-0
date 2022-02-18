@@ -34,6 +34,7 @@ public struct BlockTypeVoxelData : VoxelData {
         UpdateBlockType(defVoxelData.voxel, blockTypeRef, oldType);
     }
 
+    // todo move to block manager
     public static void SetBlockType(Voxel voxel, BlockTypeRef newBlockType) {
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
         var oldType = blockTypeVoxelData.blockTypeRef;

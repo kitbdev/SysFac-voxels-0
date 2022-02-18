@@ -15,6 +15,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
     // float blockBreakTimer = 0;
     [SerializeField] [Kutil.ReadOnly] Vector3Int targetBlockPos;
     [SerializeField] [Kutil.ReadOnly] Vector3 targetBlockNorm;
+    [SerializeField] Transform targetBlockFollow;
 
     public VoxelWorld world;
     Transform cam;
@@ -25,8 +26,19 @@ public class PlayerBlockInteraction : MonoBehaviour {
     }
     private void Update() {
         bool validTarget = CheckCursorBlock();
+        if (targetBlockFollow) {
+            if (validTarget) {
+                targetBlockFollow.transform.position = world.BlockposToWorldPos(targetBlockPos);
+            } else {
+                targetBlockFollow.transform.position = Vector2.down * 10;
+            }
+        }
         if (validTarget && Mouse.current.leftButton.isPressed) {
 
+        }
+        if (Keyboard.current.uKey.wasPressedThisFrame) {
+            targetBlockPos = Vector3Int.zero;
+            BreakBlock();
         }
         if (validTarget && Mouse.current.leftButton.wasPressedThisFrame) {
             BreakBlock();
@@ -41,6 +53,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
         Debug.DrawRay(camRay.origin, camRay.direction * maxRayDist, Color.black, 0.1f);
         if (Physics.Raycast(camRay, out var hit, maxRayDist, blockMask, QueryTriggerInteraction.Ignore)) {
             targetBlockPos = world.WorldposToBlockpos(hit.collider.bounds.center);
+            // targetBlockPos = world.WorldposToBlockpos(hit.point + camRay.direction * 0.001f);
             targetBlockNorm = world.transform.InverseTransformDirection(hit.normal).normalized;// for placing 
             // Debug.Log($"hit {hit.collider.name} bp:{blockPos}");
             BlockTypeRef blockTypeRef = GetBlockType(targetBlockPos);
@@ -74,6 +87,6 @@ public class PlayerBlockInteraction : MonoBehaviour {
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
         Debug.Log($"Set {blockTypeVoxelData} at {blockPos} to {blocktype}");
         VoxelChunk voxelChunk = world.GetChunkWithBlock(blockPos);
-        voxelChunk.Refresh(); 
+        voxelChunk.Refresh();
     }
 }

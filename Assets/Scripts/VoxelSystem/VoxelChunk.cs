@@ -38,13 +38,13 @@ namespace VoxelSystem {
                 //     var mr = gameObject.AddComponent<MeshRenderer>();
                 visuals = gameObject.AddComponent<VoxelRenderer>();
             }
-            if (world.enableCollision) { // todo: only colliders on some chunks
-                AddColliders();
-            }
 
             visuals.Initialize(this);
             if (populate) {
                 PopulateVoxels();
+            }
+            if (world.enableCollision) { // todo: only colliders on some chunks
+                AddColliders();
             }
         }
         public void OverrideVoxels(Voxel[] voxels) {
