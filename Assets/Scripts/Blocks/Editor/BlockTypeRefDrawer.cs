@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[CustomPropertyDrawer(typeof(BlockTypeRef))]
-public class BlockTypeRefDrawer : PropertyDrawer {
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        EditorGUI.PropertyField(position, property.FindPropertyRelative(nameof(BlockTypeRef.blockid)), label);
-    }
+// [CustomPropertyDrawer(typeof(BlockTypeRef))]
+// public class BlockTypeRefDrawer : PropertyDrawer {
+//     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+//         EditorGUI.PropertyField(position, property.FindPropertyRelative(nameof(BlockTypeRef.blockid)), label);
+//     }
     // public override VisualElement CreatePropertyGUI(SerializedProperty property) {
     //     // return base.CreatePropertyGUI(property);
     //     VisualElement root = new VisualElement();
@@ -33,4 +33,4 @@ public class BlockTypeRefDrawer : PropertyDrawer {
     //     root.Add(dropdownField);
     //     return root;
     // }
-}
+// }

@@ -7,14 +7,15 @@ using VoxelSystem;
 
 [DefaultExecutionOrder(-5)]
 public class BlockManager : Singleton<BlockManager> {
-    [System.Serializable]
-    class AllBlocks {
-        public List<BlockType> blockTypes;
-    }
 
-    private const string blocksfilename = "defblocks";
+    // [System.Serializable]
+    // class AllBlockTypes {
+    //     public List<BlockType> blockTypes;
+    // }
 
-    [SerializeField] TextAsset blocksjson;
+    // private const string blocksfilename = "defblocks";
+    // [SerializeField] TextAsset blocksjson;
+
     [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
     [SerializeField] BlockTypesHolderSO blockTypesHolder;
 
@@ -29,7 +30,6 @@ public class BlockManager : Singleton<BlockManager> {
         // LoadData();
         blockTypeDict = blockTypes?.ToDictionary((b) => b.idname);
     }
-
 
     public BlockType GetBlockTypeAtIndex(int index) {
         if (index >= 0 && index < blockTypes.Count) {
@@ -47,25 +47,36 @@ public class BlockManager : Singleton<BlockManager> {
             return null;
         }
     }
-    public Vector2Int GetBlockTexCoord(BlockType blockType) {
-        return default;
-        // var texname = blockType.textureNameOverride == "" ? blockType.idname : blockType.textureNameOverride;
+    public static void SetBlockType(Voxel voxel, BlockTypeRef newBlockType) {
+        BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
+        var oldType = blockTypeVoxelData.blockTypeRef;
+        // Debug.Log($"Setting |{voxel.ToStringFull()}| to |{newBlockType}|"); 
+        blockTypeVoxelData.blockTypeRef = newBlockType;
+        voxel.SetOrAddVoxelDataFor<BlockTypeVoxelData>(blockTypeVoxelData, true, false, false);
+        UpdateBlockType(voxel, newBlockType, oldType);
+        // Debug.Log($"Setdone |{voxel.ToStringFull()}| to |{newBlockType}|");
+    }
+    public static void UpdateBlockType(Voxel voxel, BlockTypeRef newBlockType, BlockTypeRef? oldBlockType = null) {
+        // note chunk refresh should be done elsewhere
+        if (!newBlockType.IsValid()) {
+            Debug.LogWarning("invalid UpdateBlockType");
+            return;
+        }
+        BlockType blockType = newBlockType.GetBlockType();
+        voxel.SetVoxelMaterialId(blockType.voxelMaterialId);
+        // Debug.Log($"Set '{voxel}' mat to '{blockType}'");
+        // ! all block types do not have the same data
+
+        // todo modify voxel
+        // todo use blockmanager? to know what kind of vdatas are needed to add
+        // defVoxelData.voxel.AddVoxelDataFor()
     }
 
-    void AddBlockTypes(params BlockType[] newBlockTypes) {
-        blockTypesHolder.AddBlockTypes(newBlockTypes);
-        blockTypeDict = newBlockTypes.ToDictionary((b) => b.idname);
-    }
-
-    // public void CreateBlockTypeAndMat(BlockTypeConsParam data, VoxelMaterialSetSO materialSet) {
-    //     BlockType blockType = new BlockType();
-    //     blockType.displayName = data.displayName;
-    //     blockType.idname = ToIdName(data.displayName);
-    //     // VoxelWorld world;
-    //     // VoxelMaterialSetSO materialSet = null;// todo where get this?
-    //     materialSet.AddVoxelMaterial(data.vmat);
-    //     AddBlockTypes(blockType);
+    // void AddBlockTypes(params BlockType[] newBlockTypes) {
+    //     blockTypesHolder.AddBlockTypes(newBlockTypes);
+    //     blockTypeDict = newBlockTypes.ToDictionary((b) => b.idname);
     // }
+
 
     // [ContextMenu("reload")]
     // void LoadData() {

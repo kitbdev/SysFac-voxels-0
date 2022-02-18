@@ -32,7 +32,7 @@ namespace VoxelSystem {
             List<VoxelData> voxelDataList = (neededData.Select(nvd => nvd.CreateInstance())).ToList();
             voxelDataList.Sort((a, b) => a.sortOrder - b.sortOrder);// in descending order
             Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
-            Debug.Log($"Adding {neededData.Count} vdatas {voxel} {voxelDataList.Aggregate("", (s, vd) => s + vd + ",")}");
+            // Debug.Log($"Adding {neededData.Count} vdatas {voxel} {voxelDataList.Aggregate("", (s, vd) => s + vd + ",")}");
             voxelDataList.Clear();
             return voxel;
         }

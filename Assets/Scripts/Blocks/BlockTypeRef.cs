@@ -3,6 +3,13 @@ using System.Linq;
 using Kutil;
 using UnityEngine;
 
+
+#if UNITY_EDITOR
+[UnityEditor.CustomPropertyDrawer(typeof(BlockTypeRef))]
+public class BlockTypeRefDrawer : Kutil.ShowAsChildPropertyDrawer {
+    public override string childName => nameof(BlockTypeRef.blockid);
+}
+#endif
 // just refers to a blocktype
 [System.Serializable]
 public struct BlockTypeRef {
@@ -11,27 +18,15 @@ public struct BlockTypeRef {
     // [CustomDropDown(nameof(choices), noElementsText: "No Types! check BlockManager")]
     // public string idname = "";
 
-    // [CustomDropDown(nameof(choices), nameof(selChoiceName), noElementsText: "No Types! check BlockManager")]
     [CustomDropDown(nameof(choicesData))]
     public int blockid;
 
-    public CustomDropDownData choicesData => CustomDropDownData.Create<int>(choicesint,choices, 
-        preFormatValueFunc: v => BlockManager.Instance?.GetBlockTypeAtIndex(v).idname);
-    public string selChoiceName => BlockManager.Instance?.GetBlockTypeAtIndex(blockid).idname;
-    public IEnumerable<int> choicesint => Enumerable.Range(0, choices.Length);
+    public CustomDropDownData choicesData => CustomDropDownData.Create<int>(choicesint, choices,
+        preFormatValueFunc: v => BlockManager.Instance?.GetBlockTypeAtIndex(v).idname,
+        noElementsText: "No Types! check BlockManager");
     public string[] choices => BlockManager.Instance?.blockTypes.Select((b) => b.idname).ToArray() ?? null;
+    public IEnumerable<int> choicesint => Enumerable.Range(0, choices.Length);
 
-    // public BlockTypeRef() { }
-    // // public BlockTypeRef(string idname) {
-    //     // idname = BlockManager.Instance.GetBlockTypeAtIndex(id).idname;
-    //     // this.idname = idname;
-    //     // todo cant call here
-    //     // this.blockid = BlockManager.Instance?.GetBlockType(idname).id ?? -1;
-    // // }
-    // public BlockTypeRef(int blockid) {
-    //     // idname = BlockManager.Instance.GetBlockTypeAtIndex(id).idname;
-    //     this.blockid = blockid;
-    // }
     public BlockTypeRef(BlockTypeRef other) {
         this.blockid = other.blockid;
     }
@@ -39,8 +34,9 @@ public struct BlockTypeRef {
         this.blockid = BlockManager.Instance?.GetBlockType(idname)?.id ?? -1;
         return this;
     }
-    public void SetBlockId(int blockid) {
+    public BlockTypeRef SetBlockId(int blockid) {
         this.blockid = blockid;
+        return this;
     }
 
     public bool IsValid() {
@@ -54,4 +50,7 @@ public struct BlockTypeRef {
     public override string ToString() {
         return $"BlockType {blockid} {GetBlockType()?.displayName ?? ""}";
     }
+
+    public static BlockTypeRef Default => new BlockTypeRef().SetBlockId(0);
+    public static BlockTypeRef Invalid => new BlockTypeRef().SetBlockId(-1);
 }

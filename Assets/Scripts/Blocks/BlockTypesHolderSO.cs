@@ -10,7 +10,6 @@ public class BlockTypesHolderSO : ScriptableObject {
     [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
     public BlockType[] blockTypes;
 
-
     private void OnValidate() {
         for (int i = 0; i < blockTypes.Length; i++) {
             blockTypes[i].id = i;
@@ -50,7 +49,7 @@ public class BlockTypesHolderSO : ScriptableObject {
         public string displayName = "";
         public TypeSelector<VoxelMaterial> vmat = new TypeSelector<VoxelMaterial>(typeof(BasicMaterial));
     }
-
+    [Header("Block editor")]
     [ContextMenuItem("add type", nameof(AddNewBlockType))]
     [ContextMenuItem("clear all", nameof(ClearAllBlockTypesAndMats))]
     public BlockTypeConsParam blockTypeToAdd;

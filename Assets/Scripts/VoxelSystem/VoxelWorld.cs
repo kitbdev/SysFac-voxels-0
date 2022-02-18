@@ -280,7 +280,8 @@ namespace VoxelSystem {
         }
         public Vector3Int WorldposToBlockpos(Vector3 wpos) {
             wpos = transform.InverseTransformPoint(wpos);
-            Vector3Int bpos = Vector3Int.FloorToInt(wpos / voxelSize);
+            // wpos -= Vector3.one * voxelSize / 2f;
+            Vector3Int bpos = Vector3Int.RoundToInt(wpos / voxelSize);
             return bpos;
         }
         public Vector3 BlockposToWorldPos(Vector3Int bpos) {

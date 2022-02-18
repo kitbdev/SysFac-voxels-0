@@ -37,8 +37,9 @@ public class PlayerBlockInteraction : MonoBehaviour {
 
         }
         if (Keyboard.current.uKey.wasPressedThisFrame) {
-            targetBlockPos = Vector3Int.zero;
-            BreakBlock();
+            if (gameObject.TryGetComponent<StarterAssets.StarterAssetsInputs>(out var si)) {
+                si.cursorInputForLook = !si.cursorInputForLook;
+            }
         }
         if (validTarget && Mouse.current.leftButton.wasPressedThisFrame) {
             BreakBlock();
@@ -50,18 +51,19 @@ public class PlayerBlockInteraction : MonoBehaviour {
     }
     bool CheckCursorBlock() {
         Ray camRay = new Ray(cam.position, cam.forward);
-        Debug.DrawRay(camRay.origin, camRay.direction * maxRayDist, Color.black, 0.1f);
+        // Debug.DrawRay(camRay.origin, camRay.direction * maxRayDist, Color.black, 0.1f);
         if (Physics.Raycast(camRay, out var hit, maxRayDist, blockMask, QueryTriggerInteraction.Ignore)) {
-            targetBlockPos = world.WorldposToBlockpos(hit.collider.bounds.center);
-            // targetBlockPos = world.WorldposToBlockpos(hit.point + camRay.direction * 0.001f);
+            // targetBlockPos = world.WorldposToBlockpos(hit.collider.bounds.center);
+            targetBlockPos = world.WorldposToBlockpos(hit.point + camRay.direction * 0.001f);
+            Debug.DrawLine(camRay.origin, hit.point + camRay.direction * 0.001f, Color.black, 0.1f);
             targetBlockNorm = world.transform.InverseTransformDirection(hit.normal).normalized;// for placing 
             // Debug.Log($"hit {hit.collider.name} bp:{blockPos}");
             BlockTypeRef blockTypeRef = GetBlockType(targetBlockPos);
 
             // if (blockType != null) {
             Voxel voxel = world.GetVoxelAt(targetBlockPos);
-            BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-            Debug.Log($"hit {blockTypeRef} {blockTypeVoxelData.defVoxelData.voxel != null}");
+            // BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
+            // Debug.Log($"hit {blockTypeRef}");
             // }
             return true;
         }
@@ -76,6 +78,10 @@ public class PlayerBlockInteraction : MonoBehaviour {
 
     private BlockTypeRef GetBlockType(Vector3Int blockPos) {
         Voxel voxel = world.GetVoxelAt(blockPos);
+        if (voxel == null) {
+            // not a valid voxel
+            return default;
+        }
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
         return blockTypeVoxelData.blockTypeRef;
     }
@@ -83,9 +89,9 @@ public class PlayerBlockInteraction : MonoBehaviour {
         Voxel voxel = world.GetVoxelAt(blockPos);
         // Debug.Log($"Setting {blockTypeVoxelData} at {blockPos} to {blocktype} {blockTypeVoxelData.defVoxelData.voxel != null}");
         // blockTypeVoxelData.SetBlockType(blocktype);
-        BlockTypeVoxelData.SetBlockType(voxel, blocktype);
+        BlockManager.SetBlockType(voxel, blocktype);
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-        Debug.Log($"Set {blockTypeVoxelData} at {blockPos} to {blocktype}");
+        // Debug.Log($"Set {blockTypeVoxelData} at {blockPos} to {blocktype}");
         VoxelChunk voxelChunk = world.GetChunkWithBlock(blockPos);
         voxelChunk.Refresh();
     }
