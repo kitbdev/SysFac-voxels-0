@@ -38,7 +38,7 @@ public struct BlockTypeVoxelData : VoxelData {
     public static void SetBlockType(Voxel voxel, BlockTypeRef newBlockType) {
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
         var oldType = blockTypeVoxelData.blockTypeRef;
-        // Debug.Log($"Setting |{voxel.ToStringFull()}| to |{newBlockType}|");
+        // Debug.Log($"Setting |{voxel.ToStringFull()}| to |{newBlockType}|"); 
         blockTypeVoxelData.blockTypeRef = newBlockType;
         voxel.SetOrAddVoxelDataFor<BlockTypeVoxelData>(blockTypeVoxelData, true, false, false);
         UpdateBlockType(voxel, newBlockType, oldType);

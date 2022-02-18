@@ -18,13 +18,9 @@ namespace Kutil {
 
         // todo make it so type can only be selected in editor and type is cached there
 
-        public struct Selected {
-            public Type type;
-        }
-
-        [CustomDropDown(nameof(choices),
-            formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc),
-            noElementsText: "No inherited or implemented types found!")]
+        // [CustomDropDown(nameof(choices),
+        //     formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc),
+        //     noElementsText: "No inherited or implemented types found!")]
         [SerializeField] internal string _selectedName;
         public string selectedName { get => _selectedName; protected set => _selectedName = value; }
         public bool onlyIncludeConcreteTypes = true;
@@ -43,7 +39,24 @@ namespace Kutil {
         [NonSerialized]
         protected IEnumerable<Type> choicesTypes = null;
         [SerializeField]
-        protected Type selTypeCache = null;
+        [CustomDropDown(nameof(dropDownChoice))]
+        // formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc),
+        // noElementsText: "No inherited or implemented types found!")]
+        protected SerializedType selTypeCache = null;
+        public CustomDropDownData dropDownChoice {
+            get {
+                UpdateCache();
+                return CustomDropDownData.Create<SerializedType>(
+                    choicesTypes.Select(t => (SerializedType)t),
+                    // null
+                    // choices,
+                    preFormatValueFunc: o => ((Type)o).Name,
+                    formatListFunc: formatListFunc,
+                    formatSelectedValueFunc: formatSelectedValueFunc,
+                    noElementsText: "No inherited or implemented types found!"
+                );
+            }
+        }
 
         public string[] choices {
             get {
@@ -74,9 +87,6 @@ namespace Kutil {
                 selTypeCache = choicesTypes.ElementAt(index);
                 return selTypeCache;
             }
-        }
-        public Selected GetSelected() {
-            return new Selected() { type = selectedType };
         }
         public Type GetBaseType() {
             return typeof(T);

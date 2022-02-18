@@ -9,10 +9,10 @@ using Unity.Collections;
 
 public class WorldGen : MonoBehaviour {
 
-    public BlockTypeRef airBlockref;// = new BlockTypeRef().SetBlockName("air");
-    public BlockTypeRef stoneBlockRef;// = new BlockTypeRef().SetBlockName("stone");
-    public BlockTypeRef grassBlockRef;// = new BlockTypeRef().SetBlockName("grass");
-    public BlockTypeRef dirtBlockRef;// = new BlockTypeRef().SetBlockName("dirt"); 
+    public BlockTypeRef airBlockref;
+    public BlockTypeRef stoneBlockRef;
+    public BlockTypeRef grassBlockRef;
+    public BlockTypeRef dirtBlockRef;
 
     VoxelWorld world;
     BlockManager blockManager;

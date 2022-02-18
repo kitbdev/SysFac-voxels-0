@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 
 namespace Kutil {
+
     //todo? support class and struct targets (not just string) is is possible?
     //| AttributeTargets.Class | AttributeTargets.Struct,
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property,
@@ -11,18 +12,39 @@ namespace Kutil {
     /// CustomDropDownAttribute Creates a enum like dropdown menu with custom options on a string
     /// </summary>
     public class CustomDropDownAttribute : PropertyAttribute {
+
+        public string dropdownDataFieldName = null;
+
         public string choicesListSourceField = null;
         public string selectedChoiceField = null;
         public bool includeNullChoice = false;
-        public bool includeEmptyChoice = false;
         public string formatSelectedValueFuncField = null;
         public string formatListFuncField = null;
         public string noElementsText = null;
         public string errorText = null;
+        // public bool includeEmptyChoice = false;
 
-        public CustomDropDownAttribute(string choicesListSourceField) {
-            this.choicesListSourceField = choicesListSourceField;
+
+
+        // public CustomDropDownData Create(
+        //             IEnumerable<object> dataValues,
+        //             IEnumerable<string> dataNames = null,
+        //             // Func<T, string> preFormatListFunc = null,
+        //             Func<string, string> formatSelectedValueFunc = null,
+        //             Func<string, string> formatListFunc = null,
+        //             bool includeNullChoice = false,
+        //             bool includeEmptyChoice = false,
+        //             string noElementsText = null,
+        //             string errorText = null
+        //         ) {
+        //     return default;
+        // }
+        public CustomDropDownAttribute(string dropdownDataFieldName) {
+            this.dropdownDataFieldName = dropdownDataFieldName;
         }
+        // public CustomDropDownAttribute(string dataFieldName) {
+        //     // this.dropdownDataFieldName = dropdownDataFieldName;
+        // }
         /// <summary>
         /// CustomDropDownAttribute
         /// </summary>
@@ -33,22 +55,22 @@ namespace Kutil {
         /// <param name="formatSelectedValueFunc">optional nameof a System.Func<string,string></param>
         /// <param name="formatListFunc">optional nameof a System.Func<string,string></param>
         public CustomDropDownAttribute(string choicesListSourceField,
-                string selectedChoiceField = null,
+                // string selectedChoiceField = null,
                 string formatSelectedValueFunc = null,
                 string formatListFunc = null,
                 string noElementsText = null,
                 string errorText = null,
-                bool includeNullChoice = false,
-                bool includeEmptyChoice = false
+                bool includeNullChoice = false
+            // bool includeEmptyChoice = false
             ) {
             this.choicesListSourceField = choicesListSourceField;
-            this.selectedChoiceField = selectedChoiceField;
+            // this.selectedChoiceField = selectedChoiceField;
             this.formatSelectedValueFuncField = formatSelectedValueFunc;
             this.formatListFuncField = formatListFunc;
             this.errorText = errorText;
             this.noElementsText = noElementsText;
             this.includeNullChoice = includeNullChoice;
-            this.includeEmptyChoice = includeEmptyChoice;
+            // this.includeEmptyChoice = includeEmptyChoice;
         }
     }
 }

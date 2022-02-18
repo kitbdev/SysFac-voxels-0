@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Kutil;
 using UnityEngine;
@@ -10,10 +11,14 @@ public struct BlockTypeRef {
     // [CustomDropDown(nameof(choices), noElementsText: "No Types! check BlockManager")]
     // public string idname = "";
 
-    [CustomDropDown(nameof(choices), nameof(selChoiceName), noElementsText: "No Types! check BlockManager")]
+    // [CustomDropDown(nameof(choices), nameof(selChoiceName), noElementsText: "No Types! check BlockManager")]
+    [CustomDropDown(nameof(choicesData))]
     public int blockid;
 
+    public CustomDropDownData choicesData => CustomDropDownData.Create<int>(choicesint,choices, 
+        preFormatValueFunc: v => BlockManager.Instance?.GetBlockTypeAtIndex(v).idname);
     public string selChoiceName => BlockManager.Instance?.GetBlockTypeAtIndex(blockid).idname;
+    public IEnumerable<int> choicesint => Enumerable.Range(0, choices.Length);
     public string[] choices => BlockManager.Instance?.blockTypes.Select((b) => b.idname).ToArray() ?? null;
 
     // public BlockTypeRef() { }
@@ -30,7 +35,7 @@ public struct BlockTypeRef {
     public BlockTypeRef(BlockTypeRef other) {
         this.blockid = other.blockid;
     }
-    public BlockTypeRef SetBlockName(string idname){
+    public BlockTypeRef SetBlockName(string idname) {
         this.blockid = BlockManager.Instance?.GetBlockType(idname)?.id ?? -1;
         return this;
     }

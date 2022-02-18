@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Kutil {
-    [CustomPropertyDrawer(typeof(TypeChoice<>))]
+    // [CustomPropertyDrawer(typeof(TypeChoice<>))]
     public class TypeChoiceDrawer : PropertyDrawer {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
             SerializedProperty selNameProp = property.FindPropertyRelative(nameof(TypeChoice<int>._selectedName));

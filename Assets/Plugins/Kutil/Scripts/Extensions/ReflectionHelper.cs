@@ -15,6 +15,19 @@ namespace Kutil {
 
 
         /// <summary>
+        /// attempts to set a value on an object at a given path
+        /// </summary>
+        /// <param name="value">value to set target to</param>
+        /// <param name="target">object the value is on</param>
+        /// <param name="memberPath">path of the property (nesting is '.' delimited)</param>
+        /// <returns>true if successful</returns>
+        public static bool TrySetValue(object value, object target, string memberPath) {
+            if (TryGetMemberInfo(ref target, memberPath, defFlags, out var memberInfo)) {
+                return TrySetValue(value, target, memberInfo);
+            }
+            return false;
+        }
+        /// <summary>
         /// Attempts to get a value on an object at a given path (supports nesting)
         /// </summary>
         /// <param name="target">object the value is on</param>
@@ -22,7 +35,7 @@ namespace Kutil {
         /// <param name="value">output. gives the wanted value</param>
         /// <typeparam name="T">type of wanted value</typeparam>
         /// <returns>true if successful</returns>
-        public static bool TryGetValue<T>(System.Object target, string memberPath, out T value) {
+        public static bool TryGetValue<T>(object target, string memberPath, out T value) {
             return TryGetValue<T>(target, memberPath, defFlags, out value);
         }
         /// <summary>
@@ -34,9 +47,16 @@ namespace Kutil {
         /// <param name="value">output. gives the wanted value</param>
         /// <typeparam name="T">type of wanted value</typeparam>
         /// <returns>true if successful</returns>
-        public static bool TryGetValue<T>(System.Object target, string memberPath, BindingFlags flags, out T value) {
+        public static bool TryGetValue<T>(object target, string memberPath, BindingFlags flags, out T value) {
+            if (TryGetMemberInfo(ref target, memberPath, flags, out var memberInfo)) {
+                return TryGetValue<T>(target, memberInfo, out value);
+            }
+            value = default;
+            return false;
+        }
+        static bool TryGetMemberInfo(ref object target, string memberPath, BindingFlags flags, out MemberInfo memberInfo) {
             if (target == null) {
-                value = default;
+                memberInfo = default;
                 return false;
             }
             if (memberPath.Contains('.')) {
@@ -51,7 +71,7 @@ namespace Kutil {
                     bool gotarray = TryGetValue<IEnumerable<System.Object>>(target, splitpath[0], defFlags, out var ntargets);
                     if (!gotarray) {
                         Debug.LogWarning($"TryGetValue Failed to get enumerable {memberPath} on {target}");
-                        value = default; return false;
+                        memberInfo = default; return false;
                     }
                     // "data[" = 5 characters
                     newpath = newpath.Remove(0, 5);
@@ -59,7 +79,7 @@ namespace Kutil {
                     int arrayIndex = 0;
                     if (!int.TryParse(t[0], out arrayIndex)) {
                         Debug.LogWarning($"TryGetValue Failed to parse path {memberPath} on {target}");
-                        value = default; return false;
+                        memberInfo = default; return false;
                     }
                     newpath = t[1];
                     if (newpath.Contains('.')) {
@@ -70,20 +90,23 @@ namespace Kutil {
                         // value = default; return false;
                     }
                     var ntarget = ntargets.ToArray()[arrayIndex];
-                    return TryGetValue<T>(ntarget, newpath, flags, out value);
+                    target = ntarget;
+                    return TryGetMemberInfo(ref target, newpath, flags, out memberInfo);
                 } else {
                     // get nested object
                     TryGetValue<System.Object>(target, splitpath[0], defFlags, out var ntarget);
-                    return TryGetValue<T>(ntarget, splitpath[1], flags, out value);
+                    target = ntarget;
+                    return TryGetMemberInfo(ref target, splitpath[1], flags, out memberInfo);
                 }
             } else {
-                MemberInfo memberInfo = GetMemberInfo(target.GetType(), memberPath, flags);
-                if (memberInfo == null) {
-                    value = default;
+                MemberInfo checkMeminfo = GetMemberInfo(target.GetType(), memberPath, flags);
+                if (checkMeminfo == null) {
+                    memberInfo = default;
                     return false;
                 }
+                memberInfo = checkMeminfo;
                 // Debug.Log($"found member {memberInfo} {target}");
-                return TryGetValue<T>(target, memberInfo, out value);
+                return true;
             }
         }
         /// <summary>
@@ -94,26 +117,58 @@ namespace Kutil {
         /// <param name="value"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns>true if successful</returns>
-        public static bool TryGetValue<T>(System.Object target, MemberInfo memberInfo, out T value) {
-            value = default;
+        public static bool TryGetValue<T>(object target, MemberInfo memberInfo, out T value) {
+            object obj;
+            // Debug.Log($"{target}.{memberInfo.Name} checkt type {typeof(T)}!");
             if (memberInfo is FieldInfo) {
                 FieldInfo fieldInfo = memberInfo as FieldInfo;
+                // Debug.Log($"{target}-{fieldInfo.Name} ({fieldInfo.FieldType}) fcheck type {typeof(T)}");
                 var targetObj = fieldInfo.IsStatic ? null : target;
-                value = (T)fieldInfo.GetValue(targetObj);
-                return true;
+                obj = fieldInfo.GetValue(targetObj);
             } else if (memberInfo is PropertyInfo) {
                 PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-                value = (T)propertyInfo.GetValue(target);
-                return true;
+                // Debug.Log($"{target}-{propertyInfo} ({propertyInfo.PropertyType}) pcheck type {typeof(T)}");
+                obj = propertyInfo.GetValue(target);
             } else if (memberInfo is MethodInfo) {
                 MethodInfo methodInfo = memberInfo as MethodInfo;
                 var targetObj = methodInfo.IsStatic ? null : target;
-                value = (T)methodInfo.Invoke(targetObj, new object[0]);
-                return true;
+                // Debug.Log($"{target}-{methodInfo.Name} ({methodInfo.ReturnType}) ncheck type {typeof(T)}");
+                obj = methodInfo.Invoke(targetObj, new object[0]);
             } else {
                 Debug.LogWarning($"Failed to find valid member info on '{target}' {memberInfo}");
+                value = default;
                 return false;
             }
+            if (obj is T val) {
+                value = val;
+                return true;
+            } else {
+                Debug.LogWarning($"{target}.{memberInfo.Name} is not of type {typeof(T)}!");
+                value = default;
+                return false;
+            }
+        }
+        public static bool TrySetValue(object value, object target, MemberInfo memberInfo) {
+            if (memberInfo is FieldInfo) {
+                FieldInfo fieldInfo = memberInfo as FieldInfo;
+                var targetObj = fieldInfo.IsStatic ? null : target;
+                // Debug.Log($"{target}-{fieldInfo.Name}({fieldInfo.FieldType}) fset to {value}({value.GetType()})");
+                fieldInfo.SetValue(targetObj, value);
+                // Debug.Log($"fset {value} = {fieldInfo}:{fieldInfo.GetValue(targetObj)}");
+                // return value.Equals(fieldInfo.GetValue(targetObj));
+                return true;
+            } else if (memberInfo is PropertyInfo) {
+                PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+                if (propertyInfo.CanWrite && propertyInfo.SetMethod != null) {
+                    propertyInfo.SetValue(target, value);
+                    return true;
+                } else {
+                    Debug.LogWarning($"Cannot set value to a property without a setter on{target}.{memberInfo.Name}");
+                    return false;
+                }
+            }
+            Debug.LogWarning($"Cannot set value to {target}.{memberInfo}");
+            return false;
         }
         public static MemberInfo GetMemberInfo(Type objectType, string fname, Type matchType = null) {
             return GetMemberInfo(objectType, fname, defFlags, matchType);

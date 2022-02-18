@@ -716,12 +716,17 @@ MonoBehaviour:
   mesher:
     _selectedName: SimpleMesher
     onlyIncludeConcreteTypes: 1
+    selTypeCache:
+      assemblyName: VoxelSystem.Mesher.SimpleMesher, VoxelSystem, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
   enableCollision: 1
-  useBoxColliders: 0
+  useBoxColliders: 1
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
   additionalData:
   - _selectedName: BlockTypeVoxelData
     onlyIncludeConcreteTypes: 0
+    selTypeCache:
+      assemblyName: 
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
   _activeChunks: []
 --- !u!4 &1191201397

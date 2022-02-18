@@ -22,7 +22,7 @@ namespace VoxelSystem {
         public List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
 
         [Space]
-        [SerializeField] GameObject voxelChunkPrefab;// todo? remove
+        [SerializeField] GameObject voxelChunkPrefab;// todo? remove 
         [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
         Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
 
