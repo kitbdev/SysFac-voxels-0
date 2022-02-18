@@ -5,9 +5,9 @@ using VoxelSystem;
 public struct BlockTypeVoxelData : VoxelData {
 
     public BlockTypeRef blockTypeRef;
-    // [SerializeReference, SerializeField]
-    [System.NonSerialized]
-    DefaultVoxelData defVoxelData;// todo dont serialize? 
+    // [System.NonSerialized]
+    // [SerializeField]
+    public DefaultVoxelData defVoxelData;// cant not serialize, oh well
 
     public void CopyValuesFrom(VoxelData from) {
         if (from is BlockTypeVoxelData vd) {
@@ -15,25 +15,41 @@ public struct BlockTypeVoxelData : VoxelData {
         }
     }
     public void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {
+        // Debug.Log($"btvd OnDeserialized {defVoxelData.voxel != null}");
+        // why?
         defVoxelData = voxel.GetVoxelDataFor<DefaultVoxelData>();
     }
     public void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {
+        // defVoxelData = new DefaultVoxelData();
+        // defVoxelData.CopyValuesFrom(voxel.GetVoxelDataFor<DefaultVoxelData>());
         defVoxelData = voxel.GetVoxelDataFor<DefaultVoxelData>();
         // voxel.voxelMaterialId
         // Debug.Log($"BlockTypeVoxelData Initialize voxel as '{blockTypeRef}' +{this}");
-        UpdateBlockType();
+        UpdateBlockType(defVoxelData.voxel, blockTypeRef);
     }
     public void SetBlockType(BlockTypeRef newBlockType) {
         var oldType = blockTypeRef;
-        blockTypeRef = new BlockTypeRef(newBlockType);// its a class ref, so make new
-        UpdateBlockType(oldType);
+        // blockTypeRef = new BlockTypeRef(newBlockType);// its a class ref, so make new
+        blockTypeRef = newBlockType;
+        UpdateBlockType(defVoxelData.voxel, blockTypeRef, oldType);
     }
-    void UpdateBlockType(BlockTypeRef oldType = null) {
-        if (blockTypeRef == null || !blockTypeRef.IsValid()) {
+
+    public static void SetBlockType(Voxel voxel, BlockTypeRef newBlockType) {
+        BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
+        var oldType = blockTypeVoxelData.blockTypeRef;
+        // Debug.Log($"Setting |{voxel.ToStringFull()}| to |{newBlockType}|");
+        blockTypeVoxelData.blockTypeRef = newBlockType;
+        voxel.SetOrAddVoxelDataFor<BlockTypeVoxelData>(blockTypeVoxelData, true, false, false);
+        UpdateBlockType(voxel, newBlockType, oldType);
+        // Debug.Log($"Setdone |{voxel.ToStringFull()}| to |{newBlockType}|");
+    }
+    static void UpdateBlockType(Voxel voxel, BlockTypeRef newBlockType, BlockTypeRef? oldBlockType = null) {
+        if (!newBlockType.IsValid()) {
+            Debug.LogWarning("invalid UpdateBlockType");
             return;
         }
-        BlockType blockType = blockTypeRef.GetBlockType();
-        defVoxelData.voxel.SetVoxelMaterialId(blockType.voxelMaterialId);
+        BlockType blockType = newBlockType.GetBlockType();
+        voxel.SetVoxelMaterialId(blockType.voxelMaterialId);
         // note chunk refresh should be done elsewhere
         // ! all block types do not have the same data
 
@@ -44,4 +60,5 @@ public struct BlockTypeVoxelData : VoxelData {
     public override string ToString() {
         return $"{base.ToString()}:{blockTypeRef}";
     }
+
 }

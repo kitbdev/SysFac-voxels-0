@@ -9,10 +9,10 @@ using Unity.Collections;
 
 public class WorldGen : MonoBehaviour {
 
-    public BlockTypeRef airBlockref = new BlockTypeRef("air");
-    public BlockTypeRef stoneBlockRef = new BlockTypeRef("stone");
-    public BlockTypeRef grassBlockRef = new BlockTypeRef("grass");
-    public BlockTypeRef dirtBlockRef = new BlockTypeRef("dirt");
+    public BlockTypeRef airBlockref;// = new BlockTypeRef().SetBlockName("air");
+    public BlockTypeRef stoneBlockRef;// = new BlockTypeRef().SetBlockName("stone");
+    public BlockTypeRef grassBlockRef;// = new BlockTypeRef().SetBlockName("grass");
+    public BlockTypeRef dirtBlockRef;// = new BlockTypeRef().SetBlockName("dirt"); 
 
     VoxelWorld world;
     BlockManager blockManager;
@@ -69,25 +69,25 @@ public class WorldGen : MonoBehaviour {
                     blockTypeData[chunk.IndexAt(vlpos)] = new BlockTypeVoxelData() { blockTypeRef = touse };
                 }
             }
-            yield return null;
+            // yield return null;
         }
         yield return null;
-        Debug.Log("Finished gen loop");
+        // Debug.Log("Finished gen loop");
         // chunk.SetVoxelMaterials(matData);
         chunk.SetVoxelDatas<BlockTypeVoxelData>(blockTypeData);
-        Debug.Log("set voxel data");
+        // Debug.Log("set voxel data");
         yield return null;
         // chunk.SetVoxel(chunk.IndexAt(new Vector3Int(8, 8, 8)), new Voxel(blockManager.GetBlockTypeAtIndex(2)));
         chunk.Refresh();
     }
-    
+
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     struct ChunkGenJob : IJobFor {
         [Unity.Collections.ReadOnly]
         Vector3Int chunkPos;
         [WriteOnly]
         NativeArray<BlockTypeVoxelData> blocks;
-        
+
         public void Execute(int index) {
             // GenMeshExecute(index);
         }

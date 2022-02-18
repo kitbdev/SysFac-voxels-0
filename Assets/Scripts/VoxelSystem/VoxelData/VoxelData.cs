@@ -7,8 +7,8 @@ namespace VoxelSystem {
         /// <summary>lower is earlier</summary>
         int sortOrder => 0;
         void CopyValuesFrom(VoxelData from);
-        void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {}
-        void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {}
+        void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
+        void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         // void OnMaterialChange(Voxel voxel, VoxelMaterial voxelMaterial) { }
         void OnRemove(Voxel voxel) { }
         // public virtual void OnTick(){}
@@ -44,6 +44,13 @@ namespace VoxelSystem {
                 chunk = vd.chunk;
             }
         }
+        // public void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {
+        //     Debug.Log($"DefaultVoxelData des {this.voxel != null}");
+        //     // voxel.CopyValuesFrom(vd.voxel);// todo copy?
+        //     // this.voxel = voxel;// it was never set!
+        //     // this.chunk = chunk;
+        //     // this.localVoxelPos = localVoxelPos;
+        // }
         public void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {
             // Debug.Log("DefaultVoxelData init");
             // voxel.CopyValuesFrom(vd.voxel);// todo copy?

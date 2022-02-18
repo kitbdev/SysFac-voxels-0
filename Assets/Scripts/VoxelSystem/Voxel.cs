@@ -12,7 +12,9 @@ namespace VoxelSystem {
     public class Voxel {
 
         [SerializeField] VoxelMaterialId _voxelMaterialId;
-        [SerializeReference] [SerializeField] VoxelData[] _voxelDatas;
+        [SerializeReference]// todo make sure works with structs
+        [SerializeField]
+        VoxelData[] _voxelDatas;
 
         public VoxelMaterialId voxelMaterialId { get => _voxelMaterialId; protected set => _voxelMaterialId = value; }
         public VoxelData[] voxelDatas { get => _voxelDatas; protected set => _voxelDatas = value; }
@@ -30,7 +32,7 @@ namespace VoxelSystem {
             List<VoxelData> voxelDataList = (neededData.Select(nvd => nvd.CreateInstance())).ToList();
             voxelDataList.Sort((a, b) => a.sortOrder - b.sortOrder);// in descending order
             Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
-            // Debug.Log($"Adding {neededData.Count} vdatas {voxel}");
+            Debug.Log($"Adding {neededData.Count} vdatas {voxel} {voxelDataList.Aggregate("", (s, vd) => s + vd + ",")}");
             voxelDataList.Clear();
             return voxel;
         }
@@ -100,7 +102,7 @@ namespace VoxelSystem {
         //     }
         //     voxelDatas = newVoxelDatas.ToArray();
         // }
-        public void SetOrAddVoxelDataFor<T>(T data, bool set = true, bool add = true) where T : VoxelData {
+        public void SetOrAddVoxelDataFor<T>(T data, bool set = true, bool add = true, bool reinit = true) where T : VoxelData {
             if (HasVoxelDataFor<T>()) {
                 if (set) {
                     RawSetVoxelDataFor(data);
@@ -115,8 +117,10 @@ namespace VoxelSystem {
                     voxelDatas = newVoxelDatas.ToArray();
                 }
             }
-            DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
-            data.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+            if (reinit) {
+                DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
+                data.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+            }
         }
         // public void SetOrAddVoxelDataFor(TypeSelector<VoxelData> data, bool set = true, bool add = true) {
         //     // if (data.type.CanBeAssignedTo(typeof(DefaultVoxelData))) {
@@ -201,13 +205,17 @@ namespace VoxelSystem {
             voxelDatas = datas.ToArray();
         }
 
-        public override string ToString() {
+        public string ToStringFull() {
             string str = $"Voxel mat:{voxelMaterialId} datas({voxelDatas.Length}):[";
             string postDelim = voxelDatas.Length > 3 ? "\n" : " ";
             foreach (var vd in voxelDatas) {
                 str += $"{vd.ToString()},{postDelim}";
             }
             str += "]";
+            return str;
+        }
+        public override string ToString() {
+            string str = $"Voxel mat:{voxelMaterialId} datas({voxelDatas.Length})";
             return str;
         }
 
