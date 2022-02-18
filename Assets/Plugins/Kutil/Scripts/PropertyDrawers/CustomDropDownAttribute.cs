@@ -11,7 +11,8 @@ namespace Kutil {
     /// CustomDropDownAttribute Creates a enum like dropdown menu with custom options on a string
     /// </summary>
     public class CustomDropDownAttribute : PropertyAttribute {
-        public string choicesListSourceField;
+        public string choicesListSourceField = null;
+        public string selectedChoiceField = null;
         public bool includeNullChoice = false;
         public bool includeEmptyChoice = false;
         public string formatSelectedValueFuncField = null;
@@ -26,13 +27,14 @@ namespace Kutil {
         /// CustomDropDownAttribute
         /// </summary>
         /// <param name="choicesListSourceField">nameof a string[]</param>
+        /// <param name="selectedChoiceField">if attribute on an int, nameof a string that changes with selection index</param>
         /// <param name="noElementsText">optional string used if choices has no elements</param>
         /// <param name="errorText">optional string used if an error is encountered finding the choices</param>
         /// <param name="formatSelectedValueFunc">optional nameof a System.Func<string,string></param>
         /// <param name="formatListFunc">optional nameof a System.Func<string,string></param>
         public CustomDropDownAttribute(string choicesListSourceField,
-            string formatSelectedValueFunc = null,
-                // int defaultIndex = 0,
+                string selectedChoiceField = null,
+                string formatSelectedValueFunc = null,
                 string formatListFunc = null,
                 string noElementsText = null,
                 string errorText = null,
@@ -40,11 +42,12 @@ namespace Kutil {
                 bool includeEmptyChoice = false
             ) {
             this.choicesListSourceField = choicesListSourceField;
+            this.selectedChoiceField = selectedChoiceField;
             this.formatSelectedValueFuncField = formatSelectedValueFunc;
             this.formatListFuncField = formatListFunc;
             this.errorText = errorText;
             this.noElementsText = noElementsText;
-            this.includeNullChoice = includeNullChoice;            
+            this.includeNullChoice = includeNullChoice;
             this.includeEmptyChoice = includeEmptyChoice;
         }
     }

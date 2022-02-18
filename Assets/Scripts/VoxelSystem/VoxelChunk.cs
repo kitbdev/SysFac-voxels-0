@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Kutil;
+using System.Linq;
 
 namespace VoxelSystem {
     /// <summary>
@@ -46,24 +47,31 @@ namespace VoxelSystem {
                 PopulateVoxels();
             }
         }
-        public void OverrideVoxels(Voxel[] voxels){
+        public void OverrideVoxels(Voxel[] voxels) {
             this.voxels = voxels;
             //? initialize
+            InitVoxels();
         }
         protected void PopulateVoxels() {
             voxels = new Voxel[volume];
             VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
             var neededData = world.neededData;
-            Debug.Log($"populating voxels. needs {neededData.Count}");
+            Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedName + ",")}");
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
                 voxels[i] = voxel;
+                // voxel.Initialize(this, position);
             }
-            // foreach (var vox in voxels) {
-            //     vox.Initialize(this);
-            // }
+            InitVoxels();
+        }
+        public void InitVoxels() {
+            for (int i = 0; i < voxels.Length; i++) {
+                // y,z,x
+                Vector3Int position = GetLocalPos(i);
+                voxels[i].Initialize(this, position);
+            }
         }
         // public void RepopulateVoxels(){
         //     Clear();
@@ -166,22 +174,34 @@ namespace VoxelSystem {
         }
 
 
-        public void SetVoxelMaterial(int index, VoxelMaterialId voxelMaterialId) {
-            voxels[index].SetVoxelMaterialId(world.materialSet, voxelMaterialId);
-        }
-        public void SetVoxelDataTake<T>(int index, T data) where T : VoxelData {
-            voxels[index].SetVoxelDataFor<T>(data);
-        }
-        /// <summary>
-        /// Sets the voxel data for that datatype. Copys values
-        /// </summary>
-        public void SetVoxelData<T>(int index, T data) where T : VoxelData {
-            voxels[index].GetVoxelDataFor<T>().CopyValuesFrom(data);
+        // public void SetVoxelMaterial(int index, VoxelMaterialId voxelMaterialId) {
+        //     voxels[index].SetVoxelMaterialId(world.materialSet, voxelMaterialId);
+        // }
+        // public void SetVoxelDataTake<T>(int index, T data) where T : VoxelData {
+        //     voxels[index].SetVoxelDataFor<T>(data);
+        // }
+        // /// <summary>
+        // /// Sets the voxel data for that datatype. Copys values
+        // /// </summary>
+        // public void SetVoxelData<T>(int index, T data) where T : VoxelData {
+        //     voxels[index].GetVoxelDataFor<T>().CopyValuesFrom(data);
+        // }
+        public void SetOrAddVoxelDatas<T>(T[] data) where T : VoxelData {
+            if (data.Length != volume) {
+                Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
+                return;
+            }
+            voxels[volume - 1].SetOrAddVoxelDataFor<T>(data[volume - 1]);
+            Debug.Log($"added volume-1 {voxels[volume - 1]}");
+            // todo jobs?
+            for (int i = 0; i < volume; i++) {
+                voxels[i].SetOrAddVoxelDataFor<T>(data[i]);
+            }
         }
         public void SetVoxelMaterials(VoxelMaterialId voxelMaterialId) {
             VoxelMaterialSetSO materialSet = world.materialSet;
             for (int i = 0; i < volume; i++) {
-                voxels[i].SetVoxelMaterialId(materialSet, voxelMaterialId);
+                voxels[i].SetVoxelMaterialId(voxelMaterialId);
             }
         }
         public void SetVoxelMaterials(VoxelMaterialId[] data) {
@@ -192,7 +212,7 @@ namespace VoxelSystem {
             VoxelMaterialSetSO materialSet = world.materialSet;
             for (int i = 0; i < volume; i++) {
                 // if (voxels[i] == null) Debug.LogWarning($"voxel {i} is null!");
-                voxels[i].SetVoxelMaterialId(materialSet, data[i]);
+                voxels[i].SetVoxelMaterialId(data[i]);
             }
         }
 

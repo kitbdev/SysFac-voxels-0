@@ -18,8 +18,18 @@ namespace Kutil {
             // GUI.Label(position, "CustomDropDownDrawer");
             CustomDropDownAttribute dropdownAtt = (CustomDropDownAttribute)attribute;
 
-            if (fieldInfo.FieldType != typeof(string)) {
-                Debug.LogError($"CustomDropDownAttribute must be on a string");
+            string selValue = "";
+            if (fieldInfo.FieldType == typeof(string)) {
+                selValue = property.stringValue;
+            } else if (fieldInfo.FieldType == typeof(int)) {
+                selValue = GetValueOnProp<string>(dropdownAtt.selectedChoiceField, property);
+                if (selValue == null) {
+                    Debug.LogError($"CustomDropDownDrawer invalid dropdownAtt.selectedChoiceField '{dropdownAtt.selectedChoiceField}'");
+                    base.OnGUI(position, property, label);
+                    return;
+                }
+            } else {
+                Debug.LogError($"CustomDropDownDrawer CustomDropDownAttribute must be on a string or int");
                 base.OnGUI(position, property, label);
                 return;
             }
@@ -67,44 +77,45 @@ namespace Kutil {
                 Func<string, string> selValFunc = GetFunc(dropdownAtt.formatSelectedValueFuncField, property);
                 Func<string, string> listFormatFunc = GetFunc(dropdownAtt.formatListFuncField, property);
                 // create dropdown button
-                GUIContent buttonContent = new GUIContent(property.stringValue);
+                GUIContent buttonContent = new GUIContent(selValue);
                 if (EditorGUI.DropdownButton(dropdownrect, buttonContent, FocusType.Passive)) {
                     // Debug.Log("clicked");
                     GenericMenu dmenu = new GenericMenu();
                     if (dropdownAtt.includeNullChoice) {
-                        bool isSet = ReferenceEquals(property.stringValue, null);
-                        // bool isSet = property.stringValue == null;
+                        bool isSet = ReferenceEquals(selValue, null);
+                        // bool isSet = selValue == null;
                         string content = "none";
                         if (isSet && selValFunc != null) {
                             content = selValFunc(content);
                         }
                         dmenu.AddItem(new GUIContent(content), isSet, SetMenuItemEvent, new ClickMenuData() {
-                            property = property, value = null
+                            property = property, value = null, index = -1
                         });
                         if (!dropdownAtt.includeEmptyChoice) {
                             dmenu.AddSeparator("");
                         }
                     }
                     if (dropdownAtt.includeEmptyChoice) {
-                        bool isSet = ReferenceEquals(property.stringValue, "");
-                        // bool isSet = property.stringValue == "";
+                        bool isSet = ReferenceEquals(selValue, "");
+                        // bool isSet = selValue == "";
                         string content = " (empty)";
                         if (isSet && selValFunc != null) {
                             content = selValFunc(content);
                         }
                         dmenu.AddItem(new GUIContent(content), isSet, SetMenuItemEvent, new ClickMenuData() {
-                            property = property, value = ""
+                            property = property, value = "", index = -1
                         });
                         dmenu.AddSeparator("");
                     }
-                    foreach (var choice in choices) {
-                        bool isSet = property.stringValue == choice;
+                    for (int i = 0; i < choices.Count; i++) {
+                        string choice = choices[i];
+                        bool isSet = selValue == choice;
                         string content = listFormatFunc != null ? listFormatFunc(choice) : choice;
                         if (isSet && selValFunc != null) {
                             content = selValFunc(content);
                         }
                         dmenu.AddItem(new GUIContent(content), isSet, SetMenuItemEvent, new ClickMenuData() {
-                            property = property, value = choice
+                            property = property, value = choice, index = i
                         });
                     }
                     dmenu.DropDown(dropdownrect);
@@ -120,12 +131,18 @@ namespace Kutil {
         public class ClickMenuData {
             public SerializedProperty property;
             public string value;
+            public int index;
         }
         public static void SetMenuItemEvent(object data) {
             // Debug.Log("set");
             var clickData = (ClickMenuData)data;
-            // todo int field support too, and objects?
-            clickData.property.stringValue = clickData.value;
+            // todo? object/misc field support too
+
+            if (clickData.property.propertyType == SerializedPropertyType.String) {
+                clickData.property.stringValue = clickData.value;
+            } else if (clickData.property.propertyType == SerializedPropertyType.Integer) {
+                clickData.property.intValue = clickData.index;
+            }
             clickData.property.serializedObject.ApplyModifiedProperties();
         }
 
@@ -194,15 +211,15 @@ namespace Kutil {
         }
 
         public static List<string> GetChoicesRef(CustomDropDownAttribute cddAttribute, SerializedProperty property) {
-            // return GetValueOnProp<List<string>>(cddAttribute.choicesListSourceField, property);
-            UnityEngine.Object targetObject = property.serializedObject.targetObject;
-            string path = property.propertyPath.Replace(property.name, cddAttribute.choicesListSourceField);
-            // Type parentType = targetObject.GetType();
-            // Debug.Log($"getting choices field '{path}' on {targetObject} t:{parentType} p:{property.propertyPath}");
-            if (ReflectionHelper.TryGetValue<string[]>(targetObject, path, out var val)) {
-                return val?.ToList();
-            }
-            return null;
+            return GetValueOnProp<string[]>(cddAttribute.choicesListSourceField, property)?.ToList();
+            // UnityEngine.Object targetObject = property.serializedObject.targetObject;
+            // string path = property.propertyPath.Replace(property.name, cddAttribute.choicesListSourceField);
+            // // Type parentType = targetObject.GetType();
+            // // Debug.Log($"getting choices field '{path}' on {targetObject} t:{parentType} p:{property.propertyPath}");
+            // if (ReflectionHelper.TryGetValue<string[]>(targetObject, path, out var val)) {
+            //     return val?.ToList();
+            // }
+            // return null;
         }
         public static Func<string, string> GetFunc(string fieldname, SerializedProperty property) {
             return GetValueOnProp<Func<string, string>>(fieldname, property);

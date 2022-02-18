@@ -1,9 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Kutil {
     public static class Extentions {
+    }
+    public static class EnumerableExtensions {
+        public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> enumerable, Func<T, TKey> keySelector) {
+            return enumerable.GroupBy(keySelector).Select(grp => grp.First());
+        }
     }
     public static class QuaternionExt {
         public static Quaternion ClampRotation(this Quaternion q, Vector3 bounds) {

@@ -69,13 +69,13 @@ MonoBehaviour:
         texname: grass_block_side
         textureCoord: {x: 2, y: 1}
         textureOverrides:
-          texnameUp: diamond_ore
+          texnameUp: dirt
           texnameDown: dirt
           texnameFront: 
           texnameBack: 
           texnameRight: 
           texnameLeft: 
-          texcoordUp: {x: 2, y: 0}
+          texcoordUp: {x: 1, y: 0}
           texcoordDown: {x: 1, y: 0}
           texcoordFront: {x: 2, y: 1}
           texcoordBack: {x: 2, y: 1}

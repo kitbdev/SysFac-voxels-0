@@ -9,7 +9,7 @@ using System.Linq;
 [CustomPropertyDrawer(typeof(BlockTypeRef))]
 public class BlockTypeRefDrawer : PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        EditorGUI.PropertyField(position, property.FindPropertyRelative(nameof(BlockTypeRef.idname)), label);
+        EditorGUI.PropertyField(position, property.FindPropertyRelative(nameof(BlockTypeRef.blockid)), label);
     }
     // public override VisualElement CreatePropertyGUI(SerializedProperty property) {
     //     // return base.CreatePropertyGUI(property);

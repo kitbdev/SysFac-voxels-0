@@ -55,4 +55,16 @@ MonoBehaviour:
         isTransparent: 0
         texname: 
         textureCoord: {x: 0, y: 0}
-        tint: {r: 1, g: 1, b: 1, a: 1}
+        textureOverrides:
+          texnameUp: 
+          texnameDown: 
+          texnameFront: 
+          texnameBack: 
+          texnameRight: 
+          texnameLeft: 
+          texcoordUp: {x: 0, y: 0}
+          texcoordDown: {x: 0, y: 0}
+          texcoordFront: {x: 0, y: 0}
+          texcoordBack: {x: 0, y: 0}
+          texcoordRight: {x: 0, y: 0}
+          texcoordLeft: {x: 0, y: 0}

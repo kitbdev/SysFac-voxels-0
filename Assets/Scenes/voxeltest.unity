@@ -536,11 +536,14 @@ MonoBehaviour:
   voxelSize: 1
   defaultChunkResolution: 16
   mesher:
-    _selectedName: AdvMesher
+    _selectedName: SimpleMesher
     onlyIncludeConcreteTypes: 1
   enableCollision: 1
   useBoxColliders: 0
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  additionalData:
+  - _selectedName: BlockTypeVoxelData
+    onlyIncludeConcreteTypes: 0
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
   _activeChunks: []
 --- !u!4 &1191201397
@@ -589,13 +592,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   airBlockref:
-    idname: air
+    blockid: 0
   stoneBlockRef:
-    idname: stone
+    blockid: 0
   grassBlockRef:
-    idname: grass
+    blockid: 1
   dirtBlockRef:
-    idname: dirt
+    blockid: 2
 --- !u!114 &1191201400
 MonoBehaviour:
   m_ObjectHideFlags: 0

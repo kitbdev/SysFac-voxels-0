@@ -8,7 +8,8 @@ namespace VoxelSystem {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class VoxelRenderer : MonoBehaviour {
 
-        [SerializeField] VoxelMesher voxelMesher;
+        [SerializeField]
+        VoxelMesher voxelMesher;
         MeshFilter meshFilter;
 
         public void Initialize(VoxelChunk chunk) {

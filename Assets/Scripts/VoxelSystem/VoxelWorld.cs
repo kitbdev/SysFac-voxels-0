@@ -19,6 +19,8 @@ namespace VoxelSystem {
         public bool useBoxColliders = true;
         public VoxelMaterialSetSO materialSet;
 
+        public List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
+
         [Space]
         [SerializeField] GameObject voxelChunkPrefab;// todo? remove
         [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
@@ -34,7 +36,15 @@ namespace VoxelSystem {
         public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
 
         public TypeChoice<VoxelMaterial> materialType => mesher.CreateInstance().neededMaterial;
-        public List<TypeChoice<VoxelData>> neededData => mesher.CreateInstance().neededDatas.ToList();
+        public List<TypeChoice<VoxelData>> neededData {
+            get {
+                List<TypeChoice<VoxelData>> datas = new List<TypeChoice<VoxelData>>(additionalData);
+                datas.AddRange(mesher.CreateInstance().neededDatas);
+                datas.Add(typeof(DefaultVoxelData));
+                // datas = datas.DistinctBy(tcvd => tcvd.selectedName).ToList();
+                return datas;
+            }
+        }
 
         private void Awake() {
             Clear();
