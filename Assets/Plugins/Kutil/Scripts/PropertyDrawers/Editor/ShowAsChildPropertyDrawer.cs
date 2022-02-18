@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Kutil {
-    // [CustomPropertyDrawer()]
+    /// <summary>
+    /// Inherit this for an easy way to show as child
+    /// </summary>
     public class ShowAsChildPropertyDrawer : PropertyDrawer {
         public virtual string childName => "";
 

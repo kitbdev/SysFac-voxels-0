@@ -3,14 +3,17 @@ using System;
 
 namespace Kutil {
     /// <summary>
-    /// Choose an inherited class and configure it
+    /// Holds a Type that implements or inherits a base type and an object of that type.
+    /// Uses a TypeChoice for editor inspector type selection
     /// </summary>
     /// <typeparam name="T">base type</typeparam>
     [Serializable]
     public class TypeSelector<T> : ISerializationCallbackReceiver {
 
         [SerializeField]
-        internal TypeChoice<T> _type;
+        internal TypeChoice<T> _type = new TypeChoice<T>() {
+            onlyIncludeConcreteTypes = true,
+        };
 
         [SerializeField]
         [SerializeReference]
@@ -19,6 +22,7 @@ namespace Kutil {
 
         public TypeChoice<T> type {
             get => _type; set {
+                var old = _type;
                 _type = value;
                 UpdateObjectType();
             }
@@ -26,11 +30,13 @@ namespace Kutil {
         public T objvalue {
             get => _objvalue;
             set => _objvalue = value;
-            // protected set => _obj = value;
         }
 
-
-        public TypeSelector() { }
+        public TypeSelector() { 
+            this._type = null;
+            // inspector doesnt initialize values like this
+            // this._type.onSelectCallback = (v) => { UpdateObjectType(); };
+        }
         public TypeSelector(T objectData) {
             this._type = objectData.GetType();
             this.objvalue = objectData;
@@ -40,10 +46,10 @@ namespace Kutil {
         }
 
         private void UpdateObjectType() {
-            type.UpdateTypeList();
             Type selType = type.selectedType;
             if (selType != null && (objvalue == null || objvalue.GetType() != selType)) {
                 // todo? try to keep parts from old type? would need reflection
+                // Debug.Log($"Updating object type to {selType}");
                 type.TryCreateInstance(out _objvalue);
             }
         }

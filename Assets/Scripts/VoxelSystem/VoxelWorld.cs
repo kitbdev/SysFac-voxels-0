@@ -46,6 +46,9 @@ namespace VoxelSystem {
             }
         }
 
+        private void OnValidate() {
+            additionalData.ForEach(tc => tc.onlyIncludeConcreteTypes = true);
+        }
         private void Awake() {
             Clear();
         }

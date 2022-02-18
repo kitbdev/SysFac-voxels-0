@@ -12,6 +12,24 @@ namespace Kutil {
     // any data types and with arbitrarily deeply-pathed properties.
     public static class SerializedPropertyExtensions {
 
+
+        public static T GetValueOnPropRefl<T>(this SerializedProperty property, string fieldname = null) {
+            UnityEngine.Object targetObject = property.serializedObject.targetObject;
+            string path = fieldname == null ? property.propertyPath :
+                property.propertyPath.Replace(property.name, fieldname);
+            if (ReflectionHelper.TryGetValue<T>(targetObject, path, out var val)) {
+                return val;
+            }
+            return default;
+        }
+        public static bool TrySetValueOnPropRefl(this SerializedProperty property,object value, string fieldname = null) {
+            UnityEngine.Object targetObject = property.serializedObject.targetObject;
+            string path = fieldname == null ? property.propertyPath :
+                property.propertyPath.Replace(property.name, fieldname);
+            return ReflectionHelper.TrySetValue(value, targetObject, path);
+        }
+
+
         public static SerializedProperty GetNeighborProperty(this SerializedProperty property, string neighborFieldName) {
             string path = property.propertyPath.Replace(property.name, neighborFieldName);
             SerializedProperty neighborProp = property.serializedObject.FindProperty(path);

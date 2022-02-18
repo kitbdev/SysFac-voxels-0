@@ -133,5 +133,16 @@ namespace VoxelSystem {
     public class AnimatedMaterial : BasicMaterial {
         public float animDuration;
         public Vector2Int[] frameCoords;// ? auto set using texture?
+
+        public override void OnValidate(VoxelMaterialSetSO voxelMaterialSet) {
+            base.OnValidate(voxelMaterialSet);
+            textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
+            textureOverrides.Initialize(voxelMaterialSet, textureCoord);
+        }
+        public override void Initialize(VoxelMaterialSetSO voxelMaterialSet) {
+            base.Initialize(voxelMaterialSet);
+            textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
+            textureOverrides.Initialize(voxelMaterialSet, textureCoord);
+        }
     }
 }

@@ -714,19 +714,16 @@ MonoBehaviour:
   voxelSize: 1
   defaultChunkResolution: 16
   mesher:
-    _selectedName: SimpleMesher
-    onlyIncludeConcreteTypes: 1
-    selTypeCache:
-      assemblyName: VoxelSystem.Mesher.SimpleMesher, VoxelSystem, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
+    _selectedType:
+      assemblyName: VoxelSystem.Mesher.AdvMesher, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   enableCollision: 1
   useBoxColliders: 1
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
   additionalData:
-  - _selectedName: BlockTypeVoxelData
-    onlyIncludeConcreteTypes: 0
-    selTypeCache:
-      assemblyName: 
+  - _selectedType:
+      assemblyName: BlockTypeVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
   _activeChunks: []
 --- !u!4 &1191201397
@@ -775,7 +772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   airBlockref:
-    blockid: 0
+    blockid: 1
   stoneBlockRef:
     blockid: 0
   grassBlockRef:
@@ -1060,3 +1057,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2017753174}
   m_CullTransparentMesh: 1
+--- !u!1001 &3962466642992162716
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 49787874975196951, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_Name
+      value: testpref
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843141519089897506, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: grassBlockRef.blockid
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843141519089897506, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: stoneBlockRef.blockid
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.721724
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.6481698
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 9.11167
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340662053212429442, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b4b89fd6b22397f4892dab83157d1f4f, type: 3}

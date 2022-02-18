@@ -56,7 +56,7 @@ namespace VoxelSystem {
             voxels = new Voxel[volume];
             VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
             var neededData = world.neededData;
-            Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedName + ",")}");
+            Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);

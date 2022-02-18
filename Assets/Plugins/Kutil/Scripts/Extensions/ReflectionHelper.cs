@@ -27,6 +27,12 @@ namespace Kutil {
             }
             return false;
         }
+        public static bool TryCallMethod(object target, string memberPath, object[] parameters = null) {
+            if (TryGetMemberInfo(ref target, memberPath, defFlags, out var memberInfo)) {
+                return TryCallMethod(target, memberInfo, parameters);
+            }
+            return false;
+        }
         /// <summary>
         /// Attempts to get a value on an object at a given path (supports nesting)
         /// </summary>
@@ -139,8 +145,10 @@ namespace Kutil {
                 value = default;
                 return false;
             }
-            if (obj is T val) {
-                value = val;
+            value = (T)obj;
+            // if (obj is T val) {
+            //     value = val;
+            if (value != null) {
                 return true;
             } else {
                 Debug.LogWarning($"{target}.{memberInfo.Name} is not of type {typeof(T)}!");
@@ -168,6 +176,18 @@ namespace Kutil {
                 }
             }
             Debug.LogWarning($"Cannot set value to {target}.{memberInfo}");
+            return false;
+        }
+        public static bool TryCallMethod(object target, MemberInfo memberInfo, object[] parameters = null) {
+            if (memberInfo is MethodInfo) {
+                MethodInfo methodInfo = memberInfo as MethodInfo;
+                var targetObj = methodInfo.IsStatic ? null : target;
+                // Debug.Log($"{target}-{methodInfo.Name} ({methodInfo.ReturnType}) ncheck type {typeof(T)}");
+                parameters ??= new object[0];
+                methodInfo.Invoke(targetObj, parameters);
+                return true;
+            }
+            Debug.LogWarning($"Cannot call method {target}.{memberInfo}");
             return false;
         }
         public static MemberInfo GetMemberInfo(Type objectType, string fname, Type matchType = null) {

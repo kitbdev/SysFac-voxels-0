@@ -6,134 +6,86 @@ using System;
 using System.Linq;
 
 namespace Kutil {
+#if UNITY_EDITOR
+    [UnityEditor.CustomPropertyDrawer(typeof(TypeChoice<>))]
+    public class TypeChoiceDrawer : ShowAsChildPropertyDrawer {
+        public override string childName => "_selectedType";
+    }
+#endif
     /// <summary>
     /// Holds a Type that implements or inherits a base type. Basically a dynamic enum for types.
-    /// ! these are really slow, try to avoid using in runtime
+    /// The type can be selected in the editor, otherwise cannot be changed
     /// </summary>
     /// <typeparam name="T">base type</typeparam>
     [Serializable]
     public class TypeChoice<T> {
-        // alternate names: ImplementsType, childtype, typeholder, TypeSubclass, 
-        // SubType, TypeMatcher, TypeInterface, TypeImplementer, TypeInheritChoice
 
-        // todo make it so type can only be selected in editor and type is cached there
-
-        // [CustomDropDown(nameof(choices),
-        //     formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc),
-        //     noElementsText: "No inherited or implemented types found!")]
-        [SerializeField] internal string _selectedName;
-        public string selectedName { get => _selectedName; protected set => _selectedName = value; }
-        public bool onlyIncludeConcreteTypes = true;
         // todo? seperate no self option
-
-        public Func<string, string> formatSelectedValueFunc = null;
-        public Func<string, string> formatListFunc = s => {
-            Type curType = GetTypeFor(s);
-            if (curType != null && curType.BaseType != null) {
-                return $"{s} : ({curType.BaseType.Name})";
-            }
-            return s;
-        };
-
-
-        [NonSerialized]
-        protected IEnumerable<Type> choicesTypes = null;
         [SerializeField]
         [CustomDropDown(nameof(dropDownChoice))]
-        // formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc),
-        // noElementsText: "No inherited or implemented types found!")]
-        protected SerializedType selTypeCache = null;
-        public CustomDropDownData dropDownChoice {
+        private SerializedType _selectedType = new SerializedType();
+        private bool _onlyIncludeConcreteTypes = true;
+
+        [NonSerialized]
+        protected IEnumerable<Type> choicesTypes;// cache
+
+        public Action<SerializedType> onSelectCallback;
+        public Func<string, string> formatSelectedValueFunc;
+        public Func<string, string> formatListFunc;//s => {
+                                                   //     Type curType = GetTypeFor(s);
+                                                   //     if (curType != null && curType.BaseType != null) {
+                                                   //         return $"{s} : ({curType.BaseType.Name})";
+                                                   //     }
+                                                   //     return s;
+                                                   // };
+
+        public bool onlyIncludeConcreteTypes {
+            get => _onlyIncludeConcreteTypes; set {
+                if (_onlyIncludeConcreteTypes != value) {
+                    ClearCache();
+                }
+                _onlyIncludeConcreteTypes = value;
+            }
+        }
+        public SerializedType selectedType { get => _selectedType; protected set => _selectedType = value; }
+        public Type selectedRawType => selectedType;
+
+        private CustomDropDownData dropDownChoice {
             get {
                 UpdateCache();
                 return CustomDropDownData.Create<SerializedType>(
                     choicesTypes.Select(t => (SerializedType)t),
                     // null
                     // choices,
-                    preFormatValueFunc: o => ((Type)o).Name,
+                    preFormatValueFunc: o => ((Type)o)?.Name ?? "None",
                     formatListFunc: formatListFunc,
+                    onSelectCallback: onSelectCallback,
                     formatSelectedValueFunc: formatSelectedValueFunc,
                     noElementsText: "No inherited or implemented types found!"
                 );
             }
         }
 
-        public string[] choices {
-            get {
-                UpdateCache();
-                // todo? sort by hierarchy? if not already
-                return choicesTypes.Select(t => t.Name)
-                    // .OrderBy(s => s.Length > 0 ? s[0] : 0) // alphabetical
-                    // .OrderBy(s => s) 
-                    .ToArray();
-            }
-        }
-
-        public Type selectedType {
-            get {
-                if (selectedName == null || selectedName == "") {
-                    return selTypeCache;
-                }
-                if (selTypeCache != null) {
-                    return selTypeCache;
-                }
-                UpdateCache();
-                int index = choicesTypes.Select(t => t.Name).ToList().IndexOf(selectedName);
-                if (index < 0) {
-                    // selectedname is not set
-                    return null;
-                }
-
-                selTypeCache = choicesTypes.ElementAt(index);
-                return selTypeCache;
-            }
-        }
         public Type GetBaseType() {
             return typeof(T);
         }
 
         public TypeChoice() {
-            selectedName = choices[0];
+            onlyIncludeConcreteTypes = true;
         }
-        public TypeChoice(Type setType, Func<string, string> formatSelectedValueFunc = null, Func<string, string> formatListFunc = null) {
-            RawSetType(setType);
+        public TypeChoice(Type setType, bool onlyIncludeConcreteTypes = true,
+                Action<SerializedType> onSelectCallback = null,
+                Func<string, string> formatSelectedValueFunc = null,
+                Func<string, string> formatListFunc = null) {
+            this._selectedType = setType;
+            this.onlyIncludeConcreteTypes = onlyIncludeConcreteTypes;
+            this.onSelectCallback = onSelectCallback;
             this.formatSelectedValueFunc = formatSelectedValueFunc;
             this.formatListFunc = formatListFunc;
         }
 
-        public bool IsTypeValid(Type type) {
-            return typeof(T).IsAssignableFrom(type);
-        }
-        public bool CanBeAssignedTo(Type type) {
-            return type.IsAssignableFrom(typeof(T));
-        }
-
-        public void RawSetType(Type type) {
-            selectedName = type.Name;
-            ClearCache();
-        }
-        public bool SetType(Type type) {
-            if (IsTypeValid(type)) {
-                RawSetType(type);
-                return true;
-            }
-            return false;
-        }
-
-        public void UpdateTypeList() {
-            ClearCache();
-        }
-        private void ClearCache() {
-            choicesTypes = null;
-            selTypeCache = null;
-        }
-        protected void UpdateCache() {
-            choicesTypes ??= GetAllAssignableTypes(typeof(T), onlyIncludeConcreteTypes);
-        }
-
-
         public T CreateInstance() {
-            Type selType = selectedType;
+            Type selType = _selectedType;
             if (selType != null && !selType.IsAbstract && !selType.IsInterface) {
                 return (T)Activator.CreateInstance(selType);
             }
@@ -141,7 +93,7 @@ namespace Kutil {
             return default;
         }
         public bool TryCreateInstance(out T instance) {
-            Type selType = selectedType;
+            Type selType = _selectedType;
             if (selType != null && !selType.IsAbstract) {
                 instance = (T)Activator.CreateInstance(selType);
                 return true;
@@ -149,11 +101,21 @@ namespace Kutil {
             instance = default;
             return false;
         }
+
+        protected void ClearCache() {
+            choicesTypes = null;
+            _selectedType.type = null;
+        }
+        protected void UpdateCache() {
+            choicesTypes ??= GetAllAssignableTypes(typeof(T), onlyIncludeConcreteTypes);
+        }
+
         public override string ToString() {
-            return $"TypeChoice<{typeof(T).Name}> {selectedName}";
+            return $"TypeChoice<{typeof(T).Name}> {_selectedType.type?.Name}";
         }
 
         public static IEnumerable<Type> GetAllAssignableTypes(Type type, bool onlyConcrete = true) {
+            // Debug.Log($"GetAllAssignableTypes for {type} conc:{onlyConcrete}");
             IEnumerable<Type> enumerable = AppDomain.CurrentDomain.GetAssemblies()
                             .SelectMany(s => s.GetTypes())
                             .Where(p => type.IsAssignableFrom(p));
@@ -171,6 +133,6 @@ namespace Kutil {
             return null;
         }
         public static implicit operator TypeChoice<T>(Type type) => new TypeChoice<T>(type);
-        public static explicit operator Type(TypeChoice<T> typechoice) => typechoice.selectedType;
+        public static explicit operator Type(TypeChoice<T> typechoice) => typechoice._selectedType;
     }
 }

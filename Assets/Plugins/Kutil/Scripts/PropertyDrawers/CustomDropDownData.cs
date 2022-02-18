@@ -13,31 +13,16 @@ namespace Kutil {
             public string name;
         }
         public Data[] data;
-        // public T[] GetData<T>() {
-        //     return data.Cast<T>().ToArray();
-        // }
-        // public void SetData<T>(T[] newData) {
-        //     data = newData.Cast<object>().ToArray();
-        // }
-        // public string[] names;
-        // public string[] GetNames() {
-        //     if (data == null) {
-        //         return null;
-        //     }
-        //     if (names != null && names.Length == data.Length) {
-        //         return names;
-        //     } else {
-        //         return data.Cast<string>().ToArray();
-        //     }
-        // }
         public Func<object, string> preFormatValueFunc;
         public Func<string, string> formatSelectedValueFunc;
         public Func<string, string> formatListFunc;
+        public Action<object> onSelectCallback;
         public bool includeNullChoice;
         public string noElementsText;
         public string errorText;
 
         // public CustomDropDownData() { }
+
         /// <summary>
         /// Create CustomDropDownData from values
         /// </summary>
@@ -46,6 +31,7 @@ namespace Kutil {
         /// <param name="preFormatValueFunc">optional func to convert values into strings</param>
         /// <param name="formatListFunc">optional func to format entire display list</param>
         /// <param name="formatSelectedValueFunc">optional func to format the selected value</param>
+        /// <param name="onSelectCallback">optional callback after the value is set</param>
         /// <param name="includeNullChoice">include a null choice at beginning? (default=false)</param>
         /// <param name="noElementsText">optional string used if choices has no elements</param>
         /// <param name="errorText">optional string used if an error is encountered finding the choices</param>
@@ -57,6 +43,7 @@ namespace Kutil {
             Func<T, string> preFormatValueFunc = null,
             Func<string, string> formatListFunc = null,
             Func<string, string> formatSelectedValueFunc = null,
+            Action<T> onSelectCallback = null,
             bool includeNullChoice = false,
             string noElementsText = null,
             string errorText = null
@@ -73,15 +60,18 @@ namespace Kutil {
             if (preFormatValueFunc != null) {
                 customDropDownData.preFormatValueFunc = new Func<object, string>(o => preFormatValueFunc((T)o));
             }
-            customDropDownData.data = dataValues
+            if (onSelectCallback != null) {
+                customDropDownData.onSelectCallback = new Action<object>(o => onSelectCallback((T)o));
+            }
+            customDropDownData.data = dataValues?
                 .Select(v => (object)v)
                 .Zip(displayNames ?? dataValues.Select(v => {
-                    return customDropDownData.preFormatValueFunc != null ? 
+                    return customDropDownData.preFormatValueFunc != null ?
                         customDropDownData.preFormatValueFunc(v) :
                         v.ToString();
                 }),
                 (o, s) => new Data() { value = o, name = s })
-                .ToArray();
+                .ToArray() ?? new Data[0];
             // List<T> ts = dataValues.ToList();
             // T[] vals = ts.ToArray();
             // string[] datanamesarr = displayNames?.ToArray();

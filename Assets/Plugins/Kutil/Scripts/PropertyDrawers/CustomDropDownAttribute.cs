@@ -22,29 +22,10 @@ namespace Kutil {
         public string formatListFuncField = null;
         public string noElementsText = null;
         public string errorText = null;
-        // public bool includeEmptyChoice = false;
-
-
-
-        // public CustomDropDownData Create(
-        //             IEnumerable<object> dataValues,
-        //             IEnumerable<string> dataNames = null,
-        //             // Func<T, string> preFormatListFunc = null,
-        //             Func<string, string> formatSelectedValueFunc = null,
-        //             Func<string, string> formatListFunc = null,
-        //             bool includeNullChoice = false,
-        //             bool includeEmptyChoice = false,
-        //             string noElementsText = null,
-        //             string errorText = null
-        //         ) {
-        //     return default;
-        // }
+        
         public CustomDropDownAttribute(string dropdownDataFieldName) {
             this.dropdownDataFieldName = dropdownDataFieldName;
         }
-        // public CustomDropDownAttribute(string dataFieldName) {
-        //     // this.dropdownDataFieldName = dropdownDataFieldName;
-        // }
         /// <summary>
         /// CustomDropDownAttribute
         /// </summary>
@@ -61,7 +42,6 @@ namespace Kutil {
                 string noElementsText = null,
                 string errorText = null,
                 bool includeNullChoice = false
-            // bool includeEmptyChoice = false
             ) {
             this.choicesListSourceField = choicesListSourceField;
             // this.selectedChoiceField = selectedChoiceField;
@@ -70,7 +50,6 @@ namespace Kutil {
             this.errorText = errorText;
             this.noElementsText = noElementsText;
             this.includeNullChoice = includeNullChoice;
-            // this.includeEmptyChoice = includeEmptyChoice;
         }
     }
 }

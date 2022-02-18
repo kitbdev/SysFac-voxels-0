@@ -9,6 +9,9 @@ namespace Kutil {
         public override string childName => nameof(SerializedType.assemblyName);
     }
 #endif
+    /// <summary>
+    /// A serializable System.Type
+    /// </summary>
     [Serializable]
     public class SerializedType : ISerializationCallbackReceiver {
 
@@ -39,6 +42,8 @@ namespace Kutil {
             return type != null ? type.GetHashCode() : 0;
         }
         public bool Equals(SerializedType other) {
+            if (type == null && other?.type == null) return true;
+            if (type == null || other?.type == null) return false;
             return type.Equals(other.type);
         }
         public override bool Equals(System.Object obj) {

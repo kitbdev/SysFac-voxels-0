@@ -16,24 +16,28 @@ MonoBehaviour:
   - {fileID: 2100000, guid: ec38bc7a4fbe85545980a4df9b43255e, type: 2}
   textureAtlas: {fileID: 11400000, guid: 8329e17f7f1688d4e84c4d723008c2c6, type: 2}
   activeType:
-    _selectedName: BasicMaterial
-    onlyIncludeConcreteTypes: 1
+    _selectedType:
+      assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   _voxelMats:
   - _type:
-      _selectedName: BasicMaterial
-      onlyIncludeConcreteTypes: 1
+      _selectedType:
+        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
     _objvalue:
       rid: 4170073068073385993
   - _type:
-      _selectedName: BasicMaterial
-      onlyIncludeConcreteTypes: 1
+      _selectedType:
+        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
     _objvalue:
       rid: 4170073068073385995
   - _type:
-      _selectedName: BasicMaterial
-      onlyIncludeConcreteTypes: 1
+      _selectedType:
+        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
     _objvalue:
-      rid: 4170073068073385997
+      rid: 4170073095837057030
   references:
     version: 2
     RefIds:
@@ -81,15 +85,15 @@ MonoBehaviour:
           texcoordBack: {x: 2, y: 1}
           texcoordRight: {x: 2, y: 1}
           texcoordLeft: {x: 2, y: 1}
-    - rid: 4170073068073385997
+    - rid: 4170073095837057030
       type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
       data:
         materialIndex: 0
         material: {fileID: 0}
         isInvisible: 0
         isTransparent: 0
-        texname: dirt
-        textureCoord: {x: 1, y: 0}
+        texname: 
+        textureCoord: {x: 0, y: 0}
         textureOverrides:
           texnameUp: 
           texnameDown: 
@@ -97,9 +101,9 @@ MonoBehaviour:
           texnameBack: 
           texnameRight: 
           texnameLeft: 
-          texcoordUp: {x: 1, y: 0}
-          texcoordDown: {x: 1, y: 0}
-          texcoordFront: {x: 1, y: 0}
-          texcoordBack: {x: 1, y: 0}
-          texcoordRight: {x: 1, y: 0}
-          texcoordLeft: {x: 1, y: 0}
+          texcoordUp: {x: 0, y: 0}
+          texcoordDown: {x: 0, y: 0}
+          texcoordFront: {x: 0, y: 0}
+          texcoordBack: {x: 0, y: 0}
+          texcoordRight: {x: 0, y: 0}
+          texcoordLeft: {x: 0, y: 0}
