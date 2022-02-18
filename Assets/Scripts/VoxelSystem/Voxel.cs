@@ -40,6 +40,11 @@ namespace VoxelSystem {
             }
             // NotifyVoxelDataMaterialUpdate(GetVoxelMaterial(chunk.world.materialSet));
         }
+        public void OnDeserialized(VoxelChunk chunk, Vector3Int localVoxelPos) {
+            foreach (var voxelData in voxelDatas) {
+                voxelData.OnDeserialized(this, chunk, localVoxelPos);
+            }
+        }
 
         public bool TryGetVoxelDataType<T>(out T voxelData)
             where T : VoxelData {
@@ -47,7 +52,7 @@ namespace VoxelSystem {
                 voxelData = GetVoxelDataFor<T>();
                 return true;
             }
-            voxelData = null;
+            voxelData = default;
             return false;
         }
         public bool HasVoxelDataFor<T>() where T : VoxelData {
@@ -59,76 +64,90 @@ namespace VoxelSystem {
         public T GetVoxelDataFor<T>() where T : VoxelData {
             return (T)voxelDatas.FirstOrDefault(vd => vd.GetType() == typeof(T));
         }
-        public TypeSelector<VoxelData> GetVoxelDataFor(TypeChoice<VoxelData> type) {
-            return new TypeSelector<VoxelData>(voxelDatas.FirstOrDefault(vd => vd.GetType() == type.selectedType));
-        }
+        // public TypeSelector<VoxelData> GetVoxelDataFor(TypeChoice<VoxelData> type) {
+        //     return new TypeSelector<VoxelData>(voxelDatas.FirstOrDefault(vd => vd.GetType() == type.selectedType));
+        // }
         void RawSetVoxelDataFor<T>(T data) where T : VoxelData {
             int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == typeof(T));
             voxelDatas[v] = data;
         }
-        void RawSetVoxelDataFor(TypeSelector<VoxelData> data) {
-            int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.selectedType);
-            voxelDatas[v] = data.objvalue;
-        }
+        // void RawSetVoxelDataFor(TypeSelector<VoxelData> data) {
+        //     int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.selectedType);
+        //     voxelDatas[v] = data.objvalue;
+        // }
         // public 
-        void SetVoxelDataMany(params TypeSelector<VoxelData>[] datas) {
-            DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
-            foreach (var data in datas) {
-                if (HasVoxelDataFor(data.type.selectedType)) {
-                    RawSetVoxelDataFor(data);
-                    data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
-                }
-            }
-        }
+        // void SetVoxelDataMany(params TypeSelector<VoxelData>[] datas) {
+        //     DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
+        //     foreach (var data in datas) {
+        //         if (HasVoxelDataFor(data.type.selectedType)) {
+        //             RawSetVoxelDataFor(data);
+        //             data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+        //         }
+        //     }
+        // }
         // public 
-        void AddVoxelDataMany(bool orSet = false, params TypeSelector<VoxelData>[] datas) {
-            // hopefully this should work
-            DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
-            List<VoxelData> newVoxelDatas = voxelDatas.ToList();
-            foreach (var data in datas) {
-                if (!HasVoxelDataFor(data.type.selectedType)) {
-                    newVoxelDatas.Add(data.objvalue);
-                } else {
-                    RawSetVoxelDataFor(data);
-                }
-                data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
-            }
-            voxelDatas = newVoxelDatas.ToArray();
-        }
-        public void AddVoxelDataFor<T>(T data, bool orSet = false) where T : VoxelData {
-            AddVoxelDataFor(new TypeSelector<VoxelData>(data), orSet);
-        }
-        public void AddVoxelDataFor(TypeSelector<VoxelData> data, bool orSet = false) {
-            if (data.type.CanBeAssignedTo(typeof(DefaultVoxelData))) {
-                Debug.LogError($"AddVoxelDataFor Voxel {this} cannot add {data.type.selectedType} data here");
-                return;
-            }
-            if (HasVoxelDataFor(data.type.selectedType)) {
-                if (orSet) {
+        // void AddVoxelDataMany(bool orSet = false, params TypeSelector<VoxelData>[] datas) {
+        //     // hopefully this should work
+        //     DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
+        //     List<VoxelData> newVoxelDatas = voxelDatas.ToList();
+        //     foreach (var data in datas) {
+        //         if (!HasVoxelDataFor(data.type.selectedType)) {
+        //             newVoxelDatas.Add(data.objvalue);
+        //         } else {
+        //             RawSetVoxelDataFor(data);
+        //         }
+        //         data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+        //     }
+        //     voxelDatas = newVoxelDatas.ToArray();
+        // }
+        public void SetOrAddVoxelDataFor<T>(T data, bool set = true, bool add = true) where T : VoxelData {
+            if (HasVoxelDataFor<T>()) {
+                if (set) {
                     RawSetVoxelDataFor(data);
                 } else {
-                    Debug.LogWarning($"Voxel {this} alrady has {data.type.selectedType} data, cannot add {data}");
+                    Debug.LogWarning($"Voxel {this} alrady has {typeof(T)} data, cannot add {data}");
                     return;
                 }
             } else {
-                List<VoxelData> newVoxelDatas = voxelDatas.ToList();
-                newVoxelDatas.Add(data.objvalue);
-                voxelDatas = newVoxelDatas.ToArray();
+                if (add) {
+                    List<VoxelData> newVoxelDatas = voxelDatas.ToList();
+                    newVoxelDatas.Add(data);
+                    voxelDatas = newVoxelDatas.ToArray();
+                }
             }
             DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
-            data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+            data.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
         }
-        public void SetOrAddVoxelDataFor<T>(T data) where T : VoxelData {
-            AddVoxelDataFor<T>(data, true);
-        }
+        // public void SetOrAddVoxelDataFor(TypeSelector<VoxelData> data, bool set = true, bool add = true) {
+        //     // if (data.type.CanBeAssignedTo(typeof(DefaultVoxelData))) {
+        //     //     Debug.LogError($"AddVoxelDataFor Voxel {this} cannot add {data.type.selectedType} data here");
+        //     //     return;
+        //     // }
+        //     if (HasVoxelDataFor(data.type.selectedType)) {
+        //         if (set) {
+        //             RawSetVoxelDataFor(data);
+        //         } else {
+        //             Debug.LogWarning($"Voxel {this} alrady has {data.type.selectedType} data, cannot add {data}");
+        //             return;
+        //         }
+        //     } else {
+        //         if (add) {
+        //             List<VoxelData> newVoxelDatas = voxelDatas.ToList();
+        //             newVoxelDatas.Add(data.objvalue);
+        //             voxelDatas = newVoxelDatas.ToArray();
+        //         }
+        //     }
+        //     DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
+        //     data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+        // }
         public void RemoveVoxelDataFor<T>() where T : VoxelData {
             GetVoxelDataFor<T>().OnRemove(this);
             voxelDatas = voxelDatas.ToList().Where(vd => vd.GetType() != typeof(T)).ToArray();
         }
-        public void RemoveVoxelDataFor(System.Type type) {
-            GetVoxelDataFor(type).objvalue.OnRemove(this);
-            voxelDatas = voxelDatas.ToList().Where(vd => vd.GetType() != type).ToArray();
-        }
+        // public void RemoveVoxelDataFor(System.Type type) {
+        //     GetVoxelDataFor(type).objvalue.OnRemove(this);
+        //     voxelDatas = voxelDatas.ToList().Where(vd => vd.GetType() != type).ToArray();
+        // }
         public bool TryRemoveVoxelDataFor<T>() where T : VoxelData {
             if (HasVoxelDataFor<T>()) {
                 RemoveVoxelDataFor<T>();
@@ -136,13 +155,13 @@ namespace VoxelSystem {
             }
             return false;
         }
-        public bool TryRemoveVoxelDataFor(System.Type type) {
-            if (HasVoxelDataFor(type)) {
-                RemoveVoxelDataFor(type);
-                return true;
-            }
-            return false;
-        }
+        // public bool TryRemoveVoxelDataFor(System.Type type) {
+        //     if (HasVoxelDataFor(type)) {
+        //         RemoveVoxelDataFor(type);
+        //         return true;
+        //     }
+        //     return false;
+        // }
 
         public VoxelMaterial GetVoxelMaterial(VoxelMaterialSetSO voxmatset) {
             return voxmatset.GetVoxelMaterial(voxelMaterialId);
@@ -159,11 +178,11 @@ namespace VoxelSystem {
             // NotifyVoxelDataMaterialUpdate(voxelMaterial);
         }
 
-        private void NotifyVoxelDataMaterialUpdate(VoxelMaterial voxelMaterial) {
-            foreach (var vdata in voxelDatas) {
-                vdata.OnMaterialChange(this, voxelMaterial);
-            }
-        }
+        // private void NotifyVoxelDataMaterialUpdate(VoxelMaterial voxelMaterial) {
+        //     foreach (var vdata in voxelDatas) {
+        //         vdata.OnMaterialChange(this, voxelMaterial);
+        //     }
+        // }
 
         public void ResetToDefaults() {
             voxelMaterialId = 0;
@@ -174,6 +193,7 @@ namespace VoxelSystem {
             voxelMaterialId = voxel.voxelMaterialId;
             List<VoxelData> datas = new List<VoxelData>();
             foreach (var voxelData in voxel.voxelDatas) {
+                // needs to be typechoice to instantiate child stuff
                 VoxelData nvoxl = ((TypeChoice<VoxelData>)voxelData.GetType()).CreateInstance();
                 nvoxl.CopyValuesFrom(voxelData);
                 datas.Add(nvoxl);

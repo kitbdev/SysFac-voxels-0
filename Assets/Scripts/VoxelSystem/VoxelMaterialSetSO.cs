@@ -102,7 +102,7 @@ namespace VoxelSystem {
             // id of first element //? or uninitialized -1
             return 0;
         }
-        public VoxelMaterialId GetIdForVoxelMaterial(TypeSelector<VoxelMaterial> voxelMaterial) {
+        VoxelMaterialId GetIdForVoxelMaterial(TypeSelector<VoxelMaterial> voxelMaterial) {
             // todo use hash for ids?
             // int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });
             int id = voxelMats.ToList().IndexOf(voxelMaterial);

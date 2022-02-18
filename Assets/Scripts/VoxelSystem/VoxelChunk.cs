@@ -73,6 +73,16 @@ namespace VoxelSystem {
                 voxels[i].Initialize(this, position);
             }
         }
+
+        private void OnEnable() {
+            if (voxels != null) {
+                for (int i = 0; i < voxels.Length; i++) {
+                    // y,z,x
+                    Vector3Int position = GetLocalPos(i);
+                    voxels[i]?.OnDeserialized(this, position);
+                }
+            }
+        }
         // public void RepopulateVoxels(){
         //     Clear();
         //     PopulateVoxels();
@@ -191,11 +201,23 @@ namespace VoxelSystem {
                 Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
                 return;
             }
-            voxels[volume - 1].SetOrAddVoxelDataFor<T>(data[volume - 1]);
-            Debug.Log($"added volume-1 {voxels[volume - 1]}");
+            // voxels[volume - 1].SetOrAddVoxelDataFor<T>(data[volume - 1]);
+            // Debug.Log($"added volume-1 {voxels[volume - 1]}");
             // todo jobs?
             for (int i = 0; i < volume; i++) {
-                voxels[i].SetOrAddVoxelDataFor<T>(data[i]);
+                voxels[i].SetOrAddVoxelDataFor<T>(data[i], true, true);
+            }
+        }
+        public void SetVoxelDatas<T>(T[] data) where T : VoxelData {
+            if (data.Length != volume) {
+                Debug.LogWarning($"Error in Chunk SetData size {volume} vs {data.Length}", this);
+                return;
+            }
+            // Debug.Log($"preadded 0 {voxels[0]}");
+            // voxels[0].SetOrAddVoxelDataFor<T>(data[0]);
+            // Debug.Log($"added 0 {voxels[0]}");
+            for (int i = 0; i < volume; i++) {
+                voxels[i].SetOrAddVoxelDataFor<T>(data[i], true, false);
             }
         }
         public void SetVoxelMaterials(VoxelMaterialId voxelMaterialId) {

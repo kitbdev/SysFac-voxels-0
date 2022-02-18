@@ -34,6 +34,10 @@ public class BlockTypeRef {
         this.blockid = blockid;
     }
 
+    public bool IsValid() {
+        return blockid >= 0;
+    }
+
     public BlockType GetBlockType() {
         return BlockManager.Instance?.GetBlockTypeAtIndex(blockid);
         // return BlockManager.Instance.GetBlockType(idname);

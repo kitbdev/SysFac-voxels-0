@@ -74,7 +74,7 @@ public class WorldGen : MonoBehaviour {
         yield return null;
         Debug.Log("Finished gen loop");
         // chunk.SetVoxelMaterials(matData);
-        chunk.SetOrAddVoxelDatas<BlockTypeVoxelData>(blockTypeData);
+        chunk.SetVoxelDatas<BlockTypeVoxelData>(blockTypeData);
         Debug.Log("set voxel data");
         yield return null;
         // chunk.SetVoxel(chunk.IndexAt(new Vector3Int(8, 8, 8)), new Voxel(blockManager.GetBlockTypeAtIndex(2)));
@@ -85,8 +85,8 @@ public class WorldGen : MonoBehaviour {
     struct ChunkGenJob : IJobFor {
         [Unity.Collections.ReadOnly]
         Vector3Int chunkPos;
-        // [WriteOnly]
-        // NativeArray<BlockTypeVoxelData> blocks;
+        [WriteOnly]
+        NativeArray<BlockTypeVoxelData> blocks;
         
         public void Execute(int index) {
             // GenMeshExecute(index);

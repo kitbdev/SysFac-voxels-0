@@ -8,12 +8,19 @@ using System.Linq;
 namespace Kutil {
     /// <summary>
     /// Holds a Type that implements or inherits a base type. Basically a dynamic enum for types.
+    /// ! these are really slow, try to avoid using in runtime
     /// </summary>
     /// <typeparam name="T">base type</typeparam>
     [Serializable]
     public class TypeChoice<T> {
         // alternate names: ImplementsType, childtype, typeholder, TypeSubclass, 
         // SubType, TypeMatcher, TypeInterface, TypeImplementer, TypeInheritChoice
+
+        // todo make it so type can only be selected in editor and type is cached there
+
+        public struct Selected {
+            public Type type;
+        }
 
         [CustomDropDown(nameof(choices),
             formatSelectedValueFunc: nameof(formatSelectedValueFunc), formatListFunc: nameof(formatListFunc),
@@ -35,7 +42,7 @@ namespace Kutil {
 
         [NonSerialized]
         protected IEnumerable<Type> choicesTypes = null;
-        [NonSerialized]
+        [SerializeField]
         protected Type selTypeCache = null;
 
         public string[] choices {
@@ -51,7 +58,10 @@ namespace Kutil {
 
         public Type selectedType {
             get {
-                if (selTypeCache != null && selectedName != null) {
+                if (selectedName == null || selectedName == "") {
+                    return selTypeCache;
+                }
+                if (selTypeCache != null) {
                     return selTypeCache;
                 }
                 UpdateCache();
@@ -65,6 +75,9 @@ namespace Kutil {
                 return selTypeCache;
             }
         }
+        public Selected GetSelected() {
+            return new Selected() { type = selectedType };
+        }
         public Type GetBaseType() {
             return typeof(T);
         }
@@ -73,7 +86,7 @@ namespace Kutil {
             selectedName = choices[0];
         }
         public TypeChoice(Type setType, Func<string, string> formatSelectedValueFunc = null, Func<string, string> formatListFunc = null) {
-            SetType(setType);
+            RawSetType(setType);
             this.formatSelectedValueFunc = formatSelectedValueFunc;
             this.formatListFunc = formatListFunc;
         }
@@ -85,14 +98,18 @@ namespace Kutil {
             return type.IsAssignableFrom(typeof(T));
         }
 
+        public void RawSetType(Type type) {
+            selectedName = type.Name;
+            ClearCache();
+        }
         public bool SetType(Type type) {
             if (IsTypeValid(type)) {
-                selectedName = type.Name;
-                ClearCache();
+                RawSetType(type);
                 return true;
             }
             return false;
         }
+
         public void UpdateTypeList() {
             ClearCache();
         }
