@@ -45,12 +45,14 @@ public class PlayerBlockInteraction : MonoBehaviour {
         if (Keyboard.current.uKey.wasPressedThisFrame) {
             if (gameObject.TryGetComponent<StarterAssets.StarterAssetsInputs>(out var si)) {
                 si.cursorInputForLook = !si.cursorInputForLook;
+                Cursor.lockState = si.cursorInputForLook ? CursorLockMode.Locked : CursorLockMode.None;
+                Cursor.visible = !si.cursorInputForLook;
             }
         }
         scrollAcc += -Mouse.current.scroll.y.ReadValue() * scrollSensitivity;
         int nselectedBlockType = selectedBlockType + Mathf.RoundToInt(scrollAcc);
         if (selectedBlockType != nselectedBlockType) {
-            nselectedBlockType = Mathf.Clamp(nselectedBlockType, 0, BlockManager.Instance.blockTypes.Count - 1);
+            nselectedBlockType = Mathf.Clamp(nselectedBlockType, 1, BlockManager.Instance.blockTypes.Count - 1);
             scrollAcc = 0;
             selectedBlockType = nselectedBlockType;
 
@@ -109,6 +111,10 @@ public class PlayerBlockInteraction : MonoBehaviour {
     }
     private void SetBlockType(Vector3Int blockPos, BlockTypeRef blocktype) {
         Voxel voxel = world.GetVoxelAt(blockPos);
+        if (voxel == null){
+            Debug.LogWarning("out of map, No voxel there!");
+            return;
+        }
         // Debug.Log($"Setting {blockTypeVoxelData} at {blockPos} to {blocktype} {blockTypeVoxelData.defVoxelData.voxel != null}");
         // blockTypeVoxelData.SetBlockType(blocktype);
         BlockManager.SetBlockType(voxel, blocktype);

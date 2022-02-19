@@ -138,6 +138,14 @@ namespace VoxelSystem {
                 }
             }
         }
+        // private void LocalUpdateColliders(Vector3Int pos) {
+        //     RemoveBoxColliders();
+        //     if (world.enableCollision) {
+        //         if (world.useBoxColliders) {
+        //             AddBoxColliders();
+        //         }
+        //     }
+        // }
         public void AddColliders() {
             // todo? cache this useBoxColliders
             // if (!world.enableCollision) return;

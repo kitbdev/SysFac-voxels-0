@@ -26,7 +26,7 @@ namespace VoxelSystem.Mesher {
             public struct SubmeshData {
                 public int numVertices;
                 public int numIndeces;
-                public int indexStart;
+                public int startIndex;
             }
             [System.Serializable]
             public struct FaceData {
@@ -41,13 +41,14 @@ namespace VoxelSystem.Mesher {
 
         public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer, bool renderNullSides = false) {
             base.Initialize(chunk, renderer, renderNullSides);
+            mesh = new Mesh();
         }
         internal override Mesh ApplyMesh() {
             return mesh;
         }
 
         public override void ClearMesh() {
-            // throw new System.NotImplementedException();
+            mesh.Clear();
         }
 
         public override void UpdateMesh() {
@@ -76,7 +77,7 @@ namespace VoxelSystem.Mesher {
                     default).Complete();
             preprocessMeshData.faceDatas.Dispose();
             preprocessMeshData.submeshDatas.Dispose();
-            mesh = new Mesh();
+            mesh ??= new Mesh();
             mesh.name = "Chunk Mesh Advanced";
             mesh.bounds = meshBounds;
             Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
@@ -112,12 +113,15 @@ namespace VoxelSystem.Mesher {
                     }
                 }
             }
+            tlist.Sort((a, b) => a.submeshIndex - b.submeshIndex);
             // meshGenPData.faceDatas = new NativeArray<MeshGenPData.FaceData>(tlist.ToArray(), Allocator.Persistent);
             preprocessMeshData.faceDatas = new NativeArray<MeshGenPData.FaceData>(tlist.ToArray(), Allocator.Persistent);
             preprocessMeshData.numTotalVertices = preprocessMeshData.faceDatas.Length * 4;
             preprocessMeshData.numTotalIndeces = preprocessMeshData.faceDatas.Length * 2 * 3;
-            preprocessMeshData.submeshDatas = new NativeArray<MeshGenPData.SubmeshData>(submeshflist.Select(i =>
-                new MeshGenPData.SubmeshData() { numVertices = i * 4, numIndeces = i * 6 }).ToArray()
+            preprocessMeshData.submeshDatas = new NativeArray<MeshGenPData.SubmeshData>(submeshflist.Select((n, i) =>
+                new MeshGenPData.SubmeshData() {
+                    numVertices = n * 4, numIndeces = n * 6, startIndex = submeshflist.Take(i).Sum()
+                }).ToArray()
             , Allocator.Persistent);
         }
         void CheckVertex(Vector3Int vpos) {
@@ -149,18 +153,16 @@ namespace VoxelSystem.Mesher {
                 tlist.Add(faceData);
                 submeshflist[voxelMat.materialIndex]++;
             }
-
-            bool CanRenderFace(BasicMaterial voxelMat, Voxel coverNeighbor, BasicMaterial neimat) {
-                bool renderFace;
-                if (renderNullSides) {
-                    // render face if neighbor is invisible or one of us is transparent
-                    renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
-                } else {
-                    renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
-                }
-
-                return renderFace;
+        }
+        bool CanRenderFace(BasicMaterial voxelMat, Voxel coverNeighbor, BasicMaterial neimat) {
+            bool renderFace;
+            if (renderNullSides) {
+                // render face if neighbor is invisible or one of us is transparent
+                renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
+            } else {
+                renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
             }
+            return renderFace;
         }
         // }
 
@@ -199,10 +201,12 @@ namespace VoxelSystem.Mesher {
             }
             void GenMeshExecute(int jobindex) {
                 // Debug.Log($"Job start {jindex)} {meshGenPData.faceDatas.Length}");
-                int vi = 0, ti = 0;
                 for (int i = 0; i < meshGenPData.faceDatas.Length; i++) {
+                    int vi = i * 4;
                     MeshGenPData.FaceData faceData = meshGenPData.faceDatas[i];
                     int d = (int)faceData.faceNormal;
+                    // must be sorted by submesh
+                    int ti = i * 2;// + meshGenPData.submeshDatas[faceData.submeshIndex].startIndex;
                     // Debug.Log($"face {i} dir:{d} p:{faceData.voxelPos} uv:{faceData.texcoord} vi:{vi} ti:{ti}");
                     float3 normal = unitDirs[d];
                     float4 tangent = math.float4(dirTangents[d], -1);
@@ -210,11 +214,10 @@ namespace VoxelSystem.Mesher {
                     vertexpos += vOffsets[d] * voxelSize;
                     float2 uvfrom = faceData.texcoord * textureUVScale;
                     float2 uvto = (faceData.texcoord + float2(1f)) * textureUVScale;
-                    // int sTi = meshGenPData.submeshDatas[faceData.submeshIndex].nu
                     meshStream.SetFace(
                         vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto);
-                    vi += 4;
-                    ti += 2;
+                    // vi += 4;
+                    // ti += 2;
                 }
                 // Debug.Log("Job end");
             }

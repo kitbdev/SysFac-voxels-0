@@ -48,6 +48,10 @@ public class BlockManager : Singleton<BlockManager> {
         }
     }
     public static void SetBlockType(Voxel voxel, BlockTypeRef newBlockType) {
+        if (voxel == null){
+            Debug.LogWarning("Cannot set BlockType, no voxel");
+            return;
+        }
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
         var oldType = blockTypeVoxelData.blockTypeRef;
         // Debug.Log($"Setting |{voxel.ToStringFull()}| to |{newBlockType}|"); 
