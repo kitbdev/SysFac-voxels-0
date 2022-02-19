@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _allUsedMaterials:
   - {fileID: 2100000, guid: ec38bc7a4fbe85545980a4df9b43255e, type: 2}
+  - {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
   textureAtlas: {fileID: 11400000, guid: 8329e17f7f1688d4e84c4d723008c2c6, type: 2}
   activeType:
     _selectedType:
@@ -38,6 +39,12 @@ MonoBehaviour:
           PublicKeyToken=null
     _objvalue:
       rid: 4170073095837057030
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
+    _objvalue:
+      rid: 4170073115006075058
   references:
     version: 2
     RefIds:
@@ -92,8 +99,8 @@ MonoBehaviour:
         material: {fileID: 0}
         isInvisible: 0
         isTransparent: 0
-        texname: 
-        textureCoord: {x: 0, y: 0}
+        texname: dirt
+        textureCoord: {x: 1, y: 0}
         textureOverrides:
           texnameUp: 
           texnameDown: 
@@ -101,9 +108,31 @@ MonoBehaviour:
           texnameBack: 
           texnameRight: 
           texnameLeft: 
-          texcoordUp: {x: 0, y: 0}
-          texcoordDown: {x: 0, y: 0}
-          texcoordFront: {x: 0, y: 0}
-          texcoordBack: {x: 0, y: 0}
-          texcoordRight: {x: 0, y: 0}
-          texcoordLeft: {x: 0, y: 0}
+          texcoordUp: {x: 1, y: 0}
+          texcoordDown: {x: 1, y: 0}
+          texcoordFront: {x: 1, y: 0}
+          texcoordBack: {x: 1, y: 0}
+          texcoordRight: {x: 1, y: 0}
+          texcoordLeft: {x: 1, y: 0}
+    - rid: 4170073115006075058
+      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 1
+        material: {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
+        isInvisible: 0
+        isTransparent: 1
+        texname: glass
+        textureCoord: {x: 1, y: 1}
+        textureOverrides:
+          texnameUp: 
+          texnameDown: 
+          texnameFront: 
+          texnameBack: 
+          texnameRight: 
+          texnameLeft: 
+          texcoordUp: {x: 1, y: 1}
+          texcoordDown: {x: 1, y: 1}
+          texcoordFront: {x: 1, y: 1}
+          texcoordBack: {x: 1, y: 1}
+          texcoordRight: {x: 1, y: 1}
+          texcoordLeft: {x: 1, y: 1}

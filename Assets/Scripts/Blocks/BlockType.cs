@@ -8,8 +8,8 @@ public class BlockType {
     public int id;
     public string idname;
     public string displayName;
-    [ShowAsChild(nameof(VoxelMaterialId.id))]
     public VoxelMaterialId voxelMaterialId;
+    public TypeChoice<VoxelData>[] customDatas;
     [Min(0)]
     public int maxStack;
     public int itemid;

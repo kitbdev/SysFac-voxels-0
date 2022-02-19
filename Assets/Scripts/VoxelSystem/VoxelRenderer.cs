@@ -11,10 +11,11 @@ namespace VoxelSystem {
         [SerializeField, SerializeReference]
         VoxelMesher voxelMesher;
         MeshFilter meshFilter;
+        VoxelChunk chunk;
 
         public void Initialize(VoxelChunk chunk) {
-            voxelMesher = chunk.world.mesher.CreateInstance();
-            voxelMesher.Initialize(chunk, this, chunk.world.renderNullSides);
+            this.chunk = chunk;
+            UpdateMesher();
         }
 
         [ContextMenu("ClearMesh")]
@@ -22,8 +23,15 @@ namespace VoxelSystem {
             voxelMesher.ClearMesh();
         }
 
+        [ContextMenu("UpdateMesher")]
+        public void UpdateMesher() {
+            UpdateMaterials();
+            voxelMesher = chunk.world.mesher.CreateInstance();
+            voxelMesher.Initialize(chunk, this, chunk.world.renderNullSides);
+        }
         [ContextMenu("UpdateMesh")]
         public void UpdateMesh() {
+
             voxelMesher.UpdateMesh();
         }
         public void UpdateMeshAt(Vector3Int vpos) {
@@ -31,6 +39,11 @@ namespace VoxelSystem {
         }
         public Mesh GetMesh() {
             return meshFilter?.sharedMesh;
+        }
+        [ContextMenu("UpdateMats")]
+        public void UpdateMaterials() {
+            MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+            meshRenderer.sharedMaterials = chunk.world.materialSet?.allUsedMaterials;
         }
         /// <summary>
         /// called by mesher after update is complete

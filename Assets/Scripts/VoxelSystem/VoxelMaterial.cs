@@ -12,7 +12,7 @@ namespace VoxelSystem {
     public class VoxelMaterial {
         // public Rect textureRect;
         public int materialIndex;
-        public Material material;
+        public Material material;//todo? dont serialize this
         public virtual void OnValidate(VoxelMaterialSetSO voxelMaterialSet) { }
         public virtual void Initialize(VoxelMaterialSetSO voxelMaterialSet) { }
     }

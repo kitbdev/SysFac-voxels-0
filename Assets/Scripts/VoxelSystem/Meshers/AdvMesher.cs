@@ -7,6 +7,7 @@ using static Unity.Mathematics.math;
 using Unity.Collections;
 using Unity.Mathematics;
 using Kutil;
+using System.Linq;
 
 namespace VoxelSystem.Mesher {
     [System.Serializable]
@@ -16,10 +17,17 @@ namespace VoxelSystem.Mesher {
 
         [System.Serializable]
         struct MeshGenPData {
-            public int numVertices;
-            public int numTriangles;
+            public int numTotalVertices;
+            public int numTotalIndeces;
             public NativeArray<FaceData> faceDatas;
+            public NativeArray<SubmeshData> submeshDatas;
             // todo greedy meshing
+            [System.Serializable]
+            public struct SubmeshData {
+                public int numVertices;
+                public int numIndeces;
+                public int indexStart;
+            }
             [System.Serializable]
             public struct FaceData {
                 public float3 voxelPos;
@@ -39,7 +47,7 @@ namespace VoxelSystem.Mesher {
         }
 
         public override void ClearMesh() {
-            throw new System.NotImplementedException();
+            // throw new System.NotImplementedException();
         }
 
         public override void UpdateMesh() {
@@ -57,7 +65,7 @@ namespace VoxelSystem.Mesher {
             // new GenMeshPreprocessJob() {
             // chunk = chunk, meshGenPData = preprocessMeshData
             // }.Execute(0);
-            PreprocessExecute(0);
+            PreprocessExecute(materialSet.allUsedMaterials.Length);
             Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
             Mesh.MeshData meshData = meshDataArray[0];
             // Debug.Log($"faces:{preprocessMeshData.faceDatas.Length} v:{preprocessMeshData.numVertices} t:{preprocessMeshData.numTriangles}");
@@ -67,6 +75,7 @@ namespace VoxelSystem.Mesher {
                     meshData, preprocessMeshData, voxelSize, meshBounds, materialSet.textureScale,
                     default).Complete();
             preprocessMeshData.faceDatas.Dispose();
+            preprocessMeshData.submeshDatas.Dispose();
             mesh = new Mesh();
             mesh.name = "Chunk Mesh Advanced";
             mesh.bounds = meshBounds;
@@ -91,8 +100,10 @@ namespace VoxelSystem.Mesher {
         //     return job.ScheduleParallel(jobLength, 1, dependency);
         // }
         List<MeshGenPData.FaceData> tlist;
-        void PreprocessExecute(int jindex) {
+        List<int> submeshflist;
+        void PreprocessExecute(int numSubMeshes) {
             // calculate mesh needs 
+            submeshflist = new int[numSubMeshes].ToList();
             tlist = new List<MeshGenPData.FaceData>();
             for (int y = 0; y < chunk.resolution; y++) {
                 for (int z = 0; z < chunk.resolution; z++) {
@@ -103,8 +114,11 @@ namespace VoxelSystem.Mesher {
             }
             // meshGenPData.faceDatas = new NativeArray<MeshGenPData.FaceData>(tlist.ToArray(), Allocator.Persistent);
             preprocessMeshData.faceDatas = new NativeArray<MeshGenPData.FaceData>(tlist.ToArray(), Allocator.Persistent);
-            preprocessMeshData.numVertices = preprocessMeshData.faceDatas.Length * 4;
-            preprocessMeshData.numTriangles = preprocessMeshData.faceDatas.Length * 2;
+            preprocessMeshData.numTotalVertices = preprocessMeshData.faceDatas.Length * 4;
+            preprocessMeshData.numTotalIndeces = preprocessMeshData.faceDatas.Length * 2 * 3;
+            preprocessMeshData.submeshDatas = new NativeArray<MeshGenPData.SubmeshData>(submeshflist.Select(i =>
+                new MeshGenPData.SubmeshData() { numVertices = i * 4, numIndeces = i * 6 }).ToArray()
+            , Allocator.Persistent);
         }
         void CheckVertex(Vector3Int vpos) {
             var voxel = chunk.GetLocalVoxelAt(vpos);
@@ -120,11 +134,7 @@ namespace VoxelSystem.Mesher {
                 BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
 
                 bool renderFace;
-                if (renderNullSides) {
-                    renderFace = coverNeighbor == null || neimat.isTransparent;// also renders null walls
-                } else {
-                    renderFace = coverNeighbor != null && neimat.isTransparent;
-                }
+                renderFace = CanRenderFace(voxelMat, coverNeighbor, neimat);
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
                     continue;
@@ -137,6 +147,19 @@ namespace VoxelSystem.Mesher {
                     submeshIndex = voxelMat.materialIndex,
                 };
                 tlist.Add(faceData);
+                submeshflist[voxelMat.materialIndex]++;
+            }
+
+            bool CanRenderFace(BasicMaterial voxelMat, Voxel coverNeighbor, BasicMaterial neimat) {
+                bool renderFace;
+                if (renderNullSides) {
+                    // render face if neighbor is invisible or one of us is transparent
+                    renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
+                } else {
+                    renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
+                }
+
+                return renderFace;
             }
         }
         // }
@@ -151,7 +174,7 @@ namespace VoxelSystem.Mesher {
             [Unity.Collections.ReadOnly]
             float textureUVScale;
 
-            // [WriteOnly]
+            [WriteOnly]
             MeshStream meshStream;
 
             public void Execute(int index) {
@@ -165,7 +188,10 @@ namespace VoxelSystem.Mesher {
                 job.meshGenPData = meshGenPData;
                 job.voxelSize = voxelSize;
                 job.textureUVScale = textureUVScale;
-                job.meshStream.Setup(meshData, meshBounds, meshGenPData.numVertices, meshGenPData.numTriangles * 3);
+                job.meshStream.Setup(meshData, meshGenPData.numTotalVertices, meshGenPData.numTotalIndeces,
+                    meshGenPData.submeshDatas.Select(smd => new SubmeshDescData() {
+                        bounds = meshBounds, vertexCount = smd.numVertices, indexCount = smd.numIndeces
+                    }).ToArray());
                 int jobLength = 1;
                 JobHandle jobHandle = job.ScheduleParallel(jobLength, 1, dependency);
                 job.meshStream.Dispose(jobHandle);
@@ -184,8 +210,9 @@ namespace VoxelSystem.Mesher {
                     vertexpos += vOffsets[d] * voxelSize;
                     float2 uvfrom = faceData.texcoord * textureUVScale;
                     float2 uvto = (faceData.texcoord + float2(1f)) * textureUVScale;
+                    // int sTi = meshGenPData.submeshDatas[faceData.submeshIndex].nu
                     meshStream.SetFace(
-                        vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto, faceData.submeshIndex);
+                        vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto);
                     vi += 4;
                     ti += 2;
                 }

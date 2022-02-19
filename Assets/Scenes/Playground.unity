@@ -1393,7 +1393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxRayDist: 6
-  scrollSensitivity: 1
+  scrollSensitivity: 0.01
   blockMask:
     serializedVersion: 2
     m_Bits: 4294967291

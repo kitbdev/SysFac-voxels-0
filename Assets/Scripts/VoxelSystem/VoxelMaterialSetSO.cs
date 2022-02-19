@@ -129,7 +129,9 @@ namespace VoxelSystem {
             voxelMats = voxelMats.Append(tsMat).ToArray();
             if (newVoxMat.material != null) {
                 if (!allUsedMaterials.Contains(newVoxMat.material)) {
-                    allUsedMaterials.Append(newVoxMat.material);
+                    List<Material> materials = allUsedMaterials.ToList();
+                    materials.Append(newVoxMat.material);
+                    allUsedMaterials = materials.ToArray();
                 }
                 newVoxMat.materialIndex = allUsedMaterials.ToList().IndexOf(newVoxMat.material);
             }

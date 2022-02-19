@@ -17,10 +17,11 @@ namespace VoxelSystem.Mesher {
         Mesh mesh;
         List<Vector3> vertices;
         // List<Vector3> normals;
+        [System.Serializable]
         struct SubmeshData {
             public List<int> triangles;
         }
-        List<SubmeshData> submeshDatas;
+        [SerializeField] List<SubmeshData> submeshDatas;
         List<Vector2> uvs;
 
         public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer, bool renderNullSides = false) {
@@ -48,10 +49,9 @@ namespace VoxelSystem.Mesher {
             mesh.vertices = vertices.ToArray();
             // mesh.SetSubMeshes(submeshDatas.Select(sb => new UnityEngine.Rendering.SubMeshDescriptor()))
             // mesh.SetTriangles(triangles, 0, false);
-            for (int i = 0; i < submeshDatas.Count - 1; i++) {
+            mesh.subMeshCount = submeshDatas.Count;
+            for (int i = 0; i < submeshDatas.Count; i++) {
                 SubmeshData submeshdata = submeshDatas[i];
-                // smd.indexCount = 0;//submeshdata.triangles.Count;
-                // mesh.SetSubMesh(i, smd);
                 mesh.SetTriangles(submeshdata.triangles, i, false);
             }
             mesh.uv = uvs.ToArray();
@@ -81,16 +81,21 @@ namespace VoxelSystem.Mesher {
             uvs = new List<Vector2>();
         }
         void ClearForMeshUpdate() {
-            // per run
-            vertices.Clear();
-            // triangles.Clear();
-            foreach (var submeshData in submeshDatas) {
-                submeshData.triangles.Clear();
-            }
-            // normals.Clear();
-            uvs.Clear();
-            // ClearCaches();
-            mesh.Clear();
+            SetupMesh();
+            // // per run
+            // vertices.Clear();
+            // // triangles.Clear();
+            // if (submeshDatas != null) {
+            //     foreach (var submeshData in submeshDatas) {
+            //         submeshData.triangles.Clear();
+            //     }
+            // } else {
+            //     submeshDatas = new List<SubmeshData>();
+            // }
+            // // normals.Clear();
+            // uvs.Clear();
+            // // ClearCaches();
+            // mesh.Clear();
         }
         void ClearCaches() {
             vertices.Clear();
@@ -113,8 +118,7 @@ namespace VoxelSystem.Mesher {
         void CreateBlock(Vector3Int vpos) {
             // get block type
             var voxel = chunk.GetLocalVoxelAt(vpos);
-            // todo other performance stuff
-            // var block = BlockManager.Instance.GetBlockTypeAtIndex(voxel.blockId);
+            // todo? other performance stuff
             BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
             if (voxelMat.isInvisible) {
                 return;
@@ -138,9 +142,10 @@ namespace VoxelSystem.Mesher {
 
                 bool renderFace;
                 if (renderNullSides) {
-                    renderFace = coverNeighbor == null || neimat.isTransparent;// also renders null walls
+                    // render face if neighbor is invisible or one of us is transparent
+                    renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
                 } else {
-                    renderFace = coverNeighbor != null && neimat.isTransparent;
+                    renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
                 }
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
