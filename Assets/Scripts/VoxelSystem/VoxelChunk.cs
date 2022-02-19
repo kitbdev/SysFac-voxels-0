@@ -54,7 +54,7 @@ namespace VoxelSystem {
             PopulateVoxels(world.materialSet.GetDefaultId());
         }
 
-        internal void PopulateVoxels(VoxelMaterialId voxelMaterialId) {
+        public void PopulateVoxels(VoxelMaterialId voxelMaterialId) {
             voxels = new Voxel[volume];
             List<TypeChoice<VoxelData>> neededData = world.neededData;
             // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
@@ -66,7 +66,7 @@ namespace VoxelSystem {
             }
             InitVoxels();
         }
-        internal void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, List<TypeChoice<VoxelData>> neededData = null) {
+        public void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, List<TypeChoice<VoxelData>> neededData = null, bool init = true) {
             if (voxelMaterialIds.Length != volume) return;
             voxels = new Voxel[volume];
             neededData ??= world.neededData;
@@ -77,7 +77,9 @@ namespace VoxelSystem {
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], neededData);
                 voxels[i] = voxel;
             }
-            InitVoxels();
+            if (init) {
+                InitVoxels();
+            }
         }
         public void InitVoxels() {
             for (int i = 0; i < voxels.Length; i++) {
@@ -312,10 +314,13 @@ namespace VoxelSystem {
         }
         public int IndexAt(Vector3Int localpos) => IndexAt(localpos.x, localpos.y, localpos.z);
         public int IndexAt(int x, int y, int z) {
+            return IndexAt(x, y, z, resolution);
+        }
+        public static int IndexAt(Vector3Int localpos, int resolution) => IndexAt(localpos.x, localpos.y, localpos.z, resolution);
+        public static int IndexAt(int x, int y, int z, int resolution) {
             if (x < 0 || x >= resolution || y < 0 || y >= resolution || z < 0 || z >= resolution)
                 return -1;
-            int index = x + y * floorArea + z * resolution;
-            return index;
+            return x + y * resolution * resolution + z * resolution;
         }
         public Voxel GetLocalVoxelAt(Vector3Int localpos) => GetLocalVoxelAt(IndexAt(localpos));
         public Voxel GetLocalVoxelAt(int index) {

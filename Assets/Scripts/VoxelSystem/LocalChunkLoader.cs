@@ -19,6 +19,9 @@ namespace VoxelSystem {
 
         public bool showDebug = false;
 
+        private void Reset() {
+            world = GetComponent<VoxelWorld>();
+        }
         private void Awake() {
             world ??= GetComponent<VoxelWorld>();
             // Debug.Log($"ccp:{world.ChunkposToWorldposCenter(Vector3.zero)} fp:{world.ChunkposToWorldpos(Vector3.zero)} ep:{world.ChunkposToWorldpos(Vector3.one)}");

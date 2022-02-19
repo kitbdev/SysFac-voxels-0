@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using VoxReader;
+using VoxReader.Interfaces;
 
 namespace VoxelSystem.Importer {
     [System.Serializable]
@@ -12,6 +15,7 @@ namespace VoxelSystem.Importer {
     [System.Serializable]
     public struct RawVoxel {
         public int materialId;
+        public UnityEngine.Color materialColor;
     }
     [System.Serializable]
     public class RawChunkData {
@@ -50,7 +54,7 @@ namespace VoxelSystem.Importer {
                 importSettings.filepath == null || importSettings.filepath == "") {
                 Debug.LogError($"Invalid import settings {importSettings} for .vox importer");
             }
-            VoxReader.Interfaces.IVoxFile voxFile = VoxReader.VoxReader.Read(importSettings.filepath);
+            IVoxFile voxFile = VoxReader.VoxReader.Read(importSettings.filepath);
             if (voxFile == null) {
                 Debug.LogError($"Failed to load voxels '{importSettings.filepath}'");
                 return default;
@@ -58,23 +62,53 @@ namespace VoxelSystem.Importer {
             Debug.Log($"Loaded {importSettings.filepath} version {voxFile.VersionNumber}");
             Debug.Log($"Loaded models:{voxFile.Models.Length} chunks:{voxFile.Chunks.Length} colors:{voxFile.Palette.Colors.Length}");
 
+            int chunkRes = importSettings.chunkResolution;
+            IPalette palette = voxFile.Palette;
+
+            VoxelRoomData[] roomsSaveData = new VoxelRoomData[voxFile.Models.Length];
             for (int i = 0; i < voxFile.Models.Length; i++) {
-                VoxReader.Interfaces.IModel model = voxFile.Models[i];
+                IModel model = voxFile.Models[i];
                 Debug.Log($"model[{i}]: {model}");
-                Vector3Int modelSize = ToUnityUnit(model.Size);
+                Vector3Int modelSize = ConvertVecI(model.Size);
                 // get num chunks to make
-                Vector3Int numChunksPerDir = (Vector3Int.one + modelSize) / importSettings.chunkResolution;
+                // 0/4=0 1/4=1 2/4=1 3/4=1 4/4=1 5/4=2
+                Vector3Int numChunksPerDir = Vector3Int.one + (modelSize - Vector3Int.one) / chunkRes;
                 int numChunksTotal = numChunksPerDir.x * numChunksPerDir.y * numChunksPerDir.z;
-                for (int v = 0; v < model.Voxels.Length; v++) {
-                    VoxReader.Voxel voxel = model.Voxels[v];
-                    //
+                RawChunkData[] rawChunks = new RawChunkData[numChunksTotal];
+                for (int rci = 0; rci < rawChunks.Length; rci++) {
+                    rawChunks[rci] = new RawChunkData() {
+                        rawVoxels = new RawVoxel[chunkRes * chunkRes * chunkRes],
+                    };
                 }
+                for (int v = 0; v < model.Voxels.Length; v++) {
+                    VoxReader.Voxel voxel = model.Voxels[i];
+                    Vector3Int voxelpos = ConvertVecI(voxel.Position);
+                    Vector3Int chunkpos = VoxelWorld.ChunkPosWithBlock(voxelpos, chunkRes);
+                    Vector3Int localpos = VoxelWorld.BlockPosToLocalVoxelPos(voxelpos, chunkpos, chunkRes);
+                    int chunkIndex =
+                        chunkpos.y / numChunksPerDir.y * chunkRes * chunkRes +
+                        chunkpos.z / numChunksPerDir.z * chunkRes +
+                        chunkpos.x / numChunksPerDir.x;
+                    RawChunkData rawChunkData = rawChunks[chunkIndex];
+                    rawChunkData.chunkPos = chunkpos;
+                    // int id = palette.Colors.ToList().IndexOf(voxel.Color);
+                    UnityEngine.Color color = ConvertColor(voxel.Color);
+                    int matid = voxel.ColorIndex / 8 + 1;
+                    rawChunkData.rawVoxels[VoxelChunk.IndexAt(localpos, chunkRes)] = new RawVoxel() {
+                        materialId = matid,
+                        materialColor = color
+                    };
+                }
+                roomsSaveData[i] = new VoxelRoomData() {
+                    // id = 
+                    // offsetint = 
+                    rawChunks = rawChunks
+                };
             }
-            // VoxelWorld.VoxelRoomData[] chunkSaveDatas;
-            // todo 
-            // world.LoadChunksFromData(chunkSaveDatas);
-            return default;
+            return roomsSaveData;
         }
-        static Vector3Int ToUnityUnit(VoxReader.Vector3 vec3) => new Vector3Int(vec3.X, vec3.Y, vec3.Z);
+        static Vector3Int ConvertVecI(VoxReader.Vector3 vec3) => new Vector3Int(vec3.X, vec3.Y, vec3.Z);
+        // todo VoxReader colors use bytes instead of floats
+        static UnityEngine.Color ConvertColor(VoxReader.Color color) => new UnityEngine.Color(color.R, color.G, color.B, color.A);
     }
 }

@@ -30,6 +30,7 @@ namespace VoxelSystem {
         UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
         public event System.Action<Vector3Int> generateChunkEvent;
+        // public event System.Action<Vector3Int> loadPrepopulateChunkEvent;
 
         public float chunkSize => voxelSize * defaultChunkResolution;
 
@@ -46,6 +47,8 @@ namespace VoxelSystem {
                 return datas;
             }
         }
+        // [System.NonSerialized]
+        // public List<int> testHash = new List<int>();
 
         private void OnValidate() {
             additionalData.ForEach(tc => tc.onlyIncludeConcreteTypes = true);
@@ -57,7 +60,7 @@ namespace VoxelSystem {
             ReloadPool();
         }
         [ContextMenu("Init pool")]
-        public void ReloadPool() {
+        void ReloadPool() {
             chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 () => {
                     GameObject chunk;
@@ -149,7 +152,12 @@ namespace VoxelSystem {
             }
             RefreshAll();
         }
-        public void LoadRawRoom(Importer.VoxelRoomData[] rooms) {
+        public void LoadRoomFromData(Importer.VoxelRoomData[] rooms) {
+            if (rooms != null) {
+                if (rooms.Length > 0) {
+                    LoadChunksFromData(rooms[0].rawChunks);
+                }
+            }
         }
         public void LoadChunksFromData(Importer.RawChunkData[] chunks) {
             Clear();
@@ -202,7 +210,12 @@ namespace VoxelSystem {
 
         VoxelChunk CreateChunk(Importer.RawChunkData rawChunkData) {
             VoxelChunk voxelChunk = CreateChunk(rawChunkData.chunkPos, false);
-            voxelChunk.PopulateVoxels(rawChunkData.rawVoxels.Select(rv => (VoxelMaterialId)(rv.materialId)).ToArray());
+            voxelChunk.PopulateVoxels(rawChunkData.rawVoxels.Select(rv => (VoxelMaterialId)(rv.materialId)).ToArray(), null, false);
+            // System.Action<Voxel, VoxelChunk> populateAction;
+            // if (populateAction!=null){
+
+            // }
+            // todo?? how do we know if we are going to init with desired data?
             return voxelChunk;
         }
         VoxelChunk CreateChunk(ChunkSaveData chunkSaveData) {
@@ -250,12 +263,18 @@ namespace VoxelSystem {
         }
 
         public void LoadChunks(params Vector3Int[] chunkposs) {
-            // todo multithread
+            StartCoroutine(LoadChunksCo(chunkposs));
+        }
+        IEnumerator LoadChunksCo(Vector3Int[] chunkposs) {
             foreach (var cp in chunkposs) {
                 AddChunks(cp);
                 // todo restore if have data or generate
                 generateChunkEvent?.Invoke(cp);
                 // GetChunkAt(cp).Refresh();
+                // HashSet<int> hashSet = testHash.ToHashSet();
+                // hashSet.Add(ChunkPosToHash(cp));
+                // testHash = hashSet.ToList();
+                yield return null;
             }
         }
         public void UnloadAllChunks() {
@@ -281,21 +300,27 @@ namespace VoxelSystem {
             Vector3Int npos = start.chunkPos + dir;
             return GetChunkAt(npos);
         }
-        public Vector3Int ChunkPosWithBlock(Vector3 blockpos) {
-            return Vector3Int.FloorToInt(blockpos / chunkSize);
+        public Vector3Int ChunkPosWithBlock(Vector3Int blockpos) {
+            return ChunkPosWithBlock(blockpos, defaultChunkResolution);
+        }
+        public static Vector3Int ChunkPosWithBlock(Vector3Int blockpos, int chunkResolution) {
+            return Vector3Int.FloorToInt(blockpos / chunkResolution);
         }
         public VoxelChunk GetChunkWithBlock(Vector3Int blockpos) {
             return GetChunkAt(ChunkPosWithBlock(blockpos));
         }
-        Vector3Int BlockPosToVoxelPos(Vector3Int blockpos, Vector3Int chunkpos) {
-            return blockpos - chunkpos * defaultChunkResolution;
+        Vector3Int BlockPosToLocalVoxelPos(Vector3Int blockpos, Vector3Int chunkpos) {
+            return BlockPosToLocalVoxelPos(blockpos, chunkpos, defaultChunkResolution);
+        }
+        public static Vector3Int BlockPosToLocalVoxelPos(Vector3Int blockpos, Vector3Int chunkpos, int chunkResolution) {
+            return blockpos - chunkpos * chunkResolution;
         }
         public Voxel GetVoxelAt(Vector3Int blockpos) {
             VoxelChunk chunk = GetChunkWithBlock(blockpos);
             if (chunk) {
-                Voxel voxel = chunk.GetLocalVoxelAt(BlockPosToVoxelPos(blockpos, chunk.chunkPos));
+                Voxel voxel = chunk.GetLocalVoxelAt(BlockPosToLocalVoxelPos(blockpos, chunk.chunkPos));
                 if (voxel == null) {
-                    Debug.LogWarning($"Error getting block type cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
+                    Debug.LogWarning($"Error getting block type cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToLocalVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
                     return null;
                 }
                 return voxel;
@@ -326,6 +351,15 @@ namespace VoxelSystem {
         }
         public Vector3 BlockposToWorldPos(Vector3Int bpos) {
             return transform.TransformPoint(bpos) * voxelSize;
+        }
+
+        public static int ChunkPosToHash(Vector3Int chunkpos) {
+            // using random primes
+            chunkpos += Vector3Int.one * 1097;
+            int hashCode = chunkpos.x;
+            hashCode = hashCode * 5237 + chunkpos.y;
+            hashCode = hashCode * 6043 + chunkpos.z;
+            return hashCode;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using VoxReader.Interfaces;
 
 namespace VoxReader
@@ -15,6 +16,10 @@ namespace VoxReader
             Models = models;
             Palette = palette;
             Chunks = chunks;
+        }
+
+        public T GetChunk<T>() where T: class, IChunk{
+            return Chunks.FirstOrDefault(c => c is T) as T;
         }
     }
 }

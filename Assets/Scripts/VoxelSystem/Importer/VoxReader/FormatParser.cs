@@ -169,5 +169,9 @@ namespace VoxReader
 
             return dictionary;
         }
+
+        // public Rotation ParseRotation(){
+
+        // } 
     }
 }

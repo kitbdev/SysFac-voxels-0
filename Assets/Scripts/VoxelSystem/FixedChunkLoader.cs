@@ -12,6 +12,9 @@ namespace VoxelSystem {
         [SerializeField] bool callOnStart = true;
         [SerializeField] bool callOnEnable = false;
 
+        private void Reset() {
+            world = GetComponent<VoxelWorld>();
+        }
         private void Awake() {
             world ??= GetComponent<VoxelWorld>();
         }

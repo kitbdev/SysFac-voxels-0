@@ -12,10 +12,15 @@ public struct BlockTypeVoxelData : VoxelData {
         }
     }
     public void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {
-        var defVoxelData = voxel.GetVoxelDataFor<DefaultVoxelData>();
-        // Debug.Log($"BlockTypeVoxelData Initialize voxel as '{blockTypeRef}' +{this}");
-        BlockManager.UpdateBlockType(defVoxelData.voxel, blockTypeRef);
+        // var defVoxelData = voxel.GetVoxelDataFor<DefaultVoxelData>();
+        // Debug.Log($"BlockTypeVoxelData Initialize voxel as '{blockTypeRef}' +{voxel.ToStringFull()}");
+        // voxel.voxelMaterialId
+        BlockManager.UpdateBlockType(voxel, blockTypeRef);
+        // note: block type is now based on 
     }
+    /*
+    
+    */
     // public void SetBlockType(BlockTypeRef newBlockType) {
     //     var oldType = blockTypeRef;
     //     // blockTypeRef = new BlockTypeRef(newBlockType);// its a class ref, so make new

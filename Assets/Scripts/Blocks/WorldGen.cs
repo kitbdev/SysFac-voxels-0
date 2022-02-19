@@ -14,11 +14,14 @@ public class WorldGen : MonoBehaviour {
     public BlockTypeRef grassBlockRef;
     public BlockTypeRef dirtBlockRef;
 
-    VoxelWorld world;
+    [SerializeField] VoxelWorld world;
     BlockManager blockManager;
 
-    private void Awake() {
+    private void Reset() {
         world = GetComponent<VoxelWorld>();
+    }
+    private void Awake() {
+        world ??= GetComponent<VoxelWorld>();
         blockManager = BlockManager.Instance;
     }
     private void OnEnable() {
@@ -37,7 +40,7 @@ public class WorldGen : MonoBehaviour {
 
     // todo jobs
     IEnumerator GenChunkCo(Vector3Int cpos) {
-        Debug.Log($"Generating chunk {cpos}");
+        // Debug.Log($"Generating chunk {cpos}");
         VoxelChunk chunk = world.GetChunkAt(cpos);
         float[] heightmap = new float[chunk.floorArea];
         for (int i = 0; i < chunk.floorArea; i++) {
@@ -71,7 +74,7 @@ public class WorldGen : MonoBehaviour {
             }
             // yield return null;
         }
-        yield return null;
+        // yield return null;
         // Debug.Log("Finished gen loop");
         // chunk.SetVoxelMaterials(matData);
         chunk.SetVoxelDatas<BlockTypeVoxelData>(blockTypeData);

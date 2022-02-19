@@ -112,6 +112,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
     private void SetBlockType(Vector3Int blockPos, BlockTypeRef blocktype) {
         Voxel voxel = world.GetVoxelAt(blockPos);
         if (voxel == null){
+            
             Debug.LogWarning("out of map, No voxel there!");
             return;
         }

@@ -11,9 +11,9 @@ ScriptedImporter:
   numChunks: 0
   voxelImportSettings:
     filepath: Assets/Data/VoxelData/test.vox
-    chunkPosOffset: {x: 0, y: 0, z: 0}
-    voxelSize: 1
-    chunkResolution: 16
     voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+    voxelSize: 0.5
+    chunkResolution: 32
+    chunkPosOffset: {x: 0, y: 0, z: 0}
   asPrefab: 0
   areRoomsLimbs: 0

@@ -22,7 +22,13 @@ namespace VoxelSystem.Importer {
         public override void OnImportAsset(AssetImportContext ctx) {
 
             voxelImportSettings.filepath = ctx.assetPath;
-            VoxelImporter.Load(voxelImportSettings);
+            VoxelRoomData[] voxelRoomDatas = VoxelImporter.Load(voxelImportSettings);
+            if (voxelRoomDatas == null || voxelRoomDatas.Length < 1) {
+                // load fail
+                Debug.LogError($"Failed to load {ctx.assetPath} vox info");
+                return;
+            }
+            string filename = System.IO.Path.GetFileName(ctx.assetPath);
             if (asPrefab) {
 
                 GameObject maingo = new GameObject("voxel load");
@@ -30,19 +36,21 @@ namespace VoxelSystem.Importer {
                 voxelWorld.voxelSize = 0.5f;
                 voxelWorld.materialSet =
                     AssetDatabase.LoadAssetAtPath<VoxelMaterialSetSO>("Assets/Data/defVoxelMaterialSet.asset");
-                FixedChunkLoader fixedChunkLoader = maingo.AddComponent<FixedChunkLoader>();
-                fixedChunkLoader.SetChunksToLoadOrigin();
+                // FixedChunkLoader fixedChunkLoader = maingo.AddComponent<FixedChunkLoader>();
+                // fixedChunkLoader.SetChunksToLoadOrigin();
                 // voxelWorld.SendMessage("OnEnable", SendMessageOptions.DontRequireReceiver);
-                voxelWorld.ReloadPool();
-                fixedChunkLoader.LoadChunks();
+                
+                voxelWorld.LoadRoomFromData(voxelRoomDatas);
+                // fixedChunkLoader.LoadChunks();
                 // voxelWorld.set
                 // maingo.AddComponent<VoxelRenderer>()
-                string filename = System.IO.Path.GetFileName(ctx.assetPath);
                 ctx.AddObjectToAsset($"voxel {filename} prefab", maingo);
                 ctx.SetMainObject(maingo);
             } else {
                 ImportedVoxelData importedVoxelData = ScriptableObject.CreateInstance<ImportedVoxelData>();
-                ctx.AddObjectToAsset("imported data asset", importedVoxelData);
+                importedVoxelData.modelName = filename;
+                importedVoxelData.roomsData = voxelRoomDatas;
+                ctx.AddObjectToAsset("imported vox asset", importedVoxelData);
                 ctx.SetMainObject(importedVoxelData);
             }
         }

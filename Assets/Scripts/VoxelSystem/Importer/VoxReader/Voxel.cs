@@ -12,10 +12,16 @@ namespace VoxReader
         /// </summary>
         public Color Color { get; }
 
-        internal Voxel(Vector3 position, Color color)
+        /// <summary>
+        /// The color index of the voxel.
+        /// </summary>
+        public int ColorIndex { get; }
+
+        internal Voxel(Vector3 position, Color color,int colorIndex)
         {
             Position = position;
             Color = color;
+            ColorIndex = colorIndex;
         }
 
         public override string ToString()

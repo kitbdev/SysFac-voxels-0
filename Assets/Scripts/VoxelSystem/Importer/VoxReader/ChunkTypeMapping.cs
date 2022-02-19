@@ -24,6 +24,7 @@ namespace VoxReader
             _mappings.Add("rOBJ", ChunkType.Object);
             _mappings.Add("rCAM", ChunkType.Camera);
             _mappings.Add("NOTE", ChunkType.Note);
+            _mappings.Add("IMAP", ChunkType.Imap);
         }
     }
 }
