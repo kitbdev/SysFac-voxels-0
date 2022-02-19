@@ -53,9 +53,19 @@ namespace VoxelSystem {
             Clear();
         }
         private void OnEnable() {
+            ReloadPool();
+        }
+        public void ReloadPool() {
             chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 () => {
-                    return Instantiate(voxelChunkPrefab, transform);
+                    GameObject chunk;
+                    if (voxelChunkPrefab != null) {
+                        chunk = Instantiate(voxelChunkPrefab, transform);
+                    } else {
+                        chunk = new GameObject("Voxel chunk", typeof(VoxelChunk), typeof(VoxelRenderer));
+                        chunk.transform.parent = transform;
+                    }
+                    return chunk;
                 },
                 (chunk) => { chunk.SetActive(true); },
                 (chunk) => { chunk.SetActive(false); },
@@ -121,8 +131,14 @@ namespace VoxelSystem {
             enableCollision = worldSaveData.enableCollision;
             useBoxColliders = worldSaveData.useBoxColliders;
             materialSet = worldSaveData.materialSet;
-            for (int i = 0; i < worldSaveData.chunks.Length; i++) {
-                ChunkSaveData chunkSaveData = worldSaveData.chunks[i];
+            ChunkSaveData[] chunks = worldSaveData.chunks;
+            LoadChunksFromData(chunks);
+        }
+
+        public void LoadChunksFromData(ChunkSaveData[] chunks) {
+            Clear();
+            for (int i = 0; i < chunks.Length; i++) {
+                ChunkSaveData chunkSaveData = chunks[i];
                 CreateChunk(chunkSaveData);
             }
             RefreshAll();

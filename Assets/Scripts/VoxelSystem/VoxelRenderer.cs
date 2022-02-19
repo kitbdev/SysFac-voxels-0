@@ -29,6 +29,9 @@ namespace VoxelSystem {
         public void UpdateMeshAt(Vector3Int vpos) {
             voxelMesher.UpdateMeshAt(vpos);
         }
+        public Mesh GetMesh() {
+            return meshFilter?.sharedMesh;
+        }
         /// <summary>
         /// called by mesher after update is complete
         /// </summary>

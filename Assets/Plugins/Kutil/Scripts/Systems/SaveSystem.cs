@@ -37,14 +37,9 @@ namespace Kutil {
 
             public SaveBuilder() { }
 
-            private bool TryLoadText() {
-                if (File.Exists(fullPath)) {
-                    data.contentStr = File.ReadAllText(fullPath);
-                    Debug.Log($"Loaded '{fullPath}'");
-                    return true;
-                }
-                Debug.LogWarning($"File '{fullPath}' does not exist");
-                return false;
+            private bool IsValid() {
+                return (data.filepath != null && data.filename != null && data.fileExtension != null
+                                    && data.serializeType != SerializeType.NONE);
             }
             private bool TryConvertFromJSON<T>(out T tContent) {
                 try {
@@ -66,8 +61,7 @@ namespace Kutil {
             /// </summary>
             /// <returns>True if successful</returns>
             public bool TrySave() {
-                if (data.filepath == null || data.filename == null || data.fileExtension == null
-                    || data.serializeType == SerializeType.NONE) {
+                if (!IsValid()) {
                     Debug.LogWarning("Some SaveBuilder data not set");
                     return false;
                 }
@@ -153,31 +147,61 @@ namespace Kutil {
                 }
             }
 
+            public bool TryLoadText(out string text) {
+                if (!IsValid()) {
+                    Debug.LogWarning("Some SaveBuilder data not set!");
+                    text = default;
+                    return false;
+                }
+                if (File.Exists(fullPath)) {
+                    text = File.ReadAllText(fullPath);
+                    Debug.Log($"Loaded '{fullPath}'");
+                    return true;
+                }
+                Debug.LogWarning($"File '{fullPath}' does not exist");
+                text = null;
+                return false;
+            }
+            public bool TryLoadBin(out byte[] bytes) {
+                if (!IsValid()) {
+                    Debug.LogWarning("Some SaveBuilder data not set!");
+                    bytes = default;
+                    return false;
+                }
+                if (File.Exists(fullPath)) {
+                    bytes = File.ReadAllBytes(fullPath);
+                    Debug.Log($"Loaded '{fullPath}'");
+                    return true;
+                }
+                Debug.LogWarning($"File '{fullPath}' does not exist");
+                bytes = default;
+                return false;
+            }
             /// <summary>
             /// Actually load content
             /// </summary>
             /// <returns>True if successful</returns>
             public bool TryLoad<T>(out T loadContent) {
-                if (data.filepath == null || data.filename == null || data.fileExtension == null
-                    || data.serializeType == SerializeType.NONE) {
+                if (!IsValid()) {
                     Debug.LogWarning("Some SaveBuilder data not set!");
                     loadContent = default;
                     return false;
                 }
-                if (TryLoadText()) {
+                if (TryLoadText(out data.contentStr)) {
                     if (data.serializeType == SerializeType.JSON || data.serializeType == SerializeType.JSONPRETTY) {
                         if (TryConvertFromJSON<T>(out loadContent)) {
                             // loaded and converted successfully
                             return true;
                         }
-                        // } else if (serializeType == SerializeType.TEXT) {
-                    } else {
-                        Debug.LogError($"Load failed unsupported serialization type {data.serializeType.ToString()}");
                     }
+                    // todo xml
+                } else {
+                    Debug.LogError($"Load failed unsupported serialization type {data.serializeType.ToString()}");
                 }
                 loadContent = default;
                 return false;
             }
+
 
             public SaveBuilder Clear() {
                 this.data = new SaveBuilderData();
@@ -219,6 +243,12 @@ namespace Kutil {
             }
             public SaveBuilder InCustomPath(string filepath, string filename) {
                 this.data.filename = filename;
+                this.data.filepath = filepath;
+                return this;
+            }
+            public SaveBuilder InCustomFullPath(string filepath) {
+                this.data.filename = "";
+                this.data.fileExtension = "";
                 this.data.filepath = filepath;
                 return this;
             }

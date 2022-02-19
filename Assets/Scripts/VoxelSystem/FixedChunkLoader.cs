@@ -26,7 +26,7 @@ namespace VoxelSystem {
             }
         }
         [ContextMenu("Reset chunks to load")]
-        void SetChunksToLoadOrigin() {
+        public void SetChunksToLoadOrigin() {
             chunksToLoad = new Vector3Int[1]{
                 Vector3Int.zero
             };
@@ -46,6 +46,7 @@ namespace VoxelSystem {
         }
         [ContextMenu("Reload")]
         public void LoadChunks() {
+            world ??= GetComponent<VoxelWorld>();
             world.UnloadAllChunks();
             world.LoadChunks(chunksToLoad);
         }
