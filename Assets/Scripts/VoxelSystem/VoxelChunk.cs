@@ -31,11 +31,8 @@ namespace VoxelSystem {
             this.world = world;
             this.chunkPos = chunkPos;
             this.resolution = resolution;
-            // this.voxelSize = voxelSize;
             visuals = GetComponent<VoxelRenderer>();
             if (!visuals) {
-                //     var mf = gameObject.AddComponent<MeshFilter>();
-                //     var mr = gameObject.AddComponent<MeshRenderer>();
                 visuals = gameObject.AddComponent<VoxelRenderer>();
             }
 
@@ -52,17 +49,33 @@ namespace VoxelSystem {
             //? initialize
             InitVoxels();
         }
-        protected void PopulateVoxels() {
+
+        internal void PopulateVoxels() {
+            PopulateVoxels(world.materialSet.GetDefaultId());
+        }
+
+        internal void PopulateVoxels(VoxelMaterialId voxelMaterialId) {
             voxels = new Voxel[volume];
-            VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
-            var neededData = world.neededData;
-            Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
+            List<TypeChoice<VoxelData>> neededData = world.neededData;
+            // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
                 voxels[i] = voxel;
-                // voxel.Initialize(this, position);
+            }
+            InitVoxels();
+        }
+        internal void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, List<TypeChoice<VoxelData>> neededData = null) {
+            if (voxelMaterialIds.Length != volume) return;
+            voxels = new Voxel[volume];
+            neededData ??= world.neededData;
+            // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
+            for (int i = 0; i < volume; i++) {
+                // y,z,x
+                Vector3Int position = GetLocalPos(i);
+                Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], neededData);
+                voxels[i] = voxel;
             }
             InitVoxels();
         }
@@ -73,6 +86,7 @@ namespace VoxelSystem {
                 voxels[i].Initialize(this, position);
             }
         }
+        public bool IsPopulated() => voxels != null && voxels.Length > 0;
 
         private void OnEnable() {
             if (voxels != null) {

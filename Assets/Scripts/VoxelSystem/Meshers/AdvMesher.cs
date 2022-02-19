@@ -25,13 +25,14 @@ namespace VoxelSystem.Mesher {
                 public float3 voxelPos;
                 public VoxelDirection faceNormal;
                 public float2 texcoord;
+                public int submeshIndex;
             }
         }
         [SerializeField] Mesh mesh;
         [SerializeField] MeshGenPData preprocessMeshData;
 
-        public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
-            base.Initialize(chunk, renderer);
+        public override void Initialize(VoxelChunk chunk, VoxelRenderer renderer, bool renderNullSides = false) {
+            base.Initialize(chunk, renderer, renderNullSides);
         }
         internal override Mesh ApplyMesh() {
             return mesh;
@@ -118,8 +119,12 @@ namespace VoxelSystem.Mesher {
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
                 BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
 
-                bool renderFace = coverNeighbor != null && neimat.isTransparent;
-                // bool renderFace = coverNeighbor == null || coverNeighbor.isTransparent;// also render null walls
+                bool renderFace;
+                if (renderNullSides) {
+                    renderFace = coverNeighbor == null || neimat.isTransparent;// also renders null walls
+                } else {
+                    renderFace = coverNeighbor != null && neimat.isTransparent;
+                }
                 // Debug.Log($"check {vpos}-{d}: {vpos + normalDir}({chunk.IndexAt(vpos + normalDir)}) is {coverNeighbor} r:{renderFace}");
                 if (!renderFace) {
                     continue;
@@ -128,7 +133,8 @@ namespace VoxelSystem.Mesher {
                 MeshGenPData.FaceData faceData = new MeshGenPData.FaceData() {
                     voxelPos = (Vector3)vpos,
                     faceNormal = ((VoxelDirection)d),
-                    texcoord = (Vector2)voxelMat.textureOverrides.textureCoords[d]
+                    texcoord = (Vector2)voxelMat.textureOverrides.textureCoords[d],
+                    submeshIndex = voxelMat.materialIndex,
                 };
                 tlist.Add(faceData);
             }
@@ -145,7 +151,7 @@ namespace VoxelSystem.Mesher {
             [Unity.Collections.ReadOnly]
             float textureUVScale;
 
-            [WriteOnly]
+            // [WriteOnly]
             MeshStream meshStream;
 
             public void Execute(int index) {
@@ -161,9 +167,11 @@ namespace VoxelSystem.Mesher {
                 job.textureUVScale = textureUVScale;
                 job.meshStream.Setup(meshData, meshBounds, meshGenPData.numVertices, meshGenPData.numTriangles * 3);
                 int jobLength = 1;
-                return job.ScheduleParallel(jobLength, 1, dependency);
+                JobHandle jobHandle = job.ScheduleParallel(jobLength, 1, dependency);
+                job.meshStream.Dispose(jobHandle);
+                return jobHandle;
             }
-            void GenMeshExecute(int jindex) {
+            void GenMeshExecute(int jobindex) {
                 // Debug.Log($"Job start {jindex)} {meshGenPData.faceDatas.Length}");
                 int vi = 0, ti = 0;
                 for (int i = 0; i < meshGenPData.faceDatas.Length; i++) {
@@ -177,7 +185,7 @@ namespace VoxelSystem.Mesher {
                     float2 uvfrom = faceData.texcoord * textureUVScale;
                     float2 uvto = (faceData.texcoord + float2(1f)) * textureUVScale;
                     meshStream.SetFace(
-                        vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto);
+                        vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto, faceData.submeshIndex);
                     vi += 4;
                     ti += 2;
                 }

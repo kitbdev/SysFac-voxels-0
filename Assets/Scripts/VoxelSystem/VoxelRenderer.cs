@@ -14,7 +14,7 @@ namespace VoxelSystem {
 
         public void Initialize(VoxelChunk chunk) {
             voxelMesher = chunk.world.mesher.CreateInstance();
-            voxelMesher.Initialize(chunk, this);
+            voxelMesher.Initialize(chunk, this, chunk.world.renderNullSides);
         }
 
         [ContextMenu("ClearMesh")]

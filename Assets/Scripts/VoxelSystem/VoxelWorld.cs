@@ -17,6 +17,7 @@ namespace VoxelSystem {
         public TypeChoice<Mesher.VoxelMesher> mesher = typeof(Mesher.AdvMesher);
         public bool enableCollision = true;
         public bool useBoxColliders = true;
+        public bool renderNullSides = true;
         public VoxelMaterialSetSO materialSet;
 
         public List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
@@ -55,6 +56,7 @@ namespace VoxelSystem {
         private void OnEnable() {
             ReloadPool();
         }
+        [ContextMenu("Init pool")]
         public void ReloadPool() {
             chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 () => {
@@ -94,6 +96,8 @@ namespace VoxelSystem {
             public TypeChoice<Mesher.VoxelMesher> mesher;
             public bool enableCollision;
             public bool useBoxColliders;
+            public bool renderNullSides;
+            [SerializeReference]
             public VoxelMaterialSetSO materialSet;
             public ChunkSaveData[] chunks;
         }
@@ -109,6 +113,7 @@ namespace VoxelSystem {
             worldSaveData.mesher = mesher;
             worldSaveData.enableCollision = enableCollision;
             worldSaveData.useBoxColliders = useBoxColliders;
+            worldSaveData.renderNullSides = renderNullSides;
             worldSaveData.materialSet = materialSet;
             for (int i = 0; i < activeChunks.Count; i++) {
                 VoxelChunk voxelChunk = activeChunks[i];
@@ -130,6 +135,7 @@ namespace VoxelSystem {
             mesher = worldSaveData.mesher;
             enableCollision = worldSaveData.enableCollision;
             useBoxColliders = worldSaveData.useBoxColliders;
+            renderNullSides = worldSaveData.renderNullSides;
             materialSet = worldSaveData.materialSet;
             ChunkSaveData[] chunks = worldSaveData.chunks;
             LoadChunksFromData(chunks);
@@ -140,6 +146,16 @@ namespace VoxelSystem {
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];
                 CreateChunk(chunkSaveData);
+            }
+            RefreshAll();
+        }
+        public void LoadRawRoom(Importer.VoxelRoomData[] rooms) {
+        }
+        public void LoadChunksFromData(Importer.RawChunkData[] chunks) {
+            Clear();
+            for (int i = 0; i < chunks.Length; i++) {
+                Importer.RawChunkData rawChunk = chunks[i];
+                CreateChunk(rawChunk);
             }
             RefreshAll();
         }
@@ -163,6 +179,9 @@ namespace VoxelSystem {
                 activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
                 // chunksToPopulate = new List<int>();
             } else {
+                if (chunkPool == null) {
+                    ReloadPool();
+                }
                 for (int i = activeChunks.Count - 1; i >= 0; i--) {
                     if (!activeChunks[i]) continue;
                     VoxelChunk chunk = activeChunks[i];
@@ -181,6 +200,11 @@ namespace VoxelSystem {
             chunk.Refresh();
         }
 
+        VoxelChunk CreateChunk(Importer.RawChunkData rawChunkData) {
+            VoxelChunk voxelChunk = CreateChunk(rawChunkData.chunkPos, false);
+            voxelChunk.PopulateVoxels(rawChunkData.rawVoxels.Select(rv => (VoxelMaterialId)(rv.materialId)).ToArray());
+            return voxelChunk;
+        }
         VoxelChunk CreateChunk(ChunkSaveData chunkSaveData) {
             VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
             voxelChunk.OverrideVoxels(chunkSaveData.voxels);

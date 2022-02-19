@@ -11,16 +11,18 @@ namespace VoxelSystem.Mesher {
         protected VoxelWorld world;
         protected VoxelRenderer renderer;
         protected float voxelSize;
+        public bool renderNullSides;
 
         public virtual TypeChoice<VoxelMaterial> neededMaterial => null;
         public virtual TypeChoice<VoxelData>[] neededDatas => new TypeChoice<VoxelData>[0];
 
         protected VoxelMaterialSetSO materialSet => world?.materialSet;
 
-        public virtual void Initialize(VoxelChunk chunk, VoxelRenderer renderer) {
+        public virtual void Initialize(VoxelChunk chunk, VoxelRenderer renderer, bool renderNullSides=false) {
             this.chunk = chunk;
             this.world = chunk.world;
             this.renderer = renderer;
+            this.renderNullSides = renderNullSides;
             voxelSize = world.voxelSize;
         }
         public abstract void ClearMesh();

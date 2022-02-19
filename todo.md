@@ -20,3 +20,8 @@ todo voxel mesh system
   - custom block manager editor
     - make block button?
 
+importer
+  using https://github.com/sandrofigo/VoxReader 
+  alt https://github.com/barraudf/CsharpVoxReader
+  a vox editor ref https://github.com/mgerhardy/vengi 
+  

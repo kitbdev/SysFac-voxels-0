@@ -1,7 +1,19 @@
 fileFormatVersion: 2
 guid: 374b135349e290244ab3efa3336d4482
-DefaultImporter:
+ScriptedImporter:
+  internalIDToNameTable: []
   externalObjects: {}
+  serializedVersion: 2
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+  script: {fileID: 11500000, guid: fe237def5ae0e5349bfef6e153c7a9fe, type: 3}
+  numChunks: 0
+  voxelImportSettings:
+    filepath: Assets/Data/VoxelData/test.vox
+    chunkPosOffset: {x: 0, y: 0, z: 0}
+    voxelSize: 1
+    chunkResolution: 16
+    voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  asPrefab: 0
+  areRoomsLimbs: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kutil;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VoxelSystem;
@@ -7,15 +8,20 @@ using VoxelSystem;
 public class PlayerBlockInteraction : MonoBehaviour {
 
     public float maxRayDist = 10;
+    public float scrollSensitivity = 1;
     public LayerMask blockMask = Physics.DefaultRaycastLayers;
 
     [SerializeField] BlockTypeRef dirtref;// = new BlockTypeRef().SetBlockName("dirt");
     [SerializeField] BlockTypeRef airref;// = new BlockTypeRef().SetBlockName("air");
     // public float blockBreakDuration = 0.5f;
     // float blockBreakTimer = 0;
-    [SerializeField] [Kutil.ReadOnly] Vector3Int targetBlockPos;
-    [SerializeField] [Kutil.ReadOnly] Vector3 targetBlockNorm;
     [SerializeField] Transform targetBlockFollow;
+    [SerializeField] VoxelWorld handVoxelW;
+    [SerializeField] [ReadOnly] Vector3Int targetBlockPos;
+    [SerializeField] [ReadOnly] Vector3 targetBlockNorm;
+    [SerializeField] [ReadOnly] int selectedBlockType;
+    [ReadOnly] public float scrollAcc = 0;
+    [SerializeField] [ReadOnly] BlockTypeRef selBlocktypeRef;
 
     public VoxelWorld world;
     Transform cam;
@@ -40,6 +46,22 @@ public class PlayerBlockInteraction : MonoBehaviour {
             if (gameObject.TryGetComponent<StarterAssets.StarterAssetsInputs>(out var si)) {
                 si.cursorInputForLook = !si.cursorInputForLook;
             }
+        }
+        scrollAcc += -Mouse.current.scroll.y.ReadValue() * scrollSensitivity;
+        int nselectedBlockType = selectedBlockType + Mathf.RoundToInt(scrollAcc);
+        if (selectedBlockType != nselectedBlockType) {
+            nselectedBlockType = Mathf.Clamp(nselectedBlockType, 0, BlockManager.Instance.blockTypes.Count - 1);
+            scrollAcc = 0;
+            selectedBlockType = nselectedBlockType;
+
+            selBlocktypeRef = new BlockTypeRef().SetBlockId(selectedBlockType);
+        }
+        if (handVoxelW != null && handVoxelW.activeChunks.Count > 0 && handVoxelW.GetChunkAt(Vector3Int.zero).IsPopulated()) {
+            VoxelChunk handChunk = handVoxelW.GetChunkAt(Vector3Int.zero);
+            Voxel handVoxel = handChunk.GetLocalVoxelAt(0);
+            // Debug.Log($"v{voxel.");
+            BlockManager.SetBlockType(handVoxel, selBlocktypeRef);
+            handChunk.Refresh();
         }
         if (validTarget && Mouse.current.leftButton.wasPressedThisFrame) {
             BreakBlock();
@@ -70,7 +92,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
         return false;
     }
     void PlaceBlock() {
-        SetBlockType(targetBlockPos + Vector3Int.FloorToInt(targetBlockNorm), dirtref);
+        SetBlockType(targetBlockPos + Vector3Int.FloorToInt(targetBlockNorm), selBlocktypeRef);
     }
     void BreakBlock() {
         SetBlockType(targetBlockPos, airref);
