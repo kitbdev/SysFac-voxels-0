@@ -198,10 +198,11 @@ namespace VoxelSystem {
         }
         void LoadChunksImportData(Importer.ChunkImportData[] chunks) {
             Clear();
+            // todo multithread
             Debug.Log($"Loading from import chunks:{chunks.Length}");
             for (int i = 0; i < chunks.Length; i++) {
                 Importer.ChunkImportData chunk = chunks[i];
-                Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
+                // Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
                 if (HasChunkActiveAt(chunk.chunkPos)) continue;
                 CreateChunk(chunk);
             }

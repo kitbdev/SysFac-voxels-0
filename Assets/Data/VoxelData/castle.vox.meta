@@ -8,11 +8,13 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: fe237def5ae0e5349bfef6e153c7a9fe, type: 3}
+  numModels: 0
+  models: []
   voxelImportSettings:
     filepath: Assets/Data/VoxelData/castle.vox
-    voxelMaterialSet: {instanceID: 0}
+    voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
     voxelSize: 1
     chunkResolution: 16
     chunkPosOffset: {x: 0, y: 0, z: 0}
   asPrefab: 0
-  areRoomsLimbs: 0
+  areRoomsLimbs: 1

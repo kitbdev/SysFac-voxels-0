@@ -24,4 +24,4 @@ importer
   using https://github.com/sandrofigo/VoxReader 
   alt https://github.com/barraudf/CsharpVoxReader
   a vox editor ref https://github.com/mgerhardy/vengi 
-  
+  bones https://github.com/takashicompany/vox-reader/blob/unity/Unity/VoxLoader.cs

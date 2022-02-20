@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using Kutil;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEngine;
-using VoxReader;
 
 namespace VoxelSystem.Importer {
     /// <summary>
@@ -12,7 +12,15 @@ namespace VoxelSystem.Importer {
     public class VoxAssetImporter : ScriptedImporter {
 
         [Header("Data")]
-        // [ReadOnly]
+        [ReadOnly]
+        [SerializeField] int numModels;
+        [System.Serializable]
+        struct Models {
+            public Vector3Int chunkCountAxis;
+            public int numChunks;
+        }
+        [ReadOnly]
+        [SerializeField] List<Models> models = new List<Models>();
         // [SerializeField]
         FullVoxelImportData fullVoxelImportData;
         [Header("Settings")]
@@ -23,13 +31,19 @@ namespace VoxelSystem.Importer {
         public override void OnImportAsset(AssetImportContext ctx) {
             voxelImportSettings ??= new VoxelImportSettings();
             voxelImportSettings.filepath = ctx.assetPath;
-            fullVoxelImportData = VoxelImporter.Load(voxelImportSettings);
+            fullVoxelImportData = VoxImporter.Load(voxelImportSettings);
             if (fullVoxelImportData == null) {
                 // load fail
                 Debug.LogError($"Failed to load {ctx.assetPath} vox info");
                 return;
             }
-
+            numModels = fullVoxelImportData.rooms.Length;
+            for (int i = 0; i < numModels; i++) {
+                models.Add(new Models() {
+                    numChunks = fullVoxelImportData.rooms[i].chunks.Length,
+                    chunkCountAxis = fullVoxelImportData.rooms[i].numChunksByAxis,
+                });
+            }
             string filename = System.IO.Path.GetFileName(ctx.assetPath);
             if (asPrefab) {
                 GameObject maingo = new GameObject("voxel load");
