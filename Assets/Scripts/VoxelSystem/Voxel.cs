@@ -17,6 +17,7 @@ namespace VoxelSystem {
         [SerializeReference]// todo make sure works with structs
         [SerializeField]
         VoxelData[] _voxelDatas;
+        TypedObjectPool<VoxelData> voxelDataPool;
 
         public VoxelMaterialId voxelMaterialId { get => _voxelMaterialId; protected set => _voxelMaterialId = value; }
         public VoxelData[] voxelDatas { get => _voxelDatas; protected set => _voxelDatas = value; }
@@ -26,29 +27,28 @@ namespace VoxelSystem {
             this.voxelMaterialId = voxelMaterialId;
             this.voxelDatas = voxelDatas;
         }
-        public static Voxel CreateVoxel(VoxelWorld world) {
-            VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
-            return CreateVoxel(voxelMaterialId, world.neededData);
-        }
-        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, TypeChoice<VoxelData>[] neededData) {
-            // List<VoxelData> voxelDataList = (neededData.Select(nvd => nvd.CreateInstance())).ToList();
-            // voxelDataList.Sort(VoxelDataSortComparer());
-            // Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
-            // neededData.Select(nvd => nvd.CreateInstance()).ToArray()
-            VoxelData[] voxelDatas = new VoxelData[neededData.Length];
-            for (int i = 0; i < voxelDatas.Length; i++)
-            {
-                voxelDatas[i] = neededData[i].CreateInstance();
-            }
-            Voxel voxel = new Voxel(voxelMaterialId, voxelDatas);
-            // Debug.Log($"Adding {neededData.Count} vdatas {voxel} {voxelDataList.Aggregate("", (s, vd) => s + vd + ",")}");
-            // voxelDataList.Clear();
-            return voxel;
-        }
-
-        // private static Comparison<VoxelData> VoxelDataSortComparer() {
-        //     return (a, b) => a.sortOrder - b.sortOrder;// in descending order
+        // public static Voxel CreateVoxel(VoxelWorld world) {
+        //     VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
+        //     return CreateVoxel(voxelMaterialId, world.neededData);
         // }
+        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
+            return new Voxel(voxelMaterialId, voxelDatas);
+        }
+        // public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, TypeChoice<VoxelData>[] neededData) {
+        //     // List<VoxelData> voxelDataList = (neededData.Select(nvd => nvd.CreateInstance())).ToList();
+        //     // voxelDataList.Sort(VoxelDataSortComparer());
+        //     // Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
+        //     // neededData.Select(nvd => nvd.CreateInstance()).ToArray()
+        //     VoxelData[] voxelDatas = new VoxelData[neededData.Length];
+        //     for (int i = 0; i < voxelDatas.Length; i++) {
+        //         voxelDatas[i] = neededData[i].CreateInstance();
+        //     }
+        //     Voxel voxel = new Voxel(voxelMaterialId, voxelDatas);
+        //     // Debug.Log($"Adding {neededData.Count} vdatas {voxel} {voxelDataList.Aggregate("", (s, vd) => s + vd + ",")}");
+        //     // voxelDataList.Clear();
+        //     return voxel;
+        // }
+
 
         public void Initialize(VoxelChunk chunk, Vector3Int localVoxelPos) {
             foreach (var voxelData in voxelDatas) {

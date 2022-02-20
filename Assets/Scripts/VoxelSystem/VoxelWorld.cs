@@ -187,7 +187,7 @@ namespace VoxelSystem {
             if (fullVoxelImportData == null) return;
             voxelSize = fullVoxelImportData.voxelSize;
             chunkResolution = fullVoxelImportData.chunkResolution;
-            Debug.Log($"Loading from import data rooms:{fullVoxelImportData.rooms.Length} vs:{voxelSize} cr:{chunkResolution}");
+            Debug.Log($"Loading from import data rooms:{fullVoxelImportData.rooms.Length} vsize:{voxelSize} cres:{chunkResolution}");
             LoadRoomsImportData(fullVoxelImportData.rooms);
         }
         void LoadRoomsImportData(Importer.VoxelRoomModelImportData[] rooms) {

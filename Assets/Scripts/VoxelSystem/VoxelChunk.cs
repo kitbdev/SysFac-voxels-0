@@ -38,7 +38,7 @@ namespace VoxelSystem {
             }
             visuals.Initialize(this);
 
-            if (populate) {
+            if (populate) {// todo dont auto populate here, force a call higher up?
                 PopulateVoxels();
                 InitVoxels();
             }
@@ -60,10 +60,16 @@ namespace VoxelSystem {
             voxels = new Voxel[volume];
             TypeChoice<VoxelData>[] neededData = world.neededData;
             // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
+
+            VoxelData[] voxelDatas = new VoxelData[neededData.Length];
+            for (int i = 0; i < voxelDatas.Length; i++) {
+                voxelDatas[i] = neededData[i].CreateInstance();
+            }
+
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
-                Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
+                Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, voxelDatas);
                 voxels[i] = voxel;
             }
         }
@@ -71,18 +77,24 @@ namespace VoxelSystem {
             if (voxelMaterialIds.Length != volume) return;
             voxels = new Voxel[volume];
             neededData ??= world.neededData;
+
+            VoxelData[] voxelDatas = new VoxelData[neededData.Length];// todo pass this in at world level
+            for (int i = 0; i < voxelDatas.Length; i++) {
+                voxelDatas[i] = neededData[i].CreateInstance();
+                // todo sort?
+            }
             // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
-                // todo instead of making the voxel create all of its datas, fill a pool of the needed types here and give to the voxel
-                // ObjectPool<VoxelData> voxelDataPool = new UnityEngine.Pool.ObjectPool<VoxelData>();
-                // voxelDataPool.Get()
-                
-                Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], neededData);
+                // voxeldata is a struct, so it is passed by value and doesnt need to be copied
+                Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], voxelDatas.ToArray());
                 voxels[i] = voxel;
             }
         }
+        // private static Comparison<VoxelData> VoxelDataSortComparer() {
+        //     return (a, b) => a.sortOrder - b.sortOrder;// in descending order
+        // }
         public void InitVoxels() {
             for (int i = 0; i < voxels.Length; i++) {
                 // y,z,x
@@ -139,6 +151,11 @@ namespace VoxelSystem {
             if (world.enableCollision) {
                 if (world.useBoxColliders) {
                     AddBoxColliders();
+                } else {
+                    if (gameObject.TryGetComponent<MeshCollider>(out var mc)){
+                        // might need to be re-set to update
+                        mc.sharedMesh = visuals?.GetMesh();
+                    }
                 }
             }
         }
@@ -159,7 +176,8 @@ namespace VoxelSystem {
             } else {
                 RemoveBoxColliders();
                 if (!gameObject.TryGetComponent<MeshCollider>(out _)) {
-                    gameObject.AddComponent<MeshCollider>();
+                    var mc = gameObject.AddComponent<MeshCollider>();
+                    mc.sharedMesh = visuals?.GetMesh();
                 }
             }
         }

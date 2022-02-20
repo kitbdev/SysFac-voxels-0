@@ -53,10 +53,6 @@ namespace VoxelSystem {
 
             meshFilter ??= GetComponent<MeshFilter>();
             meshFilter.sharedMesh = mesh;
-            if (TryGetComponent<MeshCollider>(out var meshcol)) {
-                // needs to be re set to update for some reason
-                meshcol.sharedMesh = mesh;
-            }
 #if UNITY_EDITOR
             if (!Application.isPlaying) {
                 // mark scene not saved
