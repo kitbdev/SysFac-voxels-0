@@ -43,7 +43,7 @@ namespace VoxelSystem {
         [ContextMenu("UpdateMats")]
         public void UpdateMaterials() {
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-            meshRenderer.sharedMaterials = chunk.world.materialSet?.allUsedMaterials;
+            meshRenderer.sharedMaterials = chunk?.world.materialSet?.allUsedMaterials;
         }
         /// <summary>
         /// called by mesher after update is complete

@@ -187,24 +187,25 @@ namespace VoxelSystem {
             if (fullVoxelImportData == null) return;
             voxelSize = fullVoxelImportData.voxelSize;
             chunkResolution = fullVoxelImportData.chunkResolution;
-            Debug.Log($"Loading from import data rooms:{fullVoxelImportData.rooms.Length} vsize:{voxelSize} cres:{chunkResolution}");
+            Debug.Log($"Loading from import data models:{fullVoxelImportData.rooms.Length} vsize:{voxelSize} cres:{chunkResolution}");
             LoadRoomsImportData(fullVoxelImportData.rooms);
         }
         void LoadRoomsImportData(Importer.VoxelRoomModelImportData[] rooms) {
             if (rooms != null) {
+                Clear();
                 // if (rooms.Length > 0)
                 foreach (var room in rooms) {
-                    LoadChunksImportData(room.chunks);
+                    LoadChunksImportData(room.chunks, room.offset);
                 }
             }
         }
-        void LoadChunksImportData(Importer.ChunkImportData[] chunks) {
-            Clear();
+        void LoadChunksImportData(Importer.ChunkImportData[] chunks, Vector3Int chunkOffset) {
             // Debug.Log($"Loading from import chunks:{chunks.Length}");
 #if UNITY_EDITOR
             if (!Application.isPlaying) {
                 for (int i = 0; i < chunks.Length; i++) {
                     Importer.ChunkImportData chunk = chunks[i];
+                    chunk.chunkPos += chunkOffset;
                     // Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
                     if (HasChunkActiveAt(chunk.chunkPos)) continue;
                     CreateChunk(chunk);
@@ -213,13 +214,14 @@ namespace VoxelSystem {
             } else
 #endif
             {
-                StartCoroutine(LoadChunksImportDataCo(chunks));
+                StartCoroutine(LoadChunksImportDataCo(chunks, chunkOffset));
             }
         }
-        IEnumerator LoadChunksImportDataCo(Importer.ChunkImportData[] chunks) {
+        IEnumerator LoadChunksImportDataCo(Importer.ChunkImportData[] chunks, Vector3Int chunkOffset) {
             for (int i = 0; i < chunks.Length; i++) {
                 Importer.ChunkImportData chunk = chunks[i];
-                // Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
+                chunk.chunkPos += chunkOffset;
+                Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
                 if (HasChunkActiveAt(chunk.chunkPos)) continue;
                 VoxelChunk voxelChunk = CreateChunk(chunk);
                 yield return null;

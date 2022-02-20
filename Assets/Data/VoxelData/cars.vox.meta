@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: 6c94b764132ce9c48b2967a155fc4948
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: fe237def5ae0e5349bfef6e153c7a9fe, type: 3}
+  numModels: 2
+  models:
+  - chunkCountAxis: {x: 1, y: 1, z: 3}
+    numChunks: 3
+  - chunkCountAxis: {x: 1, y: 1, z: 2}
+    numChunks: 2
+  voxelImportSettings:
+    filepath: Assets/Data/VoxelData/cars.vox
+    voxelMaterialSet: {instanceID: 0}
+    voxelSize: 1
+    chunkResolution: 16
+    chunkPosOffset: {x: 0, y: 0, z: 0}
+  asPrefab: 0
+  areRoomsLimbs: 0

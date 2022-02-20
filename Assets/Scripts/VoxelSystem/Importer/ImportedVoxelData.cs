@@ -16,9 +16,9 @@ namespace VoxelSystem.Importer {
     public class VoxelRoomModelImportData {
         // public int id;
         // public UnityEngine.Vector3 offset;
+        public Vector3Int modelSize;
         public Vector3Int numChunksByAxis;
-        // public Vector3Int occupiedSize;
-        // public Vector3Int offsetInt;
+        public Vector3Int offset;
         public ChunkImportData[] chunks;
     }
     [System.Serializable]

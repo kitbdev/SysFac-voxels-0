@@ -129,6 +129,11 @@ namespace VoxelSystem.Mesher {
         void CheckVertex(Vector3Int vpos) {
             var voxel = chunk.GetLocalVoxelAt(vpos);
             BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
+            if (voxelMat == null) {
+                // Debug.LogWarning("Could not get voxel material");
+                voxelMat = materialSet.GetDefaultVoxelMaterial<BasicMaterial>();
+                // return;
+            }
             if (voxelMat.isInvisible) {
                 return;
             }
@@ -137,7 +142,7 @@ namespace VoxelSystem.Mesher {
                 Vector3Int normalDir = Voxel.unitDirs[d];
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
+                BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet) ?? materialSet.GetDefaultVoxelMaterial<BasicMaterial>();
 
                 bool renderFace;
                 renderFace = CanRenderFace(voxelMat, coverNeighbor, neimat);

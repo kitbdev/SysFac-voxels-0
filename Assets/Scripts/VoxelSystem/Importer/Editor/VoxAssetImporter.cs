@@ -16,6 +16,8 @@ namespace VoxelSystem.Importer {
         [SerializeField] int numModels;
         [System.Serializable]
         struct Models {
+            public Vector3Int modelSize;
+            public Vector3Int offset;
             public Vector3Int chunkCountAxis;
             public int numChunks;
         }
@@ -41,7 +43,9 @@ namespace VoxelSystem.Importer {
             models.Clear();
             for (int i = 0; i < numModels; i++) {
                 models.Add(new Models() {
+                    modelSize = fullVoxelImportData.rooms[i].modelSize,
                     numChunks = fullVoxelImportData.rooms[i].chunks.Length,
+                    offset = fullVoxelImportData.rooms[i].offset,
                     chunkCountAxis = fullVoxelImportData.rooms[i].numChunksByAxis,
                 });
             }

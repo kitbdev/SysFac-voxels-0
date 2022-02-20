@@ -30,9 +30,9 @@ namespace CsharpVoxReader
       return result;
     }
 
-    public static int[] ReadRotation(BinaryReader br, ref int readsize) {
-      byte rot = br.ReadByte();
-      readsize += 1;
+    public static int[] ReadRotation(byte rot) {
+      // byte rot = br.ReadByte();
+      // readsize += 1;
 
       int r0v = ((rot & 8) == 0)?1:-1;
       int r1v = ((rot & 16) == 0)?1:-1;

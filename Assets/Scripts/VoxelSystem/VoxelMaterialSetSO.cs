@@ -102,6 +102,9 @@ namespace VoxelSystem {
             // id of first element //? or uninitialized -1
             return 0;
         }
+        public T GetDefaultVoxelMaterial<T>() where T : VoxelMaterial {
+            return GetVoxelMaterial<T>(1);// not air
+        }
         VoxelMaterialId GetIdForVoxelMaterial(TypeSelector<VoxelMaterial> voxelMaterial) {
             // todo use hash for ids?
             // int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });
@@ -121,6 +124,12 @@ namespace VoxelSystem {
             //     Debug.LogWarning($"VoxelMaterial {id} is {voxelMats[id].type} and not of type {typeof(T)}!");
             //     // return null;
             // }
+            return (T)voxelMats[id].objvalue;
+        }
+        public T GetVoxelMaterialOrDefault<T>(VoxelMaterialId id) where T : VoxelMaterial {
+            if (id < 0 || id >= voxelMats.Length) {
+                return (T)voxelMats[GetDefaultId()].objvalue;
+            }
             return (T)voxelMats[id].objvalue;
         }
 

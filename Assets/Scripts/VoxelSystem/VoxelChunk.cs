@@ -105,7 +105,7 @@ namespace VoxelSystem {
         public bool IsPopulated() => voxels != null && voxels.Length > 0;
 
         private void OnEnable() {
-            if (voxels != null) {
+            if (voxels != null && resolution > 0) {
                 for (int i = 0; i < voxels.Length; i++) {
                     // y,z,x
                     Vector3Int position = GetLocalPos(i);
@@ -152,7 +152,7 @@ namespace VoxelSystem {
                 if (world.useBoxColliders) {
                     AddBoxColliders();
                 } else {
-                    if (gameObject.TryGetComponent<MeshCollider>(out var mc)){
+                    if (gameObject.TryGetComponent<MeshCollider>(out var mc)) {
                         // might need to be re-set to update
                         mc.sharedMesh = visuals?.GetMesh();
                     }
