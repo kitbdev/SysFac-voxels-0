@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VoxelSystem.Importer {
     
-    public class VoxelImporter : MonoBehaviour {
+    // public class VoxelImporter : MonoBehaviour {
         // public static void Load(VoxelWorld world, string filepath) {
         // Kutil.SaveSystem.StartLoad()
         //                 .InCustomFullPath(filepath)
@@ -112,5 +112,5 @@ namespace VoxelSystem.Importer {
         // static Vector3Int ConvertVecI(VoxReader.Vector3 vec3) => new Vector3Int(vec3.X, vec3.Y, vec3.Z);
         // // todo VoxReader colors use bytes instead of floats
         // static UnityEngine.Color ConvertColor(VoxReader.Color color) => new UnityEngine.Color(color.R, color.G, color.B, color.A);
-    }
+    // }
 }

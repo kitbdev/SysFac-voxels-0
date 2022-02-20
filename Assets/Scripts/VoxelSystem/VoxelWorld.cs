@@ -39,20 +39,14 @@ namespace VoxelSystem {
         public List<Vector3Int> activeChunksPos => activeChunksDict.Keys.ToList();
 
         public TypeChoice<VoxelMaterial> materialType => mesher.CreateInstance().neededMaterial;
-        public List<TypeChoice<VoxelData>> neededData {
-            get {
-                List<TypeChoice<VoxelData>> datas = new List<TypeChoice<VoxelData>>(additionalData);
-                datas.AddRange(mesher.CreateInstance().neededDatas);
-                datas.Add(typeof(DefaultVoxelData));
-                // datas = datas.DistinctBy(tcvd => tcvd.selectedName).ToList();
-                return datas;
-            }
-        }
+        private TypeChoice<VoxelData>[] _neededData;
+        public TypeChoice<VoxelData>[] neededData { get => _neededData ?? UpdateNeededData(); }
         // [System.NonSerialized]
         // public List<int> testHash = new List<int>();
 
         private void OnValidate() {
             additionalData.ForEach(tc => tc.onlyIncludeConcreteTypes = true);
+            UpdateNeededData();
         }
         private void Awake() {
             // Clear();
@@ -91,6 +85,14 @@ namespace VoxelSystem {
         private void OnDestroy() {
             RemoveAllChunks();
             chunkPool.Dispose();
+        }
+        public TypeChoice<VoxelData>[] UpdateNeededData() {
+            List<TypeChoice<VoxelData>> datas = new List<TypeChoice<VoxelData>>(additionalData);
+            TypeChoice<VoxelData>[] mesherDatas = mesher.CreateInstance().neededDatas;
+            datas.AddRange(mesherDatas);
+            datas.Add(typeof(DefaultVoxelData));
+            _neededData = datas.ToHashSet().ToArray();
+            return neededData;
         }
 
         [ContextMenu("Refresh")]
@@ -198,15 +200,33 @@ namespace VoxelSystem {
         }
         void LoadChunksImportData(Importer.ChunkImportData[] chunks) {
             Clear();
-            // todo multithread
-            Debug.Log($"Loading from import chunks:{chunks.Length}");
+            // Debug.Log($"Loading from import chunks:{chunks.Length}");
+#if UNITY_EDITOR
+            if (!Application.isPlaying) {
+                for (int i = 0; i < chunks.Length; i++) {
+                    Importer.ChunkImportData chunk = chunks[i];
+                    // Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
+                    if (HasChunkActiveAt(chunk.chunkPos)) continue;
+                    CreateChunk(chunk);
+                    RefreshAll();
+                }
+            } else
+#endif
+            {
+                StartCoroutine(LoadChunksImportDataCo(chunks));
+            }
+        }
+        IEnumerator LoadChunksImportDataCo(Importer.ChunkImportData[] chunks) {
             for (int i = 0; i < chunks.Length; i++) {
                 Importer.ChunkImportData chunk = chunks[i];
                 // Debug.Log($"Loading from import chunk:{chunk.chunkPos}");
                 if (HasChunkActiveAt(chunk.chunkPos)) continue;
-                CreateChunk(chunk);
+                VoxelChunk voxelChunk = CreateChunk(chunk);
+                yield return null;
+                voxelChunk.Refresh();
+                yield return null;
             }
-            RefreshAll();
+            // RefreshAll();
         }
 
         public void LoadChunksEmpty(params Vector3Int[] chunkposs) {
@@ -218,7 +238,20 @@ namespace VoxelSystem {
             // todo refresh neighbor chunks?
         }
         public void LoadChunksAndGen(params Vector3Int[] chunkposs) {
-            StartCoroutine(LoadChunksCo(chunkposs));
+#if UNITY_EDITOR
+            if (!Application.isPlaying) {
+                foreach (var cp in chunkposs) {
+                    if (HasChunkActiveAt(cp))
+                        continue;
+                    CreateChunk(cp);
+                    // todo restore if have data or generate
+                    generateChunkEvent?.Invoke(cp);
+                }
+            } else
+#endif
+            {
+                StartCoroutine(LoadChunksCo(chunkposs));
+            }
         }
         IEnumerator LoadChunksCo(Vector3Int[] chunkposs) {
             foreach (var cp in chunkposs) {

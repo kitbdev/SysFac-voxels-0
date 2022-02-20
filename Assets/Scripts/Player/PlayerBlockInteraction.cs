@@ -52,7 +52,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
         scrollAcc += -Mouse.current.scroll.y.ReadValue() * scrollSensitivity;
         int nselectedBlockType = selectedBlockType + Mathf.RoundToInt(scrollAcc);
         if (selectedBlockType != nselectedBlockType) {
-            nselectedBlockType = Mathf.Clamp(nselectedBlockType, 1, BlockManager.Instance.blockTypes.Count - 1);
+            nselectedBlockType = Mathf.Clamp(nselectedBlockType, 1, BlockManager.Instance.blockTypes.Length - 1);
             scrollAcc = 0;
             selectedBlockType = nselectedBlockType;
 

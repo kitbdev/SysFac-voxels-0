@@ -38,6 +38,7 @@ namespace VoxelSystem.Importer {
                 return;
             }
             numModels = fullVoxelImportData.rooms.Length;
+            models.Clear();
             for (int i = 0; i < numModels; i++) {
                 models.Add(new Models() {
                     numChunks = fullVoxelImportData.rooms[i].chunks.Length,

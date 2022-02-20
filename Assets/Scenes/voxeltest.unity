@@ -944,7 +944,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   world: {fileID: 1191201396}
-  voxelData: {fileID: -3141114760809212889, guid: 374b135349e290244ab3efa3336d4482, type: 3}
+  voxelData: {fileID: -3141114760809212889, guid: 2ba58e94b9c71134d90a57106b38be43, type: 3}
 --- !u!1 &1264246706
 GameObject:
   m_ObjectHideFlags: 0

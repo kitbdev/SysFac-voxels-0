@@ -88,6 +88,7 @@ namespace VoxelSystem.Mesher {
             tangent = vertex.tangent,
             texCoord0 = vertex.texCoord0
         };
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetTriangle(int tIndex, int3 triangle) => triangles[tIndex] = triangle;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -97,11 +98,12 @@ namespace VoxelSystem.Mesher {
             float3 bottomLeft = center - (extents.x * tang + extents.y * bitang);
             SetFace(vIndex, tIndex, bottomLeft, extents * 2f, normal, tangent, uvfrom, uvto);
         }
+        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetFace(int vIndex, int tIndex, float3 bottomLeftPos, float2 size, float3 normal, float4 tangent, float2 uvfrom, float2 uvto) {
             // Debug.Log($"setface {vIndex}/{stream0.Length} {tIndex}/{triangles.Length}");
             // note this wont weld with any others
             // vertex.tangent.xw = float2(1f, -1f);
-            // todo make sure this is optimized
+            // todo? make sure this is optimized
             Vertex vertex = new Vertex();
             vertex.normal = normal;
             vertex.tangent = tangent;

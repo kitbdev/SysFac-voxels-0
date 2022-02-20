@@ -5,7 +5,7 @@ using System.Linq;
 namespace VoxelSystem {
     public interface VoxelData {
         /// <summary>lower is earlier</summary>
-        int sortOrder => 0;
+        // int sortOrder => 0;
         void CopyValuesFrom(VoxelData from);
         void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
@@ -34,7 +34,7 @@ namespace VoxelSystem {
         [SerializeReference]
         public VoxelChunk chunk;
 
-        public int sortOrder => -1000;
+        // public int sortOrder => -1000;
 
         public void CopyValuesFrom(VoxelData from) {
             if (from is DefaultVoxelData vd) {

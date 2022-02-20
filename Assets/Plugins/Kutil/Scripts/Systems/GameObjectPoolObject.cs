@@ -6,17 +6,17 @@ namespace Kutil {
     /// <summary>
     /// Not necessary for ObjectPool, just a helper in case other scripts want to remove
     /// </summary>
-    public class ObjectPoolObject : MonoBehaviour {
+    public class GameObjectPoolObject : MonoBehaviour {
 
-        KObjectPool pool;
+        GameObjectPool pool;
         int typeId;
-        MultiObjectPool multiObjectPool;
+        MultiGameObjectPool multiObjectPool;
 
         public int TypeId => typeId;
-        public void Init(KObjectPool pool) {
+        public void Init(GameObjectPool pool) {
             this.pool = pool;
         }
-        public void Init(MultiObjectPool pool, int typeId) {
+        public void Init(MultiGameObjectPool pool, int typeId) {
             this.multiObjectPool = pool;
             this.typeId = typeId;
         }

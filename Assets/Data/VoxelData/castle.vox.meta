@@ -8,8 +8,12 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: fe237def5ae0e5349bfef6e153c7a9fe, type: 3}
-  numModels: 0
-  models: []
+  numModels: 1
+  models:
+  - chunkCountAxis: {x: 2, y: 2, z: 2}
+    numChunks: 8
+  - chunkCountAxis: {x: 2, y: 2, z: 2}
+    numChunks: 8
   voxelImportSettings:
     filepath: Assets/Data/VoxelData/castle.vox
     voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}

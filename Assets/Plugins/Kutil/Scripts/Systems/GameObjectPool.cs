@@ -8,7 +8,7 @@ namespace Kutil {
     /// <summary>
     /// For holding a pool of GameObjects, to reuse them instead of often destroying and instantiating them
     /// </summary>
-    public class KObjectPool : MonoBehaviour {
+    public class GameObjectPool : MonoBehaviour {
 
         [Min(0)]
         public int initpoolSize = 0;
@@ -149,7 +149,7 @@ namespace Kutil {
                 go = new GameObject();
                 go.transform.SetParent(transform);
             }
-            if (go.TryGetComponent<ObjectPoolObject>(out var opgo)) {
+            if (go.TryGetComponent<GameObjectPoolObject>(out var opgo)) {
                 opgo.Init(this);
             }
             // first time init Action

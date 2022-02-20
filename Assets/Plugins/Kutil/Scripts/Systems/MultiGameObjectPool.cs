@@ -9,7 +9,7 @@ namespace Kutil {
     /// <summary>
     /// For holding a pool of GameObjects, to reuse them instead of often destroying and instantiating them
     /// </summary>
-    public class MultiObjectPool : MonoBehaviour {
+    public class MultiGameObjectPool : MonoBehaviour {
 
         [Min(0)]
         public int initpoolSizeEach = 0;
@@ -272,13 +272,13 @@ namespace Kutil {
         /// <param name="go"></param>
         /// <returns></returns>
         public bool RecyclePoolObject(GameObject go) {
-            if (go.TryGetComponent<ObjectPoolObject>(out var poolObject)) {
+            if (go.TryGetComponent<GameObjectPoolObject>(out var poolObject)) {
                 Recycle(poolObject.TypeId, go);
                 return true;
             }
             return false;
         }
-        public void RecyclePoolObject(ObjectPoolObject poolObject) {
+        public void RecyclePoolObject(GameObjectPoolObject poolObject) {
             Recycle(poolObject.TypeId, poolObject.gameObject);
         }
         public void Recycle(int typeId, params GameObject[] gos) {
@@ -329,10 +329,10 @@ namespace Kutil {
                 go = new GameObject();
                 go.transform.SetParent(transform);
             }
-            if (go.TryGetComponent<ObjectPoolObject>(out var opgo)) {
+            if (go.TryGetComponent<GameObjectPoolObject>(out var opgo)) {
                 opgo.Init(this, typeId);
             } else if (forceAddPoolObjectComponent) {
-                opgo = go.AddComponent<ObjectPoolObject>();
+                opgo = go.AddComponent<GameObjectPoolObject>();
                 opgo.Init(this, typeId);
             }
             // first time init Action

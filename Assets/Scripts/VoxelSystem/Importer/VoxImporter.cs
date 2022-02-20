@@ -66,7 +66,7 @@ namespace VoxelSystem.Importer {
                         ChunkImportData chunkData = chunks[chunkIndex];
                         // Debug.Log($"{chunkIndex} from {chunkpos} ({chunkData.chunkPos}) ncpd{numChunksPerDir} vp{voxelpos} lp{localpos} chunkres{chunkRes}");
                         // chunkData.chunkPos = chunkpos;
-                        int matid = (int)data[x, y, z];
+                        int matid = (int)data[x, z, y];
                         // if (matid != 0) {
                         //     Debug.Log($"found {chunkpos} {voxelpos} is {matid}");
                         // }

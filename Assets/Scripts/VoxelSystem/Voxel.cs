@@ -3,6 +3,8 @@ using Kutil;
 using System.Linq;
 using System.Collections.Generic;
 using Unity.Collections;
+using System.Runtime.CompilerServices;
+using System;
 
 namespace VoxelSystem {
     /// <summary>
@@ -28,14 +30,26 @@ namespace VoxelSystem {
             VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
             return CreateVoxel(voxelMaterialId, world.neededData);
         }
-        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, List<TypeChoice<VoxelData>> neededData) {
-            List<VoxelData> voxelDataList = (neededData.Select(nvd => nvd.CreateInstance())).ToList();
-            voxelDataList.Sort((a, b) => a.sortOrder - b.sortOrder);// in descending order
-            Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
+        public static Voxel CreateVoxel(VoxelMaterialId voxelMaterialId, TypeChoice<VoxelData>[] neededData) {
+            // List<VoxelData> voxelDataList = (neededData.Select(nvd => nvd.CreateInstance())).ToList();
+            // voxelDataList.Sort(VoxelDataSortComparer());
+            // Voxel voxel = new Voxel(voxelMaterialId, voxelDataList.ToArray());
+            // neededData.Select(nvd => nvd.CreateInstance()).ToArray()
+            VoxelData[] voxelDatas = new VoxelData[neededData.Length];
+            for (int i = 0; i < voxelDatas.Length; i++)
+            {
+                voxelDatas[i] = neededData[i].CreateInstance();
+            }
+            Voxel voxel = new Voxel(voxelMaterialId, voxelDatas);
             // Debug.Log($"Adding {neededData.Count} vdatas {voxel} {voxelDataList.Aggregate("", (s, vd) => s + vd + ",")}");
-            voxelDataList.Clear();
+            // voxelDataList.Clear();
             return voxel;
         }
+
+        // private static Comparison<VoxelData> VoxelDataSortComparer() {
+        //     return (a, b) => a.sortOrder - b.sortOrder;// in descending order
+        // }
+
         public void Initialize(VoxelChunk chunk, Vector3Int localVoxelPos) {
             foreach (var voxelData in voxelDatas) {
                 voxelData.Initialize(this, chunk, localVoxelPos);
@@ -57,21 +71,50 @@ namespace VoxelSystem {
             voxelData = default;
             return false;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasVoxelDataFor<T>() where T : VoxelData {
-            return voxelDatas.Any(vd => vd.GetType() == typeof(T));
+            return HasVoxelDataFor(typeof(T));
+            // return voxelDatas.Any(vd => vd.GetType() == typeof(T));
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasVoxelDataFor(System.Type type) {
-            return voxelDatas.Any(vd => vd.GetType() == type);
+            for (int i = 0; i < voxelDatas.Length; i++) {
+                if (voxelDatas[i].GetType() == type) {
+                    return true;
+                }
+            }
+            return false;
+            // return voxelDatas.Any(vd => vd.GetType() == type);
         }
         public T GetVoxelDataFor<T>() where T : VoxelData {
-            return (T)voxelDatas.FirstOrDefault(vd => vd.GetType() == typeof(T));
+            System.Type t = typeof(T);
+            for (int i = 0; i < voxelDatas.Length; i++) {
+                if (voxelDatas[i].GetType() == t) {
+                    return (T)voxelDatas[i];
+                }
+            }
+            return default;
+            // return (T)voxelDatas.FirstOrDefault(vd => vd.GetType() == typeof(T));
         }
         // public TypeSelector<VoxelData> GetVoxelDataFor(TypeChoice<VoxelData> type) {
         //     return new TypeSelector<VoxelData>(voxelDatas.FirstOrDefault(vd => vd.GetType() == type.selectedType));
         // }
-        void RawSetVoxelDataFor<T>(T data) where T : VoxelData {
-            int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == typeof(T));
-            voxelDatas[v] = data;
+        /// <summary>
+        /// Set the voxel data without checking
+        /// </summary>
+        /// <param name="data"></param>
+        /// <typeparam name="T"></typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RawSetVoxelDataFor<T>(T data) where T : VoxelData {
+            // int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == typeof(T));
+            System.Type t = typeof(T);
+            // todo dict for Type, int voxeldata index? eh there shouldnt be too many voxeldatas
+            for (int i = 0; i < voxelDatas.Length; i++) {
+                if (voxelDatas[i].GetType() == t) {
+                    voxelDatas[i] = data;
+                    return;
+                }
+            }
         }
         // void RawSetVoxelDataFor(TypeSelector<VoxelData> data) {
         //     int v = voxelDatas.ToList().FindIndex(vd => vd.GetType() == data.type.selectedType);
@@ -102,7 +145,7 @@ namespace VoxelSystem {
         //     }
         //     voxelDatas = newVoxelDatas.ToArray();
         // }
-        public void SetOrAddVoxelDataFor<T>(T data, bool set = true, bool add = true, bool reinit = true) where T : VoxelData {
+        public void SetOrAddVoxelDataFor<T>(T data, bool set = true, bool add = true, bool reinit = false) where T : VoxelData {
             if (HasVoxelDataFor<T>()) {
                 if (set) {
                     RawSetVoxelDataFor(data);
@@ -112,9 +155,11 @@ namespace VoxelSystem {
                 }
             } else {
                 if (add) {
-                    List<VoxelData> newVoxelDatas = voxelDatas.ToList();
-                    newVoxelDatas.Add(data);
-                    voxelDatas = newVoxelDatas.ToArray();
+                    // List<VoxelData> newVoxelDatas = voxelDatas.ToList();
+                    // newVoxelDatas.Add(data);
+                    // voxelDatas = newVoxelDatas.ToArray();
+                    // voxelDataList.Sort(VoxelDataSortComparer());
+                    voxelDatas = voxelDatas.Append(data).ToArray();// todo sort?
                 }
             }
             if (reinit) {

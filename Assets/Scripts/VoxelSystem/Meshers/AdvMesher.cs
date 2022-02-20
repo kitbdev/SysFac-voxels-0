@@ -74,7 +74,7 @@ namespace VoxelSystem.Mesher {
             Bounds meshBounds = new Bounds(Vector3.one * world.chunkSize / 2f, Vector3.one * world.chunkSize);
             GenMeshJob.ScheduleParallel(
                     meshData, preprocessMeshData, voxelSize, meshBounds, materialSet.textureScale,
-                    default).Complete();
+                    4, default).Complete();
             preprocessMeshData.faceDatas.Dispose();
             preprocessMeshData.submeshDatas.Dispose();
             mesh ??= new Mesh();
@@ -100,12 +100,14 @@ namespace VoxelSystem.Mesher {
         //     int jobLength = 1;
         //     return job.ScheduleParallel(jobLength, 1, dependency);
         // }
-        List<MeshGenPData.FaceData> tlist;
+        List<MeshGenPData.FaceData> tlist = new List<MeshGenPData.FaceData>();
         List<int> submeshflist;
         void PreprocessExecute(int numSubMeshes) {
             // calculate mesh needs 
             submeshflist = new int[numSubMeshes].ToList();
-            tlist = new List<MeshGenPData.FaceData>();
+            tlist.Clear();
+            // int neiChunkRes = chunk.resolution+2;
+            // int[] neichunkvoxelCache = new int[neiChunkRes*neiChunkRes*neiChunkRes];
             for (int y = 0; y < chunk.resolution; y++) {
                 for (int z = 0; z < chunk.resolution; z++) {
                     for (int x = 0; x < chunk.resolution; x++) {
@@ -175,6 +177,8 @@ namespace VoxelSystem.Mesher {
             float voxelSize;
             [Unity.Collections.ReadOnly]
             float textureUVScale;
+            [Unity.Collections.ReadOnly]
+            int batchSize;
 
             [WriteOnly]
             MeshStream meshStream;
@@ -185,7 +189,7 @@ namespace VoxelSystem.Mesher {
             public static JobHandle ScheduleParallel(
                 Mesh.MeshData meshData, MeshGenPData meshGenPData, float voxelSize, Bounds meshBounds,
                 float textureUVScale,
-                JobHandle dependency) {
+                int jobLength, JobHandle dependency) {
                 var job = new GenMeshJob();
                 job.meshGenPData = meshGenPData;
                 job.voxelSize = voxelSize;
@@ -194,14 +198,21 @@ namespace VoxelSystem.Mesher {
                     meshGenPData.submeshDatas.Select(smd => new SubmeshDescData() {
                         bounds = meshBounds, vertexCount = smd.numVertices, indexCount = smd.numIndeces
                     }).ToArray());
-                int jobLength = 1;
+                job.batchSize = (int)math.ceil(((float)meshGenPData.faceDatas.Length) / jobLength);
+                // may have overflow, but oh well
+                // if (job.batchSize != ((float)meshGenPData.faceDatas.Length) / jobLength) {
+                //     Debug.LogWarning($"Adv Mesh Job job length {jobLength} is not a factor of num faces {meshGenPData.faceDatas.Length} mod:{meshGenPData.faceDatas.Length % jobLength}");
+                // }
                 JobHandle jobHandle = job.ScheduleParallel(jobLength, 1, dependency);
                 job.meshStream.Dispose(jobHandle);
                 return jobHandle;
             }
             void GenMeshExecute(int jobindex) {
-                // Debug.Log($"Job start {jindex)} {meshGenPData.faceDatas.Length}");
-                for (int i = 0; i < meshGenPData.faceDatas.Length; i++) {
+                // Debug.Log($"Job {jobindex} start batchlen:{batchSize} faces:{meshGenPData.faceDatas.Length}");
+                // for each face
+                int faceStart = jobindex * batchSize;
+                for (int i = faceStart; i < faceStart + batchSize
+                    && i < meshGenPData.faceDatas.Length; i++) {
                     int vi = i * 4;
                     MeshGenPData.FaceData faceData = meshGenPData.faceDatas[i];
                     int d = (int)faceData.faceNormal;

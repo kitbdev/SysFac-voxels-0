@@ -23,7 +23,7 @@ public class BlockManager : Singleton<BlockManager> {
     // List<BlockType> _blockTypes = new List<BlockType>();
     Dictionary<string, BlockType> _blockTypeDict = new Dictionary<string, BlockType>();
 
-    public List<BlockType> blockTypes { get => blockTypesHolder?.blockTypes?.ToList(); }
+    public BlockType[] blockTypes { get => blockTypesHolder?.blockTypes; }
     public Dictionary<string, BlockType> blockTypeDict { get => _blockTypeDict; private set => _blockTypeDict = value; }
 
     private void OnEnable() {
@@ -32,7 +32,7 @@ public class BlockManager : Singleton<BlockManager> {
     }
 
     public BlockType GetBlockTypeAtIndex(int index) {
-        if (index >= 0 && index < blockTypes.Count) {
+        if (index >= 0 && index < blockTypes.Length) {
             return blockTypes[index];
         } else {
             Debug.LogWarning($"Block index {index} does not exist!");

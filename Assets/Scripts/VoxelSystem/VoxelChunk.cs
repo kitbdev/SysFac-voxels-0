@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Kutil;
 using System.Linq;
+using UnityEngine.Pool;
 
 namespace VoxelSystem {
     /// <summary>
@@ -57,7 +58,7 @@ namespace VoxelSystem {
 
         public void PopulateVoxels(VoxelMaterialId voxelMaterialId) {
             voxels = new Voxel[volume];
-            List<TypeChoice<VoxelData>> neededData = world.neededData;
+            TypeChoice<VoxelData>[] neededData = world.neededData;
             // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
             for (int i = 0; i < volume; i++) {
                 // y,z,x
@@ -66,7 +67,7 @@ namespace VoxelSystem {
                 voxels[i] = voxel;
             }
         }
-        public void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, List<TypeChoice<VoxelData>> neededData = null) {
+        public void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, TypeChoice<VoxelData>[] neededData = null) {
             if (voxelMaterialIds.Length != volume) return;
             voxels = new Voxel[volume];
             neededData ??= world.neededData;
@@ -74,6 +75,10 @@ namespace VoxelSystem {
             for (int i = 0; i < volume; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);
+                // todo instead of making the voxel create all of its datas, fill a pool of the needed types here and give to the voxel
+                // ObjectPool<VoxelData> voxelDataPool = new UnityEngine.Pool.ObjectPool<VoxelData>();
+                // voxelDataPool.Get()
+                
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], neededData);
                 voxels[i] = voxel;
             }
@@ -334,5 +339,47 @@ namespace VoxelSystem {
             Gizmos.DrawCube(world.ChunkposToWorldposCenter(chunkPos), world.chunkSize * Vector3.one);
             Gizmos.color = Color.white;
         }
+        /*
+        [System.Serializable]
+    class RawVoxelRun {
+        public int count;
+        public RawVoxel data;
+    }
+    RawVoxelRun[] ToRawVoxelRuns() {
+        // todo test these
+        // should be a more compact format
+        List<RawVoxelRun> runList = new List<RawVoxelRun>();
+        for (int i = 0; i < voxels.Length; i++) {
+            var rv = voxels[i].ToRawVoxel();
+            if (runList.Count == 0 || runList[runList.Count - 1].data != rv) {
+                runList.Add(new RawVoxelRun { count = 1, data = rv });
+            } else {
+                runList[runList.Count - 1].count++;
+            }
+        }
+        return runList.ToArray();
+    }
+    void SetDataFromRawVoxelRuns(RawVoxelRun[] runs) {
+        if (runs == null) {
+            return;
+        }
+        int run = -1;
+        int cnt = 0;
+        for (int i = 0; i < volume; i++) {
+            if (cnt <= 0) {
+                run++;
+                if (run > runs.Length || runs[run] == null) {
+                    Debug.LogError("Invalid RawVoxelRun!");
+                    return;
+                }
+                cnt = runs[run].count;
+            }
+            voxels[i].value = runs[run].data.value;
+            voxels[i].colorId = runs[run].data.colorId;
+            cnt--;
+        }
+
+    }
+    */
     }
 }
