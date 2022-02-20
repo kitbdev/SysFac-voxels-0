@@ -51,7 +51,7 @@ namespace VoxelSystem {
         public void LoadChunks() {
             world ??= GetComponent<VoxelWorld>();
             world.UnloadAllChunks();
-            world.LoadChunks(chunksToLoad);
+            world.LoadChunksAndGen(chunksToLoad);
         }
     }
 }

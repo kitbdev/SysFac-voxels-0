@@ -12,25 +12,26 @@ namespace VoxelSystem.Importer {
     public class VoxAssetImporter : ScriptedImporter {
 
         [Header("Data")]
-        [ReadOnly]
-        public int numChunks = 0;
+        // [ReadOnly]
+        // [SerializeField]
+        FullVoxelImportData fullVoxelImportData;
         [Header("Settings")]
-        public VoxelImportSettings voxelImportSettings;
-        public bool asPrefab = true;
+        public VoxelImportSettings voxelImportSettings = new VoxelImportSettings();
+        public bool asPrefab = false;
         public bool areRoomsLimbs = false;
 
         public override void OnImportAsset(AssetImportContext ctx) {
-
+            voxelImportSettings ??= new VoxelImportSettings();
             voxelImportSettings.filepath = ctx.assetPath;
-            VoxelRoomData[] voxelRoomDatas = VoxelImporter.Load(voxelImportSettings);
-            if (voxelRoomDatas == null || voxelRoomDatas.Length < 1) {
+            fullVoxelImportData = VoxelImporter.Load(voxelImportSettings);
+            if (fullVoxelImportData == null) {
                 // load fail
                 Debug.LogError($"Failed to load {ctx.assetPath} vox info");
                 return;
             }
+
             string filename = System.IO.Path.GetFileName(ctx.assetPath);
             if (asPrefab) {
-
                 GameObject maingo = new GameObject("voxel load");
                 VoxelWorld voxelWorld = maingo.AddComponent<VoxelWorld>();
                 voxelWorld.voxelSize = 0.5f;
@@ -39,8 +40,8 @@ namespace VoxelSystem.Importer {
                 // FixedChunkLoader fixedChunkLoader = maingo.AddComponent<FixedChunkLoader>();
                 // fixedChunkLoader.SetChunksToLoadOrigin();
                 // voxelWorld.SendMessage("OnEnable", SendMessageOptions.DontRequireReceiver);
-                
-                voxelWorld.LoadRoomFromData(voxelRoomDatas);
+                voxelWorld.enableCollision = false;
+                voxelWorld.LoadFullImportVoxelData(fullVoxelImportData);
                 // fixedChunkLoader.LoadChunks();
                 // voxelWorld.set
                 // maingo.AddComponent<VoxelRenderer>()
@@ -49,7 +50,7 @@ namespace VoxelSystem.Importer {
             } else {
                 ImportedVoxelData importedVoxelData = ScriptableObject.CreateInstance<ImportedVoxelData>();
                 importedVoxelData.modelName = filename;
-                importedVoxelData.roomsData = voxelRoomDatas;
+                importedVoxelData.fullVoxelImportData = fullVoxelImportData;
                 ctx.AddObjectToAsset("imported vox asset", importedVoxelData);
                 ctx.SetMainObject(importedVoxelData);
             }

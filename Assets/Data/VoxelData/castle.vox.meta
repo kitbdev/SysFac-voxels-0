@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 2ba58e94b9c71134d90a57106b38be43
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: fe237def5ae0e5349bfef6e153c7a9fe, type: 3}
+  voxelImportSettings:
+    filepath: Assets/Data/VoxelData/castle.vox
+    voxelMaterialSet: {instanceID: 0}
+    voxelSize: 1
+    chunkResolution: 16
+    chunkPosOffset: {x: 0, y: 0, z: 0}
+  asPrefab: 0
+  areRoomsLimbs: 0

@@ -35,10 +35,11 @@ namespace VoxelSystem {
             if (!visuals) {
                 visuals = gameObject.AddComponent<VoxelRenderer>();
             }
-
             visuals.Initialize(this);
+
             if (populate) {
                 PopulateVoxels();
+                InitVoxels();
             }
             if (world.enableCollision) { // todo: only colliders on some chunks
                 AddColliders();
@@ -64,9 +65,8 @@ namespace VoxelSystem {
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, neededData);
                 voxels[i] = voxel;
             }
-            InitVoxels();
         }
-        public void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, List<TypeChoice<VoxelData>> neededData = null, bool init = true) {
+        public void PopulateVoxels(VoxelMaterialId[] voxelMaterialIds, List<TypeChoice<VoxelData>> neededData = null) {
             if (voxelMaterialIds.Length != volume) return;
             voxels = new Voxel[volume];
             neededData ??= world.neededData;
@@ -76,9 +76,6 @@ namespace VoxelSystem {
                 Vector3Int position = GetLocalPos(i);
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], neededData);
                 voxels[i] = voxel;
-            }
-            if (init) {
-                InitVoxels();
             }
         }
         public void InitVoxels() {

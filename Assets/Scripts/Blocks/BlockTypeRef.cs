@@ -36,6 +36,11 @@ public struct BlockTypeRef {
     }
     public BlockTypeRef SetBlockId(int blockid) {
         this.blockid = blockid;
+        int maxBlockId = BlockManager.Instance.blockTypes.Count;
+        if (this.blockid >= maxBlockId) {
+            Debug.LogWarning($"BlockTypeRef {blockid} is larger than {maxBlockId} setting to default 0");
+            this.blockid = Default.blockid;
+        }
         return this;
     }
 

@@ -21,7 +21,7 @@ namespace VoxelSystem {
         }
         [ContextMenu("Load Data")]
         public void LoadData() {
-            world?.LoadRoomFromData(voxelData?.roomsData);
+            world?.LoadFullImportVoxelData(voxelData?.fullVoxelImportData);
         }
     }
 }

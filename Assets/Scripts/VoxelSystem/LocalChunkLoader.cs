@@ -63,8 +63,8 @@ namespace VoxelSystem {
 
             var loadChunks = validChunks.Except(world.activeChunksPos);
             var unloadChunks = world.activeChunksPos.Except(validChunks);
-            world.LoadChunks(loadChunks.ToArray());
             world.UnloadChunks(unloadChunks.ToArray());
+            world.LoadChunksAndGen(loadChunks.ToArray());
         }
         private void OnDrawGizmosSelected() {
             if (!showDebug) return;

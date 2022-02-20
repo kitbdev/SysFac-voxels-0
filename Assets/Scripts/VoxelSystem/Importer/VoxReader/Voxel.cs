@@ -4,7 +4,7 @@ namespace VoxReader
     {
         /// <summary>
         /// The position of the voxel.
-        /// </summary>
+        /// /// </summary>
         public Vector3 Position { get; }
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace VoxReader
         /// </summary>
         public int ColorIndex { get; }
 
-        internal Voxel(Vector3 position, Color color,int colorIndex)
+        internal Voxel(Vector3 position, Color color, int colorIndex)
         {
             Position = position;
             Color = color;
@@ -26,7 +26,7 @@ namespace VoxReader
 
         public override string ToString()
         {
-            return $"Position: [{Position}], Color: [{Color}]";
+            return $"Position: [{Position}], Color: [{Color}], ColorIndex: [{ColorIndex}]";
         }
     }
 }

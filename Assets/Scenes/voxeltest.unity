@@ -713,20 +713,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voxelSize: 0.5
-  defaultChunkResolution: 32
+  chunkResolution: 16
   mesher:
     _selectedType:
       assemblyName: VoxelSystem.Mesher.AdvMesher, VoxelSystem, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
+  renderNullSides: 1
   enableCollision: 0
   useBoxColliders: 1
-  renderNullSides: 1
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
   additionalData:
   - _selectedType:
       assemblyName: BlockTypeVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-  voxelChunkPrefab: {fileID: 26116451302894713, guid: 8ffee07031f93dc43b65e2ee9c1bc752, type: 3}
   _activeChunks: []
 --- !u!4 &1191201397
 Transform:
@@ -789,7 +788,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1191201395}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99a514714c88ff243adcf6e7f381102f, type: 3}
   m_Name: 
@@ -812,7 +811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   world: {fileID: 1191201396}
-  voxelData: {fileID: 0}
+  voxelData: {fileID: -3141114760809212889, guid: 374b135349e290244ab3efa3336d4482, type: 3}
 --- !u!1 &1264246706
 GameObject:
   m_ObjectHideFlags: 0
