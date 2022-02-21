@@ -10,10 +10,10 @@ namespace VoxelSystem.Importer {
     public class FullVoxelImportData {
         public int chunkResolution;
         public float voxelSize;
-        public VoxelRoomModelImportData[] rooms;
+        public VoxelModelImportData[] models;
     }
     [System.Serializable]
-    public class VoxelRoomModelImportData {
+    public class VoxelModelImportData {
         // public int id;
         // public UnityEngine.Vector3 offset;
         public Vector3Int modelSize;
@@ -35,7 +35,7 @@ namespace VoxelSystem.Importer {
     public class VoxelImportSettings {
         [HideInInspector]
         public string filepath;
-        public VoxelMaterialSetSO voxelMaterialSet;
+        // public VoxelMaterialSetSO voxelMaterialSet;
         public float voxelSize = 1f;
         public int chunkResolution = 16;
         public Vector3Int chunkPosOffset;
@@ -43,7 +43,7 @@ namespace VoxelSystem.Importer {
         public override string ToString() {
             return "VoxelImportSettings" +
                 "filepath:" + filepath + " " +
-                "voxelMaterialSet:" + voxelMaterialSet + " " +
+                // "voxelMaterialSet:" + voxelMaterialSet + " " +
                 "voxelSize:" + voxelSize + " " +
                 "chunkResolution:" + chunkResolution + " " +
                 "chunkPosOffset:" + chunkPosOffset + " ";

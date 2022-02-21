@@ -14,6 +14,7 @@ namespace VoxelSystem.Importer {
         [Header("Data")]
         [ReadOnly]
         [SerializeField] int numModels;
+        [SerializeField] OgtVox.OgtVoxImporter.ogt_vox_scene scene;
         [System.Serializable]
         struct Models {
             public Vector3Int modelSize;
@@ -33,20 +34,23 @@ namespace VoxelSystem.Importer {
         public override void OnImportAsset(AssetImportContext ctx) {
             voxelImportSettings ??= new VoxelImportSettings();
             voxelImportSettings.filepath = ctx.assetPath;
+            // scene = OgtVox.OgtVoxImporter.Load(voxelImportSettings);
+            // return;
+            // fullVoxelImportData = OgtVox.OgtVoxImporter.Load(voxelImportSettings);
             fullVoxelImportData = VoxImporter.Load(voxelImportSettings);
             if (fullVoxelImportData == null) {
                 // load fail
                 Debug.LogError($"Failed to load {ctx.assetPath} vox info");
                 return;
             }
-            numModels = fullVoxelImportData.rooms.Length;
+            numModels = fullVoxelImportData.models.Length;
             models.Clear();
             for (int i = 0; i < numModels; i++) {
                 models.Add(new Models() {
-                    modelSize = fullVoxelImportData.rooms[i].modelSize,
-                    numChunks = fullVoxelImportData.rooms[i].chunks.Length,
-                    offset = fullVoxelImportData.rooms[i].offset,
-                    chunkCountAxis = fullVoxelImportData.rooms[i].numChunksByAxis,
+                    modelSize = fullVoxelImportData.models[i].modelSize,
+                    numChunks = fullVoxelImportData.models[i].chunks.Length,
+                    offset = fullVoxelImportData.models[i].offset,
+                    chunkCountAxis = fullVoxelImportData.models[i].numChunksByAxis,
                 });
             }
             string filename = System.IO.Path.GetFileName(ctx.assetPath);

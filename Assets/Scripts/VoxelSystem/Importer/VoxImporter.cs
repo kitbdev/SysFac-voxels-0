@@ -16,7 +16,7 @@ namespace VoxelSystem.Importer {
     public class VoxLoader : IVoxLoader {
         public VoxelImportSettings importSettings;
         public FullVoxelImportData fullVoxelImportData;
-        public VoxelRoomModelImportData currentRoom;
+        public VoxelModelImportData currentRoom;
         public int chunkRes => importSettings.chunkResolution;
         public Vector3Int latestPos;
         bool debug = false;
@@ -25,10 +25,10 @@ namespace VoxelSystem.Importer {
             if (debug) Debug.Log($"New VoxLoader");
             this.importSettings = importSettings;
             fullVoxelImportData = new FullVoxelImportData();
-            currentRoom = new VoxelRoomModelImportData();
+            currentRoom = new VoxelModelImportData();
             fullVoxelImportData.chunkResolution = chunkRes;
             fullVoxelImportData.voxelSize = importSettings.voxelSize;
-            fullVoxelImportData.rooms = new VoxelRoomModelImportData[0];
+            fullVoxelImportData.models = new VoxelModelImportData[0];
             latestPos = Vector3Int.zero;
         }
         // void NewRoom() {
@@ -89,16 +89,16 @@ namespace VoxelSystem.Importer {
                     }
                 }
             }
-            var roomModelImportData = new VoxelRoomModelImportData() {
+            var roomModelImportData = new VoxelModelImportData() {
                 // id = 
                 modelSize = modelSize,
                 offset = latestPos,
                 numChunksByAxis = numChunksPerDir,
                 chunks = chunks
             };
-            List<VoxelRoomModelImportData> voxelRoomModelImportDatas = fullVoxelImportData.rooms.ToList();
+            List<VoxelModelImportData> voxelRoomModelImportDatas = fullVoxelImportData.models.ToList();
             voxelRoomModelImportDatas.Add(roomModelImportData);
-            fullVoxelImportData.rooms = voxelRoomModelImportDatas.ToArray();
+            fullVoxelImportData.models = voxelRoomModelImportDatas.ToArray();
         }
 
         public void LoadPalette(uint[] palette) {

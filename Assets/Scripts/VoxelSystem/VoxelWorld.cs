@@ -187,12 +187,13 @@ namespace VoxelSystem {
             if (fullVoxelImportData == null) return;
             voxelSize = fullVoxelImportData.voxelSize;
             chunkResolution = fullVoxelImportData.chunkResolution;
-            Debug.Log($"Loading from import data models:{fullVoxelImportData.rooms.Length} vsize:{voxelSize} cres:{chunkResolution}");
-            LoadRoomsImportData(fullVoxelImportData.rooms);
+            Debug.Log($"Loading from import data models:{fullVoxelImportData.models.Length} vsize:{voxelSize} cres:{chunkResolution}");
+            LoadModelsImportData(fullVoxelImportData.models);
         }
-        void LoadRoomsImportData(Importer.VoxelRoomModelImportData[] rooms) {
+        void LoadModelsImportData(Importer.VoxelModelImportData[] rooms) {
             if (rooms != null) {
                 Clear();
+                //? load each model seperately (in seperate worlds?)
                 // if (rooms.Length > 0)
                 foreach (var room in rooms) {
                     LoadChunksImportData(room.chunks, room.offset);
