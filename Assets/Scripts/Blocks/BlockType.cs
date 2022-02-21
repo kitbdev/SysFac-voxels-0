@@ -15,6 +15,6 @@ public class BlockType {
     public int itemid;
 
     public override string ToString() {
-        return $"{id}-{displayName}";
+        return $"Blocktype{id}-'{displayName}'";
     }
 }

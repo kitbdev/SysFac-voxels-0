@@ -28,9 +28,10 @@ namespace VoxelSystem {
     }
     [System.Serializable]
     public struct DefaultVoxelData : VoxelData {
-        [SerializeReference]
-        public Voxel voxel;
+        // [SerializeReference]
+        // public Voxel voxel;
         public Vector3Int localVoxelPos;
+        public Vector3Int blockPos;
         [SerializeReference]
         public VoxelChunk chunk;
 
@@ -39,8 +40,9 @@ namespace VoxelSystem {
         public void CopyValuesFrom(VoxelData from) {
             if (from is DefaultVoxelData vd) {
                 // voxel.CopyValuesFrom(vd.voxel);
-                voxel = vd.voxel;
+                // voxel = vd.voxel;
                 localVoxelPos = vd.localVoxelPos;
+                blockPos = vd.blockPos;
                 chunk = vd.chunk;
             }
         }
@@ -54,12 +56,13 @@ namespace VoxelSystem {
         public void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) {
             // Debug.Log("DefaultVoxelData init");
             // voxel.CopyValuesFrom(vd.voxel);// todo copy?
-            this.voxel = voxel;// it was never set!
+            // this.voxel = voxel;// it was never set!
             this.chunk = chunk;
+            this.blockPos = chunk.chunkPos * chunk.resolution + localVoxelPos;
             this.localVoxelPos = localVoxelPos;
         }
         public override string ToString() {
-            return $"{base.ToString()} v:{voxel != null} lvp:{localVoxelPos} c:{chunk != null}";
+            return $"{{{this.GetType().Name} bp:{blockPos} lvp:{localVoxelPos} c:{chunk != null}}}";
         }
     }
     [System.Serializable]

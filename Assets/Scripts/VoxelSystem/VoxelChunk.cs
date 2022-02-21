@@ -131,7 +131,7 @@ namespace VoxelSystem {
         public void Refresh(bool andNeighbors = false) {
             visuals.UpdateMesh();
             UpdateColliders();
-            if (andNeighbors) {
+            if (andNeighbors) {//todo only 4(6)-way neighbors
                 // updates the 7 neighbors behind, below, and left (otherwise recursion?)
                 for (int i = 1; i < Voxel.cubePositions.Length; i++) {
                     Vector3Int dir = -Voxel.cubePositions[i];

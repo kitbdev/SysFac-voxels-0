@@ -33,6 +33,8 @@ namespace VoxelSystem {
 
         public event System.Action<Vector3Int> generateChunkEvent;
         public event System.Action<Importer.ImportedVoxel, Voxel> loadImportPopulateEvent;
+        public event System.Action<Vector3Int> onChunkLoadEvent;
+        public event System.Action<Vector3Int> onChunkUnLoadEvent;
 
         public float chunkSize => voxelSize * chunkResolution;
 
@@ -109,6 +111,12 @@ namespace VoxelSystem {
         public void RefreshAll() {
             foreach (var chunk in activeChunks) {
                 chunk.Refresh();
+            }
+        }
+        public void RefreshChunks(params Vector3Int[] chunkspos) {
+            foreach (var chunkpos in chunkspos) {
+                VoxelChunk voxelChunk = GetChunkAt(chunkpos);
+                voxelChunk?.Refresh();
             }
         }
         [ContextMenu("Clear")]
@@ -190,16 +198,26 @@ namespace VoxelSystem {
             renderNullSides = worldSaveData.renderNullSides;
             materialSet = worldSaveData.materialSet;
             ChunkSaveData[] chunks = worldSaveData.chunks;
+            Clear();
             LoadChunksFromData(chunks);
         }
 
-        public void LoadChunksFromData(ChunkSaveData[] chunks) {
-            Clear();
+        public void LoadChunksFromData(ChunkSaveData[] chunks, bool overwrite = false) {
+            List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];
-                CreateChunk(chunkSaveData);
+                if (HasChunkActiveAt(chunkSaveData.chunkPos)) {
+                    if (overwrite) {
+                        GetChunkAt(chunkSaveData.chunkPos).OverrideVoxels(chunkSaveData.voxels);
+                        chunksToRefresh.Add(chunkSaveData.chunkPos);
+                    }
+                    continue;
+                }
+                VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
+                voxelChunk.OverrideVoxels(chunkSaveData.voxels);
+                chunksToRefresh.Add(chunkSaveData.chunkPos);
             }
-            RefreshAll();
+            RefreshChunks(chunksToRefresh.ToArray());
         }
         public void LoadFullImportVoxelData(Importer.FullVoxelImportData fullVoxelImportData) {
             if (fullVoxelImportData == null) return;
@@ -221,6 +239,9 @@ namespace VoxelSystem {
                     LoadChunksImportData(model.chunks, model.position);
                 }
             }
+        }
+        void LoadModelImportData(Importer.VoxelModelImportData modelImportData) {
+            
         }
         void LoadChunksImportData(Importer.ChunkImportData[] chunks, Vector3Int vOffset) {
             // Debug.Log($"Loading from import chunks:{chunks.Length}");
@@ -334,12 +355,6 @@ namespace VoxelSystem {
                 }
             }
             voxelChunk.InitVoxels();
-            return voxelChunk;
-        }
-        VoxelChunk CreateChunk(ChunkSaveData chunkSaveData) {
-            // Debug.Log($"Creating savedata chunk {chunkSaveData.chunkPos}");
-            VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
-            voxelChunk.OverrideVoxels(chunkSaveData.voxels);
             return voxelChunk;
         }
         VoxelChunk CreateChunk(Vector3Int chunkPos, bool populate = true) {

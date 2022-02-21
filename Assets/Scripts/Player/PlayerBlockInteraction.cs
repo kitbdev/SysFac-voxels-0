@@ -30,6 +30,11 @@ public class PlayerBlockInteraction : MonoBehaviour {
         world ??= GameManager.Instance.mainWorld;
         cam = Camera.main.transform;
     }
+    private void Start() {
+        if (targetBlockFollow) {
+            targetBlockFollow.localScale *= world.voxelSize;
+        }
+    }
     private void Update() {
         bool validTarget = CheckCursorBlock();
         if (targetBlockFollow) {
@@ -111,8 +116,8 @@ public class PlayerBlockInteraction : MonoBehaviour {
     }
     private void SetBlockType(Vector3Int blockPos, BlockTypeRef blocktype) {
         Voxel voxel = world.GetVoxelAt(blockPos);
-        if (voxel == null){
-            
+        if (voxel == null) {
+
             Debug.LogWarning("out of map, No voxel there!");
             return;
         }

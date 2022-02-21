@@ -74,7 +74,8 @@ namespace Kutil {
                 if (splitpath[1].Contains(arrayStr) && splitpath[1].Split('.', 2)[0].Equals(arrayStr)) {
                     // this element is an enumerable
                     var newpath = splitpath[1].Split('.', 2)[1];
-                    bool gotarray = TryGetValue<IEnumerable<System.Object>>(target, splitpath[0], defFlags, out var ntargets);
+                    // can't use IEnumerable<System.Object> because it might be a struct
+                    bool gotarray = TryGetValue<IEnumerable>(target, splitpath[0], defFlags, out var ntargets);
                     if (!gotarray) {
                         Debug.LogWarning($"TryGetValue Failed to get enumerable {memberPath} on {target}");
                         memberInfo = default; return false;
@@ -95,7 +96,12 @@ namespace Kutil {
                         Debug.LogWarning("TryGetValue array base member check");
                         // value = default; return false;
                     }
-                    var ntarget = ntargets.ToArray()[arrayIndex];
+                    var enumerator = ntargets.GetEnumerator();
+                    enumerator.MoveNext();// 0
+                    for (int n = 0; n < arrayIndex; n++) {
+                        enumerator.MoveNext();
+                    }
+                    var ntarget = enumerator.Current;// .ToArray()[arrayIndex];
                     target = ntarget;
                     return TryGetMemberInfo(ref target, newpath, flags, out memberInfo);
                 } else {
@@ -145,12 +151,10 @@ namespace Kutil {
                 value = default;
                 return false;
             }
-            value = (T)obj;
-            // if (obj is T val) {
-            //     value = val;
-            if (value != null) {
+            try {
+                value = (T)obj;
                 return true;
-            } else {
+            } catch {
                 Debug.LogWarning($"{target}.{memberInfo.Name} is not of type {typeof(T)}!");
                 value = default;
                 return false;

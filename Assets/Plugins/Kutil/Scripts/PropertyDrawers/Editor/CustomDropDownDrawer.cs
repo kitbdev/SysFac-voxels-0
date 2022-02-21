@@ -28,8 +28,16 @@ namespace Kutil {
                 if (dropdownAtt.dropdownDataFieldName != null) {
                     customDropDownData = property.GetValueOnPropRefl<CustomDropDownData>(dropdownAtt.dropdownDataFieldName);
                     if (customDropDownData == null) {
-                        Debug.LogError($"Invalid dropdownDataFieldName {dropdownAtt.dropdownDataFieldName}");
-                        DrawDefGUI(position, property, label);
+                        Debug.LogError($"Invalid dropdownDataFieldName {dropdownAtt.dropdownDataFieldName} {property.propertyPath}");
+                        numLines = 2;
+                        // position.height /= 2;
+                        Rect labelrect = EditorGUI.IndentedRect(position);
+                        string warningText = $"Invalid dropdownDataFieldName {dropdownAtt.dropdownDataFieldName}";
+                        // EditorGUI.HelpBox(labelrect, warningText, MessageType.Warning);
+                        // backup textfield
+                        // position.y += EditorGUIUtility.singleLineHeight;
+                        EditorGUI.PropertyField(position, property, label);
+                        // DrawDefGUI(position, property, label);
                         return;
                     }
                 } else {

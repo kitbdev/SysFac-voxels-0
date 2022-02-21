@@ -252,9 +252,9 @@ namespace VoxelSystem {
 
         public string ToStringFull() {
             string str = $"Voxel mat:{voxelMaterialId} datas({voxelDatas.Length}):[";
-            string postDelim = voxelDatas.Length > 3 ? "\n" : " ";
+            string preDelim = voxelDatas.Length > 2 ? "\n" : " ";
             foreach (var vd in voxelDatas) {
-                str += $"{vd.ToString()},{postDelim}";
+                str += $"{preDelim}{vd.ToString()},";
             }
             str += "]";
             return str;
