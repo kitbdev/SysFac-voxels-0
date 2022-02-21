@@ -18,7 +18,8 @@ namespace VoxelSystem.Importer {
         // public UnityEngine.Vector3 offset;
         public Vector3Int modelSize;
         public Vector3Int numChunksByAxis;
-        public Vector3Int offset;
+        public Vector3Int position;
+        public Matrix4x4 trMatrix;
         public ChunkImportData[] chunks;
     }
     [System.Serializable]

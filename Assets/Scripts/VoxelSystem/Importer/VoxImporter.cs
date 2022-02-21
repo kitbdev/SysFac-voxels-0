@@ -92,7 +92,7 @@ namespace VoxelSystem.Importer {
             var roomModelImportData = new VoxelModelImportData() {
                 // id = 
                 modelSize = modelSize,
-                offset = latestPos,
+                position = latestPos,
                 numChunksByAxis = numChunksPerDir,
                 chunks = chunks
             };
