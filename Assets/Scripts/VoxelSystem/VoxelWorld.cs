@@ -19,6 +19,7 @@ namespace VoxelSystem {
         public bool renderNullSides = true;
         public bool enableCollision = true;
         public bool useBoxColliders = true;
+        public bool clearOnAwake = true;
         public VoxelMaterialSetSO materialSet;
 
         public List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
@@ -49,14 +50,18 @@ namespace VoxelSystem {
             UpdateNeededData();
         }
         private void Awake() {
-            // Clear();
+            if (clearOnAwake) {
+                Clear();
+            }
         }
         private void OnEnable() {
-            ReloadPool();
+            if (clearOnAwake || chunkPool == null) {
+                Initialize();
+            }
         }
-        [ContextMenu("Init pool")]
-        void ReloadPool() {
-            chunkPool ??= new UnityEngine.Pool.ObjectPool<GameObject>(
+        [ContextMenu("Init")]
+        void Initialize() {
+            chunkPool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 () => {
                     GameObject chunk;
                     // if (voxelChunkPrefab != null) {
@@ -77,14 +82,19 @@ namespace VoxelSystem {
                     }
                 },
                 true, 50, 1000);
-            // fix active chunks dict
+            // set active chunks dict
             activeChunksDict = activeChunks?.ToDictionary(vc => vc.chunkPos);
+            UpdateNeededData();
         }
         private void OnDisable() {
+            if (clearOnAwake) {
+                Clear();
+                ClearPool();
+            }
         }
         private void OnDestroy() {
             RemoveAllChunks();
-            chunkPool.Dispose();
+            ClearPool();
         }
         public TypeChoice<VoxelData>[] UpdateNeededData() {
             List<TypeChoice<VoxelData>> datas = new List<TypeChoice<VoxelData>>(additionalData);
@@ -108,18 +118,26 @@ namespace VoxelSystem {
                 activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
                 // chunksToPopulate = new List<int>();
             } else {
-                if (chunkPool == null) {
-                    ReloadPool();
-                }
                 for (int i = activeChunks.Count - 1; i >= 0; i--) {
                     if (!activeChunks[i]) continue;
                     VoxelChunk chunk = activeChunks[i];
                     chunk.Clear();
-                    chunkPool.Release(chunk.gameObject);
+                    chunkPool?.Release(chunk.gameObject);
                 }
                 activeChunks.Clear();
-                activeChunksDict.Clear();
+                activeChunksDict?.Clear();
                 // chunksToPopulate.Clear();
+            }
+        }
+        void ClearPool() {
+            chunkPool?.Dispose();
+            for (int i = transform.childCount - 1; i >= 0; i--) {
+                GameObject cgo = transform.GetChild(i).gameObject;
+                if (Application.isPlaying) {
+                    Destroy(cgo);
+                } else {
+                    DestroyImmediate(cgo);
+                }
             }
         }
 
@@ -194,8 +212,9 @@ namespace VoxelSystem {
             if (rooms != null) {
                 Clear();
                 //? load each model seperately (in seperate worlds?)
-                // if (rooms.Length > 0)
-                foreach (var room in rooms) {
+                if (rooms.Length > 0) {// todo fix loader multiple model offsets
+                    var room = rooms[0];
+                    // foreach (var room in rooms) {
                     LoadChunksImportData(room.chunks, room.offset);
                 }
             }

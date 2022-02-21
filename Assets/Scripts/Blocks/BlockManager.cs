@@ -23,9 +23,18 @@ public class BlockManager : Singleton<BlockManager> {
     // List<BlockType> _blockTypes = new List<BlockType>();
     Dictionary<string, BlockType> _blockTypeDict = new Dictionary<string, BlockType>();
 
+    public TickUpdater blockTick;
+
     public BlockType[] blockTypes { get => blockTypesHolder?.blockTypes; }
     public Dictionary<string, BlockType> blockTypeDict { get => _blockTypeDict; private set => _blockTypeDict = value; }
 
+    private void OnValidate() {
+        blockTick ??= GetComponent<TickUpdater>();
+    }
+    protected override void Awake() {
+        base.Awake();
+        blockTick ??= GetComponent<TickUpdater>();
+    }
     private void OnEnable() {
         // LoadData();
         blockTypeDict = blockTypes?.ToDictionary((b) => b.idname);
@@ -48,7 +57,7 @@ public class BlockManager : Singleton<BlockManager> {
         }
     }
     public static void SetBlockType(Voxel voxel, BlockTypeRef newBlockType) {
-        if (voxel == null){
+        if (voxel == null) {
             Debug.LogWarning("Cannot set BlockType, no voxel");
             return;
         }

@@ -8,9 +8,11 @@ namespace VoxelSystem {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class VoxelRenderer : MonoBehaviour {
 
-        [SerializeField, SerializeReference]
+        [SerializeField, SerializeReference, ReadOnly]
         VoxelMesher voxelMesher;
+        [SerializeField, ReadOnly]
         MeshFilter meshFilter;
+        [SerializeField, ReadOnly]
         VoxelChunk chunk;
 
         public void Initialize(VoxelChunk chunk) {
@@ -52,6 +54,9 @@ namespace VoxelSystem {
             Mesh mesh = voxelMesher.ApplyMesh();
 
             meshFilter ??= GetComponent<MeshFilter>();
+            if (meshFilter == null) {
+                Debug.LogWarning($"no mesh filter on {name}");
+            }
             meshFilter.sharedMesh = mesh;
 #if UNITY_EDITOR
             if (!Application.isPlaying) {

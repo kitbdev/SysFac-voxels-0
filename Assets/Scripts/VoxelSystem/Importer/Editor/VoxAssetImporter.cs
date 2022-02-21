@@ -34,7 +34,7 @@ namespace VoxelSystem.Importer {
         public override void OnImportAsset(AssetImportContext ctx) {
             voxelImportSettings ??= new VoxelImportSettings();
             voxelImportSettings.filepath = ctx.assetPath;
-            // scene = OgtVox.OgtVoxImporter.Load(voxelImportSettings);
+            // scene = OgtVox.OgtVoxImporter.GetScene(voxelImportSettings);
             // return;
             // fullVoxelImportData = OgtVox.OgtVoxImporter.Load(voxelImportSettings);
             fullVoxelImportData = VoxImporter.Load(voxelImportSettings);

@@ -23,14 +23,14 @@ namespace VoxelSystem.Importer.OgtVox {
         // static int k_ogt_vox_matl_have_media = 1 << 13;
 
         // color
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_rgba {
             public byte r, g, b, a;            // red, green, blue and alpha components of a color.
         }
 
         // column-major 4x4 matrix
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_transform {
             public float m00, m01, m02, m03;   // column 0 of 4x4 matrix, 1st three elements = x axis vector, last element always 0.0
@@ -40,7 +40,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // a palette of colors
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_palette {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
@@ -58,7 +58,7 @@ namespace VoxelSystem.Importer.OgtVox {
         };
 
         // Extended Material Chunk MATL information
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_matl {
             public uint content_flags; // set of k_ogt_vox_matl_* OR together to denote contents available
@@ -82,7 +82,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // Extended Material Chunk MATL array of materials
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_matl_array {
             // [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
@@ -91,7 +91,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // a 3-dimensional model of voxels
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_model {
             public uint size_x;        // number of voxels in the local x dimension
@@ -105,7 +105,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // an instance of a model within the scene
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_instance {
             [MarshalAs(UnmanagedType.LPTStr)]
@@ -118,7 +118,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // describes a layer within the scene
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_layer {
             [MarshalAs(UnmanagedType.LPTStr)]
@@ -127,7 +127,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // describes a group within the scene
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_group {
             public ogt_vox_transform transform;            // transform of this group relative to its parent group (if any), otherwise this will be relative to world-space.
@@ -137,7 +137,7 @@ namespace VoxelSystem.Importer.OgtVox {
         }
 
         // the scene parsed from a .vox file.
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]//, Pack = 1)]
         [System.Serializable]
         public struct ogt_vox_scene {
             public uint num_models;     // number of models within the scene.
@@ -183,7 +183,7 @@ namespace VoxelSystem.Importer.OgtVox {
 
         static bool debug = true;
 
-        public static ogt_vox_scene Load(VoxelImportSettings importSettings) {
+        public static ogt_vox_scene GetScene(VoxelImportSettings importSettings) {
             Kutil.SaveSystem.StartLoad()
                        .InCustomFullPath(importSettings.filepath)
                        .As(Kutil.SaveSystem.SaveBuilder.SerializeType.BINARY)
@@ -197,20 +197,20 @@ namespace VoxelSystem.Importer.OgtVox {
             // return loader.fullVoxelImportData;
             return scene;
         }
-        // public static FullVoxelImportData Load(VoxelImportSettings importSettings) {
-        //     Kutil.SaveSystem.StartLoad()
-        //                .InCustomFullPath(importSettings.filepath)
-        //                .As(Kutil.SaveSystem.SaveBuilder.SerializeType.BINARY)
-        //                .TryLoadBin(out var allbytes);
-        //     if (debug) Debug.Log($"Loaded vox file {importSettings?.filepath} {allbytes?.Length}");
-        //     ogt_vox_scene scene = ogt_vox_read_scene(allbytes, (uint)allbytes.Length);
-        //     if (debug) Debug.Log($"Scene {scene}");
-        //     FullVoxelImportData fullVoxelImportData = LoadScene(scene, importSettings);
-        //     // ogt_vox_destroy_scene(scene);
-        //     if (debug) Debug.Log($"Loaded vox file {importSettings.filepath} successfully");
-        //     // return loader.fullVoxelImportData;
-        //     return default;
-        // }
+        public static FullVoxelImportData Load(VoxelImportSettings importSettings) {
+            Kutil.SaveSystem.StartLoad()
+                       .InCustomFullPath(importSettings.filepath)
+                       .As(Kutil.SaveSystem.SaveBuilder.SerializeType.BINARY)
+                       .TryLoadBin(out var allbytes);
+            if (debug) Debug.Log($"Loaded vox file {importSettings?.filepath} {allbytes?.Length}");
+            ogt_vox_scene scene = ogt_vox_read_scene(allbytes, (uint)allbytes.Length);
+            if (debug) Debug.Log($"Scene {scene}");
+            FullVoxelImportData fullVoxelImportData = LoadScene(scene, importSettings);
+            // ogt_vox_destroy_scene(scene);
+            if (debug) Debug.Log($"Loaded vox file {importSettings.filepath} successfully");
+            // return loader.fullVoxelImportData;
+            return default;
+        }
         static FullVoxelImportData LoadScene(ogt_vox_scene scene, VoxelImportSettings importSettings) {
             FullVoxelImportData fullVoxelImportData = new FullVoxelImportData();
             fullVoxelImportData.chunkResolution = importSettings.chunkResolution;
