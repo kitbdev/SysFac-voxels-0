@@ -1,3 +1,6 @@
+
+using UnityEngine;
+
 namespace VoxelSystem {
     [System.Serializable]
     public struct VoxelMaterialId {

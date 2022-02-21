@@ -22,7 +22,7 @@ public struct BlockTypeRef {
     public int blockid;
 
     public CustomDropDownData choicesData => CustomDropDownData.Create<int>(choicesint, choices,
-        preFormatValueFunc: v => BlockManager.Instance?.GetBlockTypeAtIndex(v).idname,
+        preFormatValueFunc: v => BlockManager.Instance?.GetBlockTypeAtIndex(v)?.idname,
         noElementsText: "No Types! check BlockManager");
     public string[] choices => BlockManager.Instance?.blockTypes.Select((b) => b.idname).ToArray() ?? null;
     public IEnumerable<int> choicesint => Enumerable.Range(0, choices.Length);

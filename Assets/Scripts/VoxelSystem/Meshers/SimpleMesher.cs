@@ -151,7 +151,7 @@ namespace VoxelSystem.Mesher {
                 if (!renderFace) {
                     continue;
                 }
-                texoffset = voxelMat.textureOverrides.textureCoords[d];
+                texoffset = voxelMat.textureCoord;//.textureOverrides.textureCoords[d];
                 int submesh = voxelMat.materialIndex;
                 // add face
                 Vector3 vertexpos = (Vector3)vpos * voxelSize - Vector3.one * voxelSize / 2;

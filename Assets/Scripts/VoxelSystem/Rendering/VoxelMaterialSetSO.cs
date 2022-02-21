@@ -10,14 +10,16 @@ namespace VoxelSystem {
         Dictionary<VoxelMaterialId, VoxelMaterial> _voxelMatDict;
         [SerializeField]
         private Material[] _allUsedMaterials;
-        public TextureAtlasPacker textureAtlas;
+        // public TextureAtlasPacker textureAtlas;// todo remove
         // todo use SOs for mats?
         public TypeChoice<VoxelMaterial> activeType = typeof(TexturedMaterial);
         [SerializeField]
         private TypeSelector<VoxelMaterial>[] _voxelMats;
 
-        public float textureResolution => textureAtlas.textureResolution;
-        public float textureScale => textureAtlas.textureBlockScale; //16f / 512f;
+        // public float textureResolution => textureAtlas.textureResolution;
+        // public float textureScale => textureAtlas.textureBlockScale; //16f / 512f;
+        // public float textureResolution => textureAtlas.textureResolution;
+        public float textureScale => 1 / 256; //16f / 512f;
 
         public TypeSelector<VoxelMaterial>[] voxelMats { get => _voxelMats; set => _voxelMats = value; }
         public Dictionary<VoxelMaterialId, VoxelMaterial> voxelMatDict { get => _voxelMatDict; }
@@ -42,7 +44,7 @@ namespace VoxelSystem {
         private void Awake() {// todo move?
             // Debug.Log("VoxelMaterialSetSO awake " + voxelMats.Length);
             UpdateVMatDict();
-            UpdateMatTextures();
+            // UpdateMatTextures();
             // foreach (var item in collection)
             // {
 
@@ -52,12 +54,12 @@ namespace VoxelSystem {
         private void OnEnable() {
             // Debug.Log("VoxelMaterialSetSO enable");
             UpdateVMatDict();
-            UpdateMatTextures();
-            textureAtlas.finishedPackingEvent += UpdateMatTextures;
+            // UpdateMatTextures();
+            // textureAtlas.finishedPackingEvent += UpdateMatTextures;
         }
         private void OnDisable() {
             // Debug.Log("VoxelMaterialSetSO disable");
-            textureAtlas.finishedPackingEvent -= UpdateMatTextures;
+            // textureAtlas.finishedPackingEvent -= UpdateMatTextures;
         }
         // public void OnDestroy() {
         //     Debug.Log("VoxelMaterialSetSO OnDestroy");
@@ -79,23 +81,23 @@ namespace VoxelSystem {
                 return vm.objvalue;
             });
         }
-        [ContextMenu("Update mat textures")]
-        private void UpdateMatTextures() {
-            allUsedMaterials.ToList().ForEach(mat => {
-                if (textureAtlas?.atlas != null) {
-                    mat.mainTexture = textureAtlas.atlas;
-                }
-            });
-        }
+        // [ContextMenu("Update mat textures")]
+        // private void UpdateMatTextures() {
+        //     allUsedMaterials.ToList().ForEach(mat => {
+        //         if (textureAtlas?.atlas != null) {
+        //             mat.mainTexture = textureAtlas.atlas;
+        //         }
+        //     });
+        // }
 
         public Vector2Int GetTexCoordForName(string texname) {
             if (texname == "" || texname == "none") {
                 // no texture, return default
                 return Vector2Int.zero;
-            } else if (textureAtlas.packDict.ContainsKey(texname)) {
-                Vector2Int coord = textureAtlas.packDict[texname];
-                // Debug.Log($"found {texname} coord {coord}"); 
-                return coord;
+                // } else if (textureAtlas.packDict.ContainsKey(texname)) {
+                //     Vector2Int coord = textureAtlas.packDict[texname];
+                //     // Debug.Log($"found {texname} coord {coord}"); 
+                //     return coord;
             } else {
                 Debug.LogWarning($"Texture for '{texname}' not found!");
                 return Vector2Int.zero;

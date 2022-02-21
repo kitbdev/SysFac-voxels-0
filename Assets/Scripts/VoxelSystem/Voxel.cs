@@ -27,6 +27,10 @@ namespace VoxelSystem {
             this.voxelMaterialId = voxelMaterialId;
             this.voxelDatas = voxelDatas;
         }
+        public Voxel(Voxel voxel){
+            voxelMaterialId = voxel.voxelMaterialId;
+            voxelDatas = voxel.voxelDatas.ToArray();// theyre structs, so this makes a copy
+        }
         // public static Voxel CreateVoxel(VoxelWorld world) {
         //     VoxelMaterialId voxelMaterialId = world.materialSet.GetDefaultId();
         //     return CreateVoxel(voxelMaterialId, world.neededData);
@@ -240,14 +244,14 @@ namespace VoxelSystem {
         }
         public void CopyValuesFrom(Voxel voxel) {
             voxelMaterialId = voxel.voxelMaterialId;
-            List<VoxelData> datas = new List<VoxelData>();
-            foreach (var voxelData in voxel.voxelDatas) {
+            voxelDatas = voxel.voxelDatas.ToArray();// theyre structs, so this makes a copy
+            // List<VoxelData> datas = new List<VoxelData>();
+            // foreach (var voxelData in voxel.voxelDatas) {
                 // needs to be typechoice to instantiate child stuff
-                VoxelData nvoxl = ((TypeChoice<VoxelData>)voxelData.GetType()).CreateInstance();
-                nvoxl.CopyValuesFrom(voxelData);
-                datas.Add(nvoxl);
-            }
-            voxelDatas = datas.ToArray();
+                // VoxelData nvoxl = ((TypeChoice<VoxelData>)voxelData.GetType()).CreateInstance();
+                // nvoxl.CopyValuesFrom(voxelData);
+                // datas.Add(nvoxl);
+            // }
         }
 
         public string ToStringFull() {

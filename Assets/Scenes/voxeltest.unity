@@ -532,7 +532,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   world: {fileID: 1191201396}
-  ImportedVoxelData: {fileID: -3141114760809212889, guid: 2ba58e94b9c71134d90a57106b38be43, type: 3}
+  mapHolder: {fileID: 11400000, guid: bcf5e2008be131547aefc187c67495eb, type: 2}
   unkownBlockDefault:
     blockid: 1
   blockImport:
@@ -541,6 +541,10 @@ MonoBehaviour:
       specialType: 0
       blockType:
         blockid: 0
+    - importMatId: 1
+      specialType: 1
+      blockType:
+        blockid: 1
 --- !u!4 &1047866632
 Transform:
   m_ObjectHideFlags: 0
@@ -549,7 +553,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1047866630}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8, y: 8, z: 8}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -686,7 +690,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1191201395}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0cbeb6dd990f5549b5f539469584e8a, type: 3}
   m_Name: 

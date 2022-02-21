@@ -76,6 +76,10 @@ public class BlockManager : Singleton<BlockManager> {
             return;
         }
         BlockType blockType = newBlockType.GetBlockType();
+        if (blockType == null){
+            Debug.LogError($"Updating Block type {newBlockType} null");
+            return;
+        }
         voxel.SetVoxelMaterialId(blockType.voxelMaterialId);
         // Debug.Log($"Set '{voxel}' mat to '{blockType}'");
         // ! all block types do not have the same data

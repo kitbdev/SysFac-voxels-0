@@ -332,6 +332,13 @@ namespace VoxelSystem {
             pos.y = i / floorArea;
             return pos;
         }
+        public static Vector3Int GetLocalPos(int i, int resolution) {
+            Vector3Int pos = Vector3Int.zero;
+            pos.x = i % resolution;
+            pos.z = (i / resolution) % resolution;
+            pos.y = i / (resolution * resolution);
+            return pos;
+        }
         public int IndexAt(Vector3Int localpos) => IndexAt(localpos.x, localpos.y, localpos.z);
         public int IndexAt(int x, int y, int z) {
             return IndexAt(x, y, z, resolution);

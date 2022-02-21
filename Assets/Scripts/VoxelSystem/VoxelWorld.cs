@@ -33,8 +33,8 @@ namespace VoxelSystem {
 
         public event System.Action<Vector3Int> generateChunkEvent;
         public event System.Action<Importer.ImportedVoxel, Voxel> loadImportPopulateEvent;
-        public event System.Action<Vector3Int> onChunkLoadEvent;
-        public event System.Action<Vector3Int> onChunkUnLoadEvent;
+        // public event System.Action<Vector3Int> onChunkLoadEvent;
+        // public event System.Action<Vector3Int> onChunkUnLoadEvent;
 
         public float chunkSize => voxelSize * chunkResolution;
 
@@ -203,6 +203,7 @@ namespace VoxelSystem {
         }
 
         public void LoadChunksFromData(ChunkSaveData[] chunks, bool overwrite = false) {
+            Debug.Log($"Loading from data {chunks.Length}");
             List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];

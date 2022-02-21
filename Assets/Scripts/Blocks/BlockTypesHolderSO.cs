@@ -4,21 +4,42 @@ using Kutil;
 using UnityEngine;
 using VoxelSystem;
 
+/*
+todo rework blocks, voxel materials, and adding them
+load from file?
+editor to add new types
+dont store in voxmatset? set it?
+? start with editor
+
+
+idea:
+material editor
+set coords for uv
+alt uv
+material to use
+etc
+
+and block editor
+add block
+- actually rather load from file?
+
+*/
+
 [CreateAssetMenu(fileName = "BlockTypesHolder", menuName = "SysFac/BlockTypesHolder", order = 0)]
 public class BlockTypesHolderSO : ScriptableObject {
 
     [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
     public BlockType[] blockTypes;
 
-    private void OnValidate() {
-        for (int i = 0; i < blockTypes.Length; i++) {
-            blockTypes[i].id = i;
-            // if (blockTypes[i].displayName == "") {
-            //     blockTypes[i].displayName = blockTypes[i].idname;
-            // }
-        }
-        blockTypeToAdd.vmat.objvalue.OnValidate(voxelMaterialSet);
-    }
+    // private void OnValidate() {
+    //     for (int i = 0; i < blockTypes.Length; i++) {
+    //         blockTypes[i].id = i;
+    //         // if (blockTypes[i].displayName == "") {
+    //         //     blockTypes[i].displayName = blockTypes[i].idname;
+    //         // }
+    //     }
+    //     // blockTypeToAdd.vmat.objvalue.OnValidate(voxelMaterialSet);
+    // }
 
     public BlockType GetBlockTypeAtIndex(int index) {
         if (index >= 0 && index < blockTypes.Length) {
@@ -42,47 +63,9 @@ public class BlockTypesHolderSO : ScriptableObject {
         blockTypes = btlist.ToArray();
         // blockTypeDict = newBlockTypes.ToDictionary((b) => b.idname);
     }
-
-    // todo move to editor window
-    [System.Serializable]
-    public class BlockTypeConsParam {
-        public string displayName = "";
-        public TypeSelector<VoxelMaterial> vmat = new TypeSelector<VoxelMaterial>(typeof(TexturedMaterial));
-    }
-    [Header("Block editor")]
-    [ContextMenuItem("add type", nameof(AddNewBlockType))]
-    [ContextMenuItem("clear all", nameof(ClearAllBlockTypesAndMats))]
-    public BlockTypeConsParam blockTypeToAdd;
-
-    void AddNewBlockType() {
-        CreateBlockTypeAndMat(blockTypeToAdd);
-        blockTypeToAdd = new BlockTypeConsParam();
-    }
-
-    public void ClearAllBlockTypesAndMats() {
-        if (voxelMaterialSet) {
-            voxelMaterialSet.ClearVoxelMats();
-        }
+    public void ClearAllBlockTypes() {
         blockTypes = new BlockType[0];
     }
-    public void CreateBlockTypeAndMat(BlockTypeConsParam data) {
-        if (voxelMaterialSet == null || data == null || data.displayName == "") {
-            return;
-        }
-        BlockType blockType = new BlockType();
-        blockType.displayName = data.displayName;
-        blockType.idname = ToIdName(data.displayName);
-        if (data.vmat.objvalue is TexturedMaterial bvm) {
-            if (bvm.texname == "") {
-                bvm.texname = blockType.idname;
-            }
-        }
-        VoxelMaterialId voxelMaterialId = voxelMaterialSet.AddVoxelMaterial(data.vmat.objvalue);
-        blockType.voxelMaterialId = voxelMaterialId;
-        AddBlockTypes(blockType);
-    }
 
-    static string ToIdName(string displayName) {
-        return displayName.Replace(" ", "").ToLower();
-    }
+
 }

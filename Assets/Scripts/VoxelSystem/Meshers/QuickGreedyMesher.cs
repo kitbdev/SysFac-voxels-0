@@ -11,9 +11,11 @@ using System.Linq;
 
 namespace VoxelSystem.Mesher {
     [System.Serializable]
-    public class AdvMesher : VoxelMesher {
+    public class QuickGreedyMesher : VoxelMesher {
 
         public override Kutil.TypeChoice<VoxelMaterial> neededMaterial => typeof(TexturedMaterial);
+
+        // todo
 
         [System.Serializable]
         struct MeshGenPData {
@@ -30,7 +32,8 @@ namespace VoxelSystem.Mesher {
             }
             [System.Serializable]
             public struct FaceData {
-                public float3 voxelPos;
+                public float3 voxelPosStart;
+                public float3 voxelPosEnd;
                 public VoxelDirection faceNormal;
                 public float2 texcoord;
                 public int submeshIndex;
@@ -152,9 +155,9 @@ namespace VoxelSystem.Mesher {
                 }
                 // add face
                 MeshGenPData.FaceData faceData = new MeshGenPData.FaceData() {
-                    voxelPos = (Vector3)vpos,
+                    voxelPosStart = (Vector3)vpos,
                     faceNormal = ((VoxelDirection)d),
-                    texcoord = (Vector2)voxelMat.textureCoord,//textureOverrides.textureCoords[d],
+                    texcoord = (Vector2)voxelMat.textureCoord,//.textureOverrides.textureCoords[d],
                     submeshIndex = voxelMat.materialIndex,
                 };
                 tlist.Add(faceData);
@@ -226,7 +229,7 @@ namespace VoxelSystem.Mesher {
                     // Debug.Log($"face {i} dir:{d} p:{faceData.voxelPos} uv:{faceData.texcoord} vi:{vi} ti:{ti}");
                     float3 normal = unitDirs[d];
                     float4 tangent = math.float4(dirTangents[d], -1);
-                    float3 vertexpos = faceData.voxelPos * voxelSize - math.float3(voxelSize / 2f);
+                    float3 vertexpos = faceData.voxelPosStart * voxelSize - math.float3(voxelSize / 2f);
                     vertexpos += vOffsets[d] * voxelSize;
                     float2 uvfrom = faceData.texcoord * textureUVScale;
                     float2 uvto = (faceData.texcoord + float2(1f)) * textureUVScale;
