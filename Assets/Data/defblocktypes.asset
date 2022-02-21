@@ -16,33 +16,17 @@ MonoBehaviour:
   blockTypes:
   - id: 0
     idname: air
-    displayName: Air
+    displayName: air
     voxelMaterialId:
       id: 0
     customDatas: []
     maxStack: 0
     itemid: 0
-  - id: 1
-    idname: grass
-    displayName: grass
+  - id: 0
+    idname: block
+    displayName: block
     voxelMaterialId:
       id: 1
-    customDatas: []
-    maxStack: 0
-    itemid: 0
-  - id: 2
-    idname: dirt
-    displayName: dirt
-    voxelMaterialId:
-      id: 2
-    customDatas: []
-    maxStack: 0
-    itemid: 0
-  - id: 3
-    idname: glass
-    displayName: Glass
-    voxelMaterialId:
-      id: 3
     customDatas: []
     maxStack: 0
     itemid: 0
@@ -51,15 +35,15 @@ MonoBehaviour:
     vmat:
       _type:
         _selectedType:
-          assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0,
+          assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
             Culture=neutral, PublicKeyToken=null
       _objvalue:
-        rid: 4170073115006075057
+        rid: 4170073165739589636
   references:
     version: 2
     RefIds:
-    - rid: 4170073115006075057
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+    - rid: 4170073165739589636
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
       data:
         materialIndex: 0
         material: {fileID: 0}

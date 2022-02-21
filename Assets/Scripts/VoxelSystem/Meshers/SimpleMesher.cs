@@ -8,7 +8,7 @@ namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class SimpleMesher : VoxelMesher {
 
-        public override TypeChoice<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
+        public override TypeChoice<VoxelMaterial> neededMaterial => typeof(TexturedMaterial);
         // public override TypeChoice<VoxelData>[] neededDatas => new TypeChoice<VoxelData>[] {
         //                 typeof(MeshCacheVoxelData) };
 
@@ -119,7 +119,7 @@ namespace VoxelSystem.Mesher {
             // get block type
             var voxel = chunk.GetLocalVoxelAt(vpos);
             // todo? other performance stuff
-            BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
+            TexturedMaterial voxelMat = voxel.GetVoxelMaterial<TexturedMaterial>(materialSet);
             if (voxelMat.isInvisible) {
                 return;
             }
@@ -138,7 +138,7 @@ namespace VoxelSystem.Mesher {
                 Vector3Int upTangent = Vector3Int.FloorToInt(-Vector3.Cross(normalDir, rightTangent));
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet);
+                TexturedMaterial neimat = coverNeighbor?.GetVoxelMaterial<TexturedMaterial>(materialSet);
 
                 bool renderFace;
                 if (renderNullSides) {

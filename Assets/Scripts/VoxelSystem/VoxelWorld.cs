@@ -10,7 +10,7 @@ namespace VoxelSystem {
     /// handles chunks. all chunks need to be in a world
     /// </summary>
     [DefaultExecutionOrder(-2)]
-    public class VoxelWorld : MonoBehaviour {
+    public class VoxelWorld : MonoBehaviour {// todo add new class that renders voxels without chunks
 
         [Header("Voxel settings")]
         public float voxelSize = 1;
@@ -211,6 +211,7 @@ namespace VoxelSystem {
                         GetChunkAt(chunkSaveData.chunkPos).OverrideVoxels(chunkSaveData.voxels);
                         chunksToRefresh.Add(chunkSaveData.chunkPos);
                     }
+                    // todo additive mode
                     continue;
                 }
                 VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
@@ -241,7 +242,7 @@ namespace VoxelSystem {
             }
         }
         void LoadModelImportData(Importer.VoxelModelImportData modelImportData) {
-            
+
         }
         void LoadChunksImportData(Importer.ChunkImportData[] chunks, Vector3Int vOffset) {
             // Debug.Log($"Loading from import chunks:{chunks.Length}");

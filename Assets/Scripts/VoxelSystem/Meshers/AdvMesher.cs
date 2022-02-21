@@ -13,7 +13,7 @@ namespace VoxelSystem.Mesher {
     [System.Serializable]
     public class AdvMesher : VoxelMesher {
 
-        public override Kutil.TypeChoice<VoxelMaterial> neededMaterial => typeof(BasicMaterial);
+        public override Kutil.TypeChoice<VoxelMaterial> neededMaterial => typeof(TexturedMaterial);
 
         [System.Serializable]
         struct MeshGenPData {
@@ -128,10 +128,10 @@ namespace VoxelSystem.Mesher {
         }
         void CheckVertex(Vector3Int vpos) {
             var voxel = chunk.GetLocalVoxelAt(vpos);
-            BasicMaterial voxelMat = voxel.GetVoxelMaterial<BasicMaterial>(materialSet);
+            TexturedMaterial voxelMat = voxel.GetVoxelMaterial<TexturedMaterial>(materialSet);
             if (voxelMat == null) {
                 // Debug.LogWarning("Could not get voxel material");
-                voxelMat = materialSet.GetDefaultVoxelMaterial<BasicMaterial>();
+                voxelMat = materialSet.GetDefaultVoxelMaterial<TexturedMaterial>();
                 // return;
             }
             if (voxelMat.isInvisible) {
@@ -142,7 +142,7 @@ namespace VoxelSystem.Mesher {
                 Vector3Int normalDir = Voxel.unitDirs[d];
                 // cull check
                 Voxel coverNeighbor = chunk.GetVoxelN(vpos + normalDir);
-                BasicMaterial neimat = coverNeighbor?.GetVoxelMaterial<BasicMaterial>(materialSet) ?? materialSet.GetDefaultVoxelMaterial<BasicMaterial>();
+                TexturedMaterial neimat = coverNeighbor?.GetVoxelMaterial<TexturedMaterial>(materialSet) ?? materialSet.GetDefaultVoxelMaterial<TexturedMaterial>();
 
                 bool renderFace;
                 renderFace = CanRenderFace(voxelMat, coverNeighbor, neimat);
@@ -161,7 +161,7 @@ namespace VoxelSystem.Mesher {
                 submeshflist[voxelMat.materialIndex]++;
             }
         }
-        bool CanRenderFace(BasicMaterial voxelMat, Voxel coverNeighbor, BasicMaterial neimat) {
+        bool CanRenderFace(TexturedMaterial voxelMat, Voxel coverNeighbor, TexturedMaterial neimat) {
             bool renderFace;
             if (renderNullSides) {
                 // render face if neighbor is invisible or one of us is transparent

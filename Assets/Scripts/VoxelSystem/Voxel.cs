@@ -23,7 +23,7 @@ namespace VoxelSystem {
         public VoxelData[] voxelDatas { get => _voxelDatas; protected set => _voxelDatas = value; }
 
         protected Voxel() { }
-        protected Voxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
+        public Voxel(VoxelMaterialId voxelMaterialId, VoxelData[] voxelDatas) {
             this.voxelMaterialId = voxelMaterialId;
             this.voxelDatas = voxelDatas;
         }

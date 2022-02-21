@@ -109,7 +109,9 @@ namespace VoxelSystem {
         }
     }
     [System.Serializable]
-    public class BasicMaterial : VoxelMaterial {
+    public class TexturedMaterial : VoxelMaterial {
+        // todo change so only needed data is here, must be set from a loader?
+        //? multiple atlas management?
         public bool isInvisible;// dont mesh
         public bool isTransparent;
         [Kutil.CustomDropDown(nameof(textureOverrides) + "." + nameof(TextureOverrides.choices), includeNullChoice: true)]
@@ -130,7 +132,7 @@ namespace VoxelSystem {
         }
     }
     [System.Serializable]
-    public class AnimatedMaterial : BasicMaterial {
+    public class AnimatedMaterial : TexturedMaterial {
         public float animDuration;
         public Vector2Int[] frameCoords;// ? auto set using texture?
 

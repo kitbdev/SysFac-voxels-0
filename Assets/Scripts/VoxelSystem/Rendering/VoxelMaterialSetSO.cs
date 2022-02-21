@@ -12,7 +12,7 @@ namespace VoxelSystem {
         private Material[] _allUsedMaterials;
         public TextureAtlasPacker textureAtlas;
         // todo use SOs for mats?
-        public TypeChoice<VoxelMaterial> activeType = typeof(BasicMaterial);
+        public TypeChoice<VoxelMaterial> activeType = typeof(TexturedMaterial);
         [SerializeField]
         private TypeSelector<VoxelMaterial>[] _voxelMats;
 
@@ -24,14 +24,18 @@ namespace VoxelSystem {
         public Material[] allUsedMaterials { get => _allUsedMaterials; protected set => _allUsedMaterials = value; }
 
         private void OnValidate() {
-            foreach (var vm in voxelMats) {
-                vm.objvalue.OnValidate(this);
+            if (voxelMats != null) {
+                foreach (var vm in voxelMats) {
+                    vm?.objvalue?.OnValidate(this);
+                }
             }
         }
         [ContextMenu("Re Init VMats")]
         private void ReInitVMats() {
-            foreach (var vm in voxelMats) {
-                vm.objvalue.Initialize(this);
+            if (voxelMats != null) {
+                foreach (var vm in voxelMats) {
+                    vm?.objvalue?.OnValidate(this);
+                }
             }
         }
 

@@ -81,6 +81,20 @@ public class MapManager : Singleton<MapManager> {
     }
     private FullVoxelImportData PreLoadMap(FullVoxelImportData fullImportData) {
         // find player spawn pos
+        List<VoxelWorld.ChunkSaveData> chunkSaveDatas = new List<VoxelWorld.ChunkSaveData>();
+        TypeChoice<VoxelData>[] neededData = world.neededData;
+        int chunkRes = world.chunkResolution;
+        VoxelData[] createVoxelDatas = neededData.Select(tc => tc.CreateInstance()).ToArray();
+
+        // todo do we need to convert everything into voxels at the start?
+        // ! actually, do this in editor
+        // yes, so I can add things in editor like enemies and fine tune things, configuration
+        VoxelWorld.ChunkSaveData chunkSaveData = new VoxelWorld.ChunkSaveData();
+        chunkSaveData.voxels = new Voxel[chunkRes * chunkRes * chunkRes];
+        // chunkSaveData.chunkPos = ;
+        for (int i = 0; i < chunkRes * chunkRes * chunkRes; i++) {
+            chunkSaveData.voxels[i] = new Voxel(0, createVoxelDatas.ToArray());
+        }
         // flood outer map with stone
         // ? organize for better loading
         //  to a single model of chunks and help with reloading?

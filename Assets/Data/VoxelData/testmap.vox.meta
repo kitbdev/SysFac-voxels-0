@@ -1,0 +1,31 @@
+fileFormatVersion: 2
+guid: 675e901124a22a64da6cd4bbb172b38d
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: fe237def5ae0e5349bfef6e153c7a9fe, type: 3}
+  numModels: 3
+  models:
+  - modelSize: {x: 41, y: 33, z: 51}
+    offset: {x: 37, y: -21, z: 16}
+    chunkCountAxis: {x: 3, y: 3, z: 4}
+    numChunks: 36
+  - modelSize: {x: 41, y: 23, z: 11}
+    offset: {x: 37, y: 9, z: 11}
+    chunkCountAxis: {x: 3, y: 2, z: 1}
+    numChunks: 6
+  - modelSize: {x: 33, y: 33, z: 33}
+    offset: {x: 1, y: 1, z: 16}
+    chunkCountAxis: {x: 3, y: 3, z: 3}
+    numChunks: 27
+  voxelImportSettings:
+    filepath: Assets/Data/VoxelData/testmap.vox
+    voxelSize: 1
+    chunkResolution: 16
+    chunkPosOffset: {x: 0, y: 0, z: 0}
+  asPrefab: 0
+  areRoomsLimbs: 0

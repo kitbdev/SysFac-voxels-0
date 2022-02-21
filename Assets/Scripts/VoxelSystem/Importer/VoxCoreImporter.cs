@@ -102,7 +102,7 @@ namespace VoxelSystem.Importer.VoxCore {
             return modelImportData;
         }
         static Vector3 Convert(FileToVoxCore.Schematics.Tools.Vector3 vector3) {
-            return new Vector3(vector3.X, vector3.Y, vector3.Z);
+            return new Vector3(vector3.X, vector3.Z, vector3.Y);
         }
         static Vector4 Convert(FileToVoxCore.Schematics.Tools.Vector4 vector4) {
             return new Vector4(vector4.X, vector4.Y, vector4.Z, vector4.W);

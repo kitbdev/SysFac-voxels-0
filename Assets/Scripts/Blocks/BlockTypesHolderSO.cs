@@ -47,7 +47,7 @@ public class BlockTypesHolderSO : ScriptableObject {
     [System.Serializable]
     public class BlockTypeConsParam {
         public string displayName = "";
-        public TypeSelector<VoxelMaterial> vmat = new TypeSelector<VoxelMaterial>(typeof(BasicMaterial));
+        public TypeSelector<VoxelMaterial> vmat = new TypeSelector<VoxelMaterial>(typeof(TexturedMaterial));
     }
     [Header("Block editor")]
     [ContextMenuItem("add type", nameof(AddNewBlockType))]
@@ -72,7 +72,7 @@ public class BlockTypesHolderSO : ScriptableObject {
         BlockType blockType = new BlockType();
         blockType.displayName = data.displayName;
         blockType.idname = ToIdName(data.displayName);
-        if (data.vmat.objvalue is BasicMaterial bvm) {
+        if (data.vmat.objvalue is TexturedMaterial bvm) {
             if (bvm.texname == "") {
                 bvm.texname = blockType.idname;
             }

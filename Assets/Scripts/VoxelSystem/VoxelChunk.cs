@@ -86,7 +86,7 @@ namespace VoxelSystem {
             // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
             for (int i = 0; i < volume; i++) {
                 // y,z,x
-                Vector3Int position = GetLocalPos(i);
+                // Vector3Int position = GetLocalPos(i);
                 // voxeldata is a struct, so it is passed by value and doesnt need to be copied
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], voxelDatas.ToArray());
                 voxels[i] = voxel;
@@ -202,7 +202,7 @@ namespace VoxelSystem {
             for (int i = 0; i < volume; i++) {
                 Vector3Int vpos = GetLocalPos(i);
                 Voxel voxel = GetLocalVoxelAt(i);
-                var vmat = voxel.GetVoxelMaterial<BasicMaterial>(world.materialSet);
+                var vmat = voxel.GetVoxelMaterial<TexturedMaterial>(world.materialSet);
                 if (vmat.isInvisible) {// todo? seperate collider data?
                     continue;
                 }
@@ -311,7 +311,7 @@ namespace VoxelSystem {
             bool hidden = true;
             foreach (Vector3Int dir in Voxel.unitDirs) {
                 Voxel voxel = GetVoxelN(vpos + dir);
-                var vmat = voxel?.GetVoxelMaterial<BasicMaterial>(world.materialSet);
+                var vmat = voxel?.GetVoxelMaterial<TexturedMaterial>(world.materialSet);
                 if (voxel != null && vmat.isTransparent) {
                     hidden = false;
                     break;
