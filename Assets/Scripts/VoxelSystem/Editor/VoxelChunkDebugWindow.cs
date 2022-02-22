@@ -101,10 +101,12 @@ namespace VoxelSystem {
             SceneView.duringSceneGui += OnScene;
         }
         private void OnDisable() {
+            serializedObject = null;
             Selection.selectionChanged -= OnSelChange;
             SceneView.duringSceneGui -= OnScene;
         }
         void OnSelChange() {
+            if (Selection.activeGameObject==null) return;
             if (Selection.activeGameObject.TryGetComponent<VoxelChunk>(out var chunk)) {
                 targetChunk = chunk;
                 world = chunk.world;

@@ -23,13 +23,17 @@ namespace VoxelSystem {
         public bool clearOnDisable = true;
         public VoxelMaterialSetSO materialSet;
 
-        public List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
+        [Header("voxel creation settings")]
+        [SerializeField] private List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
 
         [Space]
         // [SerializeField] GameObject voxelChunkPrefab;// todo? remove 
-        [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
+        [SerializeField] 
+        List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
+        [SerializeField, HideInInspector]
         SerializableDictionary<Vector3Int, VoxelChunk> activeChunksDict = new SerializableDictionary<Vector3Int, VoxelChunk>();
 
+        [SerializeField]
         UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
         public event System.Action<Vector3Int> generateChunkEvent;
@@ -54,13 +58,12 @@ namespace VoxelSystem {
         }
         private void Awake() {
             if (clearOnAwake) {
-                ClearPool();
                 Clear();
+                Initialize();
             }
         }
         private void OnEnable() {
             if (clearOnDisable || chunkPool == null) {
-                ClearPool();
                 Clear();
                 Initialize();
             }
@@ -92,14 +95,14 @@ namespace VoxelSystem {
             FixDict();
             UpdateNeededData();
         }
-        void FixDict(){
+        void FixDict() {
             activeChunksDict ??= (SerializableDictionary<Vector3Int, VoxelChunk>)(activeChunks?.ToDictionary(vc => vc.chunkPos));
         }
         private void OnDisable() {
-            if (clearOnDisable) {
-                Clear();
-                ClearPool();
-            }
+            // if (clearOnDisable) {
+            //     Clear();
+            //     ClearPool();
+            // }
         }
         private void OnDestroy() {
             RemoveAllChunks();
@@ -143,21 +146,21 @@ namespace VoxelSystem {
                 activeChunksDict?.Clear();
                 // chunksToPopulate.Clear();
             }
-            if (chunkPool == null) {
+            if (chunkPool == null || chunkPool.CountAll == 0) {
+                for (int i = transform.childCount - 1; i >= 0; i--) {
+                    GameObject cgo = transform.GetChild(i).gameObject;
+                    if (Application.isPlaying) {
+                        Destroy(cgo);
+                    } else {
+                        DestroyImmediate(cgo);
+                    }
+                }
                 Initialize();
             }
         }
         [ContextMenu("Clear pool")]
         void ClearPool() {
             chunkPool?.Dispose();
-            for (int i = transform.childCount - 1; i >= 0; i--) {
-                GameObject cgo = transform.GetChild(i).gameObject;
-                if (Application.isPlaying) {
-                    Destroy(cgo);
-                } else {
-                    DestroyImmediate(cgo);
-                }
-            }
         }
 
         [System.Serializable]
@@ -218,6 +221,11 @@ namespace VoxelSystem {
             if (chunkPool == null) {
                 Initialize();
             }
+            // todo! this will make the world use these voxels and they will be modified by the game logic
+            // todo? should make a copy or do we want this?
+            // if its loaded from a file, will just have to reload to get original state, and saving becomes trivial
+                // todo probably, check that everything is properly updates, like voxdatas
+            // todo have a save to file somewhere for processed map data
             List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];

@@ -52,6 +52,7 @@ namespace VoxelSystem.Mesher {
         }
 
         public override void UpdateMesh() {
+            mesh.Clear();
             GenMesh();
         }
 

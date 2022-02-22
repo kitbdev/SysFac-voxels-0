@@ -14,6 +14,7 @@ public class DebugShowBlockData : MonoBehaviour {
     [SerializeField] LayerMask blockMask = Physics.DefaultRaycastLayers;
     [SerializeField] VoxelWorld world;
     [SerializeField] TMP_Text tmpText;
+    [SerializeField] GameObject debugGO;
 
     [SerializeField, ReadOnly] Vector3Int targetBlockPos;
     [SerializeField, ReadOnly] Voxel targetVoxel;
@@ -52,11 +53,13 @@ public class DebugShowBlockData : MonoBehaviour {
         }
     }
     void UpdateText() {
+        if (debugGO) debugGO.SetActive(true);
         if (tmpText) {
             tmpText.text = $"{targetBlockPos}: {targetVoxel?.ToStringFull()}" ?? "None";
         }
     }
     void ClearText() {
+        if (debugGO) debugGO.SetActive(false);
         if (tmpText) {
             tmpText.text = "";
         }

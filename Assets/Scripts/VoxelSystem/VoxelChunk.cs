@@ -15,7 +15,7 @@ namespace VoxelSystem {
         [SerializeField, ReadOnly] Vector3Int _chunkPos;
         int _resolution;
         [SerializeField, ReadOnly] Voxel[] _voxels;
-
+        [SerializeField, ReadOnly]
         private VoxelRenderer visuals;
 
         public bool showDebug = false;

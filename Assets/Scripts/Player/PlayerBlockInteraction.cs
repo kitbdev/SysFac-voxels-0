@@ -52,6 +52,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
                 si.cursorInputForLook = !si.cursorInputForLook;
                 Cursor.lockState = si.cursorInputForLook ? CursorLockMode.Locked : CursorLockMode.None;
                 Cursor.visible = !si.cursorInputForLook;
+                si.look = Vector2.zero;
             }
         }
         scrollAcc += -Mouse.current.scroll.y.ReadValue() * scrollSensitivity;
@@ -64,6 +65,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
             selBlocktypeRef = new BlockTypeRef().SetBlockId(selectedBlockType);
         }
         if (handVoxelW != null && handVoxelW.activeChunks.Count > 0 && handVoxelW.GetChunkAt(Vector3Int.zero).IsPopulated()) {
+            // preview block in hand
             VoxelChunk handChunk = handVoxelW.GetChunkAt(Vector3Int.zero);
             Voxel handVoxel = handChunk.GetLocalVoxelAt(0);
             // Debug.Log($"v{voxel.");
@@ -72,6 +74,9 @@ public class PlayerBlockInteraction : MonoBehaviour {
         }
         if (validTarget && Mouse.current.leftButton.wasPressedThisFrame) {
             BreakBlock();
+        }
+        if (validTarget && Mouse.current.middleButton.wasPressedThisFrame) {
+            PickTargetBlock();
         }
         if (validTarget && Mouse.current.rightButton.wasReleasedThisFrame) {
             // place a block
@@ -103,6 +108,9 @@ public class PlayerBlockInteraction : MonoBehaviour {
     }
     void BreakBlock() {
         SetBlockType(targetBlockPos, airref);
+    }
+    void PickTargetBlock() {
+        selBlocktypeRef = GetBlockType(targetBlockPos);
     }
 
     private BlockTypeRef GetBlockType(Vector3Int blockPos) {
