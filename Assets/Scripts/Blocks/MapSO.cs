@@ -28,7 +28,7 @@ public class MapData {
 [CreateAssetMenu(fileName = "MapData", menuName = "SysFac/Map", order = 0)]
 public class MapSO : ScriptableObject {
 
-    public enum SpecialBlocks {
+    public enum SpecialBlockType {
         NONE,
         UNKNOWN,
         MAP_BORDER,
@@ -36,19 +36,25 @@ public class MapSO : ScriptableObject {
         LOOT_SPAWN,
         ENEMY_SPAWN,
     }
+    [System.Serializable]
+    public struct SpecialBlocksMap {
+        public int matid;
+        public SpecialBlockType specialType;
+        public BlockTypeRef newblockType;
+    }
 
-    [System.Serializable]
-    public struct BlockLoadConverter {
-        public int importMatId;
-        // public int importMatIdEnd;
-        public SpecialBlocks specialType;
-        public BlockTypeRef blockType;
-    }
-    [System.Serializable]
-    public class AllBlockTypeLoadData {
-        public BlockLoadConverter[] blockTypeConverter;
-    }
-    Dictionary<int, BlockLoadConverter> blockTypeLoadDict;
+    // [System.Serializable]
+    // public struct BlockLoadConverter {
+    //     public int importMatId;
+    //     // public int importMatIdEnd;
+    //     public SpecialBlocks specialType;
+    //     public BlockTypeRef blockType;
+    // }
+    // [System.Serializable]
+    // public class AllBlockTypeLoadData {
+    //     public BlockLoadConverter[] blockTypeConverter;
+    // }
+    // Dictionary<int, BlockLoadConverter> blockTypeLoadDict;
 
 
     [HideInInspector]
@@ -60,7 +66,8 @@ public class MapSO : ScriptableObject {
 
     public BlockTypeRef unkownBlockDefault;
     [SerializeField]
-    public AllBlockTypeLoadData allBlocksConverter;
+    public SpecialBlocksMap[] specialBlocksMap;
+    // public AllBlockTypeLoadData allBlocksConverter;
 
     void ResetNeededData() {
         neededVoxelDatas = new TypeChoice<VoxelData>[] { new TypeChoice<VoxelData>(typeof(DefaultVoxelData)) };
@@ -68,20 +75,28 @@ public class MapSO : ScriptableObject {
 
     [ContextMenu("Clear map data")]
     public void ClearMapData() {
+#if UNITY_EDITOR
+        UnityEditor.Undo.RecordObject(this, "clear map");
+#endif
         mapData = null;
+        Debug.Log($"map data cleared");
     }
 
     [ContextMenu("Preprocess")]
     public void ProcessImportData() {
-        blockTypeLoadDict = allBlocksConverter.blockTypeConverter
-                    .ToDictionary((bid => bid.importMatId));
+        Debug.Log($"prepocessing map...");
+        // blockTypeLoadDict = allBlocksConverter.blockTypeConverter
+        //             .ToDictionary((bid => bid.importMatId));
+#if UNITY_EDITOR
+        UnityEditor.Undo.RecordObject(this, "preprocess map");
+#endif
         var mp = PreProcessMap(importedVoxelData.fullVoxelImportData, neededVoxelDatas.ToHashSet().ToArray());
         // todo? make sure chunk resolutions are the same
         if (mp != null) {
             mapData = mp;
-            Debug.Log("Finished processing import data");
+            Debug.Log($"Finished processing import data {importedVoxelData.name} to map");
         } else {
-            Debug.LogError("Failed to process import data");
+            Debug.LogError($"Failed to process import data {importedVoxelData.name} to map");
         }
     }
     private MapData PreProcessMap(FullVoxelImportData fullImportData, TypeChoice<VoxelData>[] neededVoxelDatas) {
@@ -102,11 +117,14 @@ public class MapSO : ScriptableObject {
         int chunkVol = chunkRes * chunkRes * chunkRes;
 
         for (int m = 0; m < fullImportData.models.Length; m++) {
+            // todo? dont chunk this import data, have in its own shape
             VoxelModelImportData voxelModelImportData = fullImportData.models[m];
             for (int c = 0; c < voxelModelImportData.chunks.Length; c++) {
-                // todo models may be non chunk aligned, need to properly convert to chunks on our grid
+                // // todo models may be non chunk aligned, need to properly convert to chunks on our grid
+                // // todo alternatively, have multiple voxelworlds?
+                // or align when importing
                 ChunkImportData chunkImportData = voxelModelImportData.chunks[c];
-                Vector3Int chunkImportCPos = chunkImportData.chunkPos + voxelModelImportData.position / chunkRes;
+                Vector3Int chunkImportCPos = chunkImportData.chunkPos;// + voxelModelImportData.position / chunkRes;
                 if (mapData.chunks.ContainsKey(chunkImportCPos)) {
                     // add intersection
                     for (int v = 0; v < chunkVol; v++) {
@@ -127,23 +145,32 @@ public class MapSO : ScriptableObject {
                 mapData.chunks.Add(chunkSaveData.chunkPos, chunkSaveData);
             }
         }
+        int maxBlockType = 256;
+        Dictionary<int, SpecialBlocksMap> specialBlocksDict = specialBlocksMap.ToDictionary(sb => sb.matid);
         // set block types
         for (int c = 0; c < mapData.chunks.Count; c++) {
             VoxelWorld.ChunkSaveData chunkSaveData = mapData.chunks[mapData.chunks.Keys.ToArray()[c]];
             for (int v = 0; v < chunkVol; v++) {
                 Voxel voxel = chunkSaveData.voxels[v];
                 BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-                if (voxel.voxelMaterialId != 0 && blockTypeLoadDict.ContainsKey(voxel.voxelMaterialId)) {
+                if (voxel.voxelMaterialId < maxBlockType) {
                     // if (voxel.voxelMaterialId == 0) {
-                    BlockLoadConverter btypel = blockTypeLoadDict[voxel.voxelMaterialId];
-                    voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
-                        blockTypeRef = btypel.blockType
-                    });
-                    if (btypel.specialType == SpecialBlocks.PLAYER_SPAWN) {
-                        mapData.playerSpawn = VoxelChunk.GetLocalPos(v, chunkRes) + chunkSaveData.chunkPos * chunkRes;
+                    int blockTypeId = voxel.voxelMaterialId;
+                    if (specialBlocksDict.ContainsKey(voxel.voxelMaterialId)){
+                        if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()){
+                            blockTypeId = specialBlocksDict[voxel.voxelMaterialId].newblockType.blockid;
+                        }
+                        SpecialBlockType specialBlockType = specialBlocksDict[voxel.voxelMaterialId].specialType;
+                        if (specialBlockType == SpecialBlockType.PLAYER_SPAWN) {
+                            mapData.playerSpawn = VoxelChunk.GetLocalPos(v, chunkRes) + chunkSaveData.chunkPos * chunkRes;
+                        }
                     }
-                    BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-                    Debug.Log($"set {blockTypeVoxelData} id to {btypel.importMatId} now {blockTypeVoxelData1}");
+
+                    voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
+                        blockTypeRef = new BlockTypeRef().SetBlockId(blockTypeId)
+                    });
+                        BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
+                    // Debug.Log($"set {blockTypeVoxelData} id to {btypel.importMatId} now {blockTypeVoxelData1}");
                 } else {
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
                         blockTypeRef = unkownBlockDefault

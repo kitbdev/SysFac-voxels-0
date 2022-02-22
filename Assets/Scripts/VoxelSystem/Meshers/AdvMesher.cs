@@ -130,9 +130,12 @@ namespace VoxelSystem.Mesher {
             var voxel = chunk.GetLocalVoxelAt(vpos);
             TexturedMaterial voxelMat = voxel.GetVoxelMaterial<TexturedMaterial>(materialSet);
             if (voxelMat == null) {
-                // Debug.LogWarning("Could not get voxel material");
                 voxelMat = materialSet.GetDefaultVoxelMaterial<TexturedMaterial>();
-                // return;
+                if (voxelMat == null) {
+                    Debug.LogWarning("Could not get voxel material");
+                    // voxelMat = materialSet.GetDefaultVoxelMaterial<TexturedMaterial>();
+                    return;
+                }
             }
             if (voxelMat.isInvisible) {
                 return;

@@ -37,7 +37,13 @@ public class BlockManager : Singleton<BlockManager> {
     }
     private void OnEnable() {
         // LoadData();
-        blockTypeDict = blockTypes?.ToDictionary((b) => b.idname);
+        int nonecnt = 0;
+        blockTypeDict = blockTypes?.ToDictionary((b) => {
+            if (b.idname == "none") {
+                return b.idname + (nonecnt++);
+            }
+            return b.idname;
+        });
     }
 
     public BlockType GetBlockTypeAtIndex(int index) {
@@ -76,7 +82,7 @@ public class BlockManager : Singleton<BlockManager> {
             return;
         }
         BlockType blockType = newBlockType.GetBlockType();
-        if (blockType == null){
+        if (blockType == null) {
             Debug.LogError($"Updating Block type {newBlockType} null");
             return;
         }

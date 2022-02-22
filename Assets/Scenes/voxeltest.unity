@@ -533,18 +533,6 @@ MonoBehaviour:
   player: {fileID: 0}
   world: {fileID: 1191201396}
   mapHolder: {fileID: 11400000, guid: bcf5e2008be131547aefc187c67495eb, type: 2}
-  unkownBlockDefault:
-    blockid: 1
-  blockImport:
-    blockImport:
-    - importMatId: 0
-      specialType: 0
-      blockType:
-        blockid: 0
-    - importMatId: 1
-      specialType: 1
-      blockType:
-        blockid: 1
 --- !u!4 &1047866632
 Transform:
   m_ObjectHideFlags: 0

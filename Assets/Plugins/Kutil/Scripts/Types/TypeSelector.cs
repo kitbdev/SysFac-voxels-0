@@ -18,7 +18,7 @@ namespace Kutil {
         [SerializeField]
         [SerializeReference]
         [ContextMenuItem("Update Object", nameof(UpdateObjectType))]
-        internal T _objvalue;
+        internal T _objvalue;// todo not saving?
 
         public TypeChoice<T> type {
             get => _type; set {

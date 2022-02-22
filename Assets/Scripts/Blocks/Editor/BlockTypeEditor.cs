@@ -61,9 +61,17 @@ public class BlockTypeEditor : EditorWindow {
         loadbtn.text = "Load block types CSV";
         container.Add(loadbtn);
         container.Add(new PropertyField(serializedObject.FindProperty(nameof(mapData))));
-        Button loadbtn2 = new Button(() => ImportBlockConversionCSV());
-        loadbtn2.text = "Load MapData conversion CSV";
-        container.Add(loadbtn2);
+        // Button loadbtn2 = new Button(() => ImportBlockConversionCSV());
+        // loadbtn2.text = "Load MapData conversion CSV";
+        // container.Add(loadbtn2);
+        // VisualElement mapcontainter = new VisualElement();
+        // container.Add(mapcontainter);
+        Button preprocessmapbtn = new Button(() => PreprocessMap());
+        preprocessmapbtn.text = "Preprocess Map Data";
+        container.Add(preprocessmapbtn);
+        Button clearmapdatabtn = new Button(() => ClearMap());
+        clearmapdatabtn.text = "Clear Map Data";
+        container.Add(clearmapdatabtn);
 
         container.Bind(serializedObject);
     }
@@ -92,6 +100,10 @@ public class BlockTypeEditor : EditorWindow {
         });
     }
     void CreateBlockTypeAndMat(BlockTypeMaker data) {
+        if (data == null){
+            // add empty to take id
+            blockTypesHolder?.AddBlockTypes(new BlockType(){idname="none"});
+        }
         if (voxelMaterialSet == null || data == null || data.displayName == "") {
             return;
         }
@@ -119,7 +131,7 @@ public class BlockTypeEditor : EditorWindow {
             Debug.LogWarning("Missing CSV file");
             return;
         }
-        if (blockTypesHolder==null||voxelMaterialSet==null) {
+        if (blockTypesHolder == null || voxelMaterialSet == null) {
             Debug.LogWarning($"no mat or type");
             return;
         }
@@ -153,7 +165,10 @@ public class BlockTypeEditor : EditorWindow {
         for (int i = 2; i < lines.Length; i++) {
             if (lines[i] == "") continue; // ignore empty lines
             string[] cols = lines[i].Split(",");
-            if (cols.Length == 0 || cols[0] == "") continue; // ignore if no name
+            if (cols.Length == 0 || cols[0] == "") {
+                blockTypeMakers.Add(null);
+                continue; // ignore if no name
+            }
             int ccol = 0;
             BlockTypeMaker nblock = new BlockTypeMaker();
             nblock.displayName = cols[ccol++];
@@ -168,59 +183,73 @@ public class BlockTypeEditor : EditorWindow {
             blockTypeMakers.Add(nblock);
         }
         Debug.Log($"Parsed csv {blockTypesCSV.name}, {blockTypeMakers.Count} lines, now setting data");
+
+#if UNITY_EDITOR
+        UnityEditor.Undo.RecordObjects(new Object[] { voxelMaterialSet, blockTypesHolder }, "load block types");
+#endif
         HardClearAllBlockTypesAndMats();
         foreach (var btm in blockTypeMakers) {
             CreateBlockTypeAndMat(btm);
         }
         Debug.Log("Finished loading from csv");
+        // todo also update map sblocks and mapdata?
     }
 
-    [ContextMenu("Import block conversion CSV")]
-    public void ImportBlockConversionCSV() {
-        if (blockTypesCSV == null) {
-            Debug.LogWarning("Missing CSV file");
-            return;
-        }
-        if (mapData==null) {
-            Debug.LogWarning($"no map");
-            return;
-        }
-        string[] lines = blockTypesCSV.text.Split("\n");
-        int reqNumCols = 3;
-        if (lines.Length <= 1 || !lines[0].Contains(",") || lines[0].Split(",").Length < reqNumCols) {
-            Debug.LogWarning($"Invalid csv");
-            return;
-        }
-        if (lines[0].Split(",")[0] != "Source Id") {
-            Debug.LogWarning($"Invalid CSV {blockTypesCSV.name}");
-            return;
-        }
-        List<BlockLoadConverter> blockLoadConverters = new List<BlockLoadConverter>();
-        foreach (var line in lines) {
-            string[] cols = line.Split(",");
-            BlockLoadConverter blc = new BlockLoadConverter();
-            if (TryParseInt(cols[0], out var ival)) {
-                blc.importMatId = ival;
-            } else {
-                continue;
-            }
-            if (TryParseInt(cols[1], out ival)) {
-                blc.blockType = new BlockTypeRef().SetBlockId(ival);
-            } else {
-                continue;
-            }
-            if (System.Enum.TryParse<SpecialBlocks>(cols[2].Trim().ToUpper().Replace(" ", "_"), out var eval)) {
-                blc.specialType = eval;
-            } else {
-                blc.specialType = SpecialBlocks.NONE;
-            }
-            blockLoadConverters.Add(blc);
-        }
-        Debug.Log($"Got block load converters {blockLoadConverters.Count} length, now setting");
-        mapData.ClearMapData();
-        mapData.allBlocksConverter.blockTypeConverter = blockLoadConverters.ToArray();
-        Debug.Log($"Set block types, now prepocessing map");
+    //     [ContextMenu("Import block conversion CSV")]
+    //     public void ImportBlockConversionCSV() {
+    //         if (blockTypesCSV == null) {
+    //             Debug.LogWarning("Missing CSV file");
+    //             return;
+    //         }
+    //         if (mapData == null) {
+    //             Debug.LogWarning($"no map");
+    //             return;
+    //         }
+    //         string[] lines = blockTypesCSV.text.Split("\n");
+    //         int reqNumCols = 3;
+    //         if (lines.Length <= 1 || !lines[0].Contains(",") || lines[0].Split(",").Length < reqNumCols) {
+    //             Debug.LogWarning($"Invalid csv");
+    //             return;
+    //         }
+    //         if (lines[0].Split(",")[0] != "Source Id") {
+    //             Debug.LogWarning($"Invalid CSV {blockTypesCSV.name}");
+    //             return;
+    //         }
+    //         List<BlockLoadConverter> blockLoadConverters = new List<BlockLoadConverter>();
+    //         foreach (var line in lines) {
+    //             string[] cols = line.Split(",");
+    //             BlockLoadConverter blc = new BlockLoadConverter();
+    //             if (TryParseInt(cols[0], out var ival)) {
+    //                 blc.importMatId = ival;
+    //             } else {
+    //                 continue;
+    //             }
+    //             if (TryParseInt(cols[1], out ival)) {
+    //                 blc.blockType = new BlockTypeRef().SetBlockId(ival);
+    //             } else {
+    //                 continue;
+    //             }
+    //             if (System.Enum.TryParse<SpecialBlockType>(cols[2].Trim().ToUpper().Replace(" ", "_"), out var eval)) {
+    //                 blc.specialType = eval;
+    //             } else {
+    //                 blc.specialType = SpecialBlockType.NONE;
+    //             }
+    //             blockLoadConverters.Add(blc);
+    //         }
+    // #if UNITY_EDITOR
+    //         UnityEditor.Undo.RecordObject(mapData, "new converter values");
+    // #endif
+    //         Debug.Log($"Got block load converters {blockLoadConverters.Count} length, now setting");
+    //         mapData.ClearMapData();
+    //         mapData.allBlocksConverter.blockTypeConverter = blockLoadConverters.ToArray();
+    //         Debug.Log($"Set block types, now prepocessing map");
+    //         mapData.ProcessImportData();
+    //     }
+    void PreprocessMap() {
         mapData.ProcessImportData();
+    }
+    void ClearMap() {
+        mapData.ClearMapData();
     }
 
     static int ParseInt(string col, int defVal) {

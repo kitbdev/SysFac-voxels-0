@@ -6,7 +6,7 @@ using UnityEngine;
 namespace VoxelSystem.Importer.VoxCore {
 
     public class VoxCoreImporter : MonoBehaviour {
-        static bool debug = false;
+        static bool debug = true;
 
         public static FullVoxelImportData Load(VoxelImportSettings importSettings) {
             VoxReader voxReader = new VoxReader();
@@ -36,10 +36,29 @@ namespace VoxelSystem.Importer.VoxCore {
             var chunkRes = importSettings.chunkResolution;
             Vector3Int modelSize = new Vector3Int(vdata.VoxelsWide, vdata.VoxelsDeep, vdata.VoxelsTall);
             Vector3 worldPositionFrame = Convert(tra.TranslationAt());
+            Vector3Int worldPos = Vector3Int.FloorToInt(worldPositionFrame);
             // if (worldPositionFrame == FileToVoxCore.Schematics.Tools.Vector3.zero)
             //     return null;
             if (debug) Debug.Log($"LoadModel size {modelSize} wp:{worldPositionFrame}");
             Vector3Int numChunksPerDir = Vector3Int.one + (modelSize - Vector3Int.one) / chunkRes;
+            bool worldChunkAlignment = true;
+            Vector3Int startChunkPos = Vector3Int.zero;
+            Vector3Int localOffset = Vector3Int.zero;
+            if (worldChunkAlignment) {
+                startChunkPos = VoxelWorld.ChunkPosWithBlock(worldPos, chunkRes);
+                var endChunkPos = VoxelWorld.ChunkPosWithBlock(worldPos + modelSize, chunkRes) + Vector3Int.one;
+                numChunksPerDir = (endChunkPos - startChunkPos);
+                // localOffset = new Vector3Int(
+                //     (worldPos.x % chunkRes),
+                //     (worldPos.y % chunkRes),
+                //     (worldPos.z % chunkRes)
+                //     );
+                // numChunksPerDir = Vector3Int.CeilToInt(new Vector3(
+                //     (modelSize.x - 0f + localOffset.x) / chunkRes,
+                //     (modelSize.y - 0f + localOffset.y) / chunkRes,
+                //     (modelSize.z - 0f + localOffset.z) / chunkRes
+                //     ));
+            }
             int numChunksTotal = numChunksPerDir.x * numChunksPerDir.y * numChunksPerDir.z;
             ChunkImportData[] chunks = new ChunkImportData[numChunksTotal];
             for (int y = 0, rci = 0; y < numChunksPerDir.y; y++) {
@@ -48,27 +67,33 @@ namespace VoxelSystem.Importer.VoxCore {
                         // for (int rci = 0; rci < chunks.Length; rci++) {
                         chunks[rci] = new ChunkImportData() {
                             voxels = new ImportedVoxel[chunkRes * chunkRes * chunkRes],
-                            chunkPos = new Vector3Int(x, y, z),
+                            chunkPos = startChunkPos + new Vector3Int(x, y, z),
                         };
                     }
                 }
             }
-            if (debug) Debug.Log($"model size {modelSize} ncpd:{numChunksPerDir} numchunkstotal:{numChunksTotal} chunkres:{chunkRes}");
+            if (debug) Debug.Log($"model size {modelSize} ncpd:{numChunksPerDir} numchunkstotal:{numChunksTotal} chunkres:{chunkRes} chst:{startChunkPos} wp:{worldPos}");
 
             for (int x = 0; x < modelSize.x; x++) {
                 for (int z = 0; z < modelSize.z; z++) {
                     for (int y = 0; y < modelSize.y; y++) {
 
                         Vector3Int voxelpos = new Vector3Int(x, y, z);
-                        Vector3Int chunkpos = VoxelWorld.ChunkPosWithBlock(voxelpos, chunkRes);
-                        Vector3Int localpos = VoxelWorld.BlockPosToLocalVoxelPos(voxelpos, chunkpos, chunkRes);
+                        var blockpos = voxelpos;
+                        if (worldChunkAlignment) {
+                            blockpos += worldPos;
+                            // voxelpos += localOffset;
+                        }
+                        // todo offset this if not useing worldschunk alignment?
+                        Vector3Int chunkpos = VoxelWorld.ChunkPosWithBlock(blockpos, chunkRes);
+                        Vector3Int localpos = VoxelWorld.BlockPosToLocalVoxelPos(blockpos, chunkpos, chunkRes);
                         int chunkIndex =
-                            // (chunkpos.y / numChunksPerDir.y) * chunkRes * chunkRes +
-                            // (chunkpos.z / numChunksPerDir.z) * chunkRes +
-                            // (chunkpos.x / numChunksPerDir.x);
                             chunks.ToList().FindIndex(c => c.chunkPos == chunkpos);
+                        // (chunkpos.y / numChunksPerDir.y) * chunkRes * chunkRes +
+                        // (chunkpos.z / numChunksPerDir.z) * chunkRes +
+                        // (chunkpos.x / numChunksPerDir.x);
                         if (chunkIndex == -1) {
-                            Debug.LogError($"Vox importer failed to get chunk index {chunkIndex} from cp:{chunkpos} ncpd:{numChunksPerDir} vp{voxelpos} lp{localpos} chunkres{chunkRes}");
+                            Debug.LogError($"Vox importer failed to get chunk index {chunkIndex} from cp:{chunkpos} ncpd:{numChunksPerDir} vp{voxelpos} lp{localpos} bp:{blockpos} chunkres{chunkRes}");
                             return default;
                         }
                         ChunkImportData chunkData = chunks[chunkIndex];
@@ -78,10 +103,15 @@ namespace VoxelSystem.Importer.VoxCore {
                         // if (debug && !vdata.ContainsKey(x, y, z)) {
                         //     Debug.Log($"cannot find {x},{y},{z} gp:{vdata.GetGridPos(x, y, z)}");
                         // }
+                        // model size is already swiched so this gives accurate values
                         int matid = vdata.GetSafe(x, z, y);
                         // if (matid != 0) {
                         // Debug.Log($"found {chunkpos} {voxelpos} is {matid} ({data_index})");
                         // }
+                        if (VoxelChunk.IndexAt(localpos, chunkRes) < 0) {
+                            Debug.LogError($"Vox importer failed to get voxel id of ci:{chunkIndex} cp:{chunkpos} ncpd:{numChunksPerDir} vp:{voxelpos} lp:{localpos} bp:{blockpos} chunkres:{chunkRes}");
+                            return default;
+                        }
                         chunkData.voxels[VoxelChunk.IndexAt(localpos, chunkRes)] = new ImportedVoxel() {
                             materialId = matid,
                             // materialColor = color
@@ -94,7 +124,7 @@ namespace VoxelSystem.Importer.VoxCore {
             var modelImportData = new VoxelModelImportData() {
                 // id = 
                 modelSize = modelSize,
-                position = Vector3Int.FloorToInt(worldPositionFrame),
+                position = worldPos,
                 trMatrix = matrix4x4,
                 numChunksByAxis = numChunksPerDir,
                 chunks = chunks

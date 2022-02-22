@@ -20,6 +20,7 @@ namespace VoxelSystem {
         public bool enableCollision = true;
         public bool useBoxColliders = true;
         public bool clearOnAwake = true;
+        public bool clearOnDisable = true;
         public VoxelMaterialSetSO materialSet;
 
         public List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
@@ -57,7 +58,7 @@ namespace VoxelSystem {
             }
         }
         private void OnEnable() {
-            if (clearOnAwake || chunkPool == null) {
+            if (clearOnDisable || chunkPool == null) {
                 Initialize();
             }
         }
@@ -89,7 +90,7 @@ namespace VoxelSystem {
             UpdateNeededData();
         }
         private void OnDisable() {
-            if (clearOnAwake) {
+            if (clearOnDisable) {
                 Clear();
                 ClearPool();
             }
@@ -203,12 +204,13 @@ namespace VoxelSystem {
         }
 
         public void LoadChunksFromData(ChunkSaveData[] chunks, bool overwrite = false) {
-            Debug.Log($"Loading from data {chunks.Length}");
+            Debug.Log($"Loading chunks from data {chunks.Length}");
             List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];
                 if (HasChunkActiveAt(chunkSaveData.chunkPos)) {
                     if (overwrite) {
+                        Debug.LogWarning($"Overwriting chunk {chunkSaveData.chunkPos}");
                         GetChunkAt(chunkSaveData.chunkPos).OverrideVoxels(chunkSaveData.voxels);
                         chunksToRefresh.Add(chunkSaveData.chunkPos);
                     }
@@ -217,6 +219,7 @@ namespace VoxelSystem {
                 }
                 VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
                 voxelChunk.OverrideVoxels(chunkSaveData.voxels);
+                voxelChunk.InitVoxels();
                 chunksToRefresh.Add(chunkSaveData.chunkPos);
             }
             RefreshChunks(chunksToRefresh.ToArray());
@@ -388,7 +391,18 @@ namespace VoxelSystem {
             return ChunkPosWithBlock(blockpos, chunkResolution);
         }
         public static Vector3Int ChunkPosWithBlock(Vector3Int blockpos, int chunkResolution) {
-            return (blockpos / chunkResolution);
+            // if (blockpos.x < 0) blockpos.x -= chunkResolution-1;
+            // if (blockpos.y < 0) blockpos.y -= chunkResolution-1;
+            // if (blockpos.z < 0) blockpos.z -= chunkResolution-1;
+            Vector3Int cpos = Vector3Int.FloorToInt(((Vector3)blockpos) / chunkResolution);
+            // handles negatives
+            // int cshift = chunkResolution / 4;
+            // Vector3Int cpos = new Vector3Int(
+            //     blockpos.x >> cshift,
+            //     blockpos.y >> cshift,
+            //     blockpos.z >> cshift
+            //     );
+            return cpos;
         }
         public VoxelChunk GetChunkWithBlock(Vector3Int blockpos) {
             return GetChunkAt(ChunkPosWithBlock(blockpos));

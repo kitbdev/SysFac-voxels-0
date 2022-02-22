@@ -21,6 +21,7 @@ namespace VoxelSystem.Importer {
         public Vector3Int position;
         public Matrix4x4 trMatrix;
         public ChunkImportData[] chunks;
+        // public ImportedVoxel[] voxels;//?
     }
     [System.Serializable]
     public class ChunkImportData {
