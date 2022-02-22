@@ -13,13 +13,14 @@ namespace VoxelSystem {
         // public TextureAtlasPacker textureAtlas;// todo remove
         // todo use SOs for mats?
         public TypeChoice<VoxelMaterial> activeType = typeof(TexturedMaterial);
-        [SerializeField]
-        private TypeSelector<VoxelMaterial>[] _voxelMats;
 
         // public float textureResolution => textureAtlas.textureResolution;
         // public float textureScale => textureAtlas.textureBlockScale; //16f / 512f;
         // public float textureResolution => textureAtlas.textureResolution;
-        public float textureScale => 1 / 256; //16f / 512f;
+        public Vector2 textureScale = Vector2.one * 1 / 256; //16f / 512f;
+
+        [SerializeField]
+        private TypeSelector<VoxelMaterial>[] _voxelMats;
 
         public TypeSelector<VoxelMaterial>[] voxelMats { get => _voxelMats; set => _voxelMats = value; }
         public Dictionary<VoxelMaterialId, VoxelMaterial> voxelMatDict { get => _voxelMatDict; }
@@ -35,8 +36,9 @@ namespace VoxelSystem {
         [ContextMenu("Re Init VMats")]
         private void ReInitVMats() {
             if (voxelMats != null) {
-                foreach (var vm in voxelMats) {
-                    vm?.objvalue?.OnValidate(this);
+                for (int i = 0; i < voxelMats.Length; i++) {
+                    TypeSelector<VoxelMaterial> vm = voxelMats[i];
+                    vm?.objvalue?.Initialize(this, i);
                 }
             }
         }
@@ -114,7 +116,8 @@ namespace VoxelSystem {
         VoxelMaterialId GetIdForVoxelMaterial(TypeSelector<VoxelMaterial> voxelMaterial) {
             // todo use hash for ids?
             // int vmat = mats.ToList().FindIndex(tsm => { return tsm.type == voxelMaterialType; });
-            int id = voxelMats.ToList().IndexOf(voxelMaterial);
+            int id = System.Array.IndexOf(voxelMats, voxelMaterial);
+            // Debug.LogWarning($"could not find id for vmat {voxelMaterial}");
             return id;
         }
         public VoxelMaterial GetVoxelMaterial(VoxelMaterialId id) {
@@ -148,7 +151,7 @@ namespace VoxelSystem {
                     materials.Append(newVoxMat.material);
                     allUsedMaterials = materials.ToArray();
                 }
-                newVoxMat.materialIndex = allUsedMaterials.ToList().IndexOf(newVoxMat.material);
+                newVoxMat.materialIndex = System.Array.IndexOf(allUsedMaterials, newVoxMat.material);
             }
             newVoxMat.Initialize(this);
             UpdateVMatDict();

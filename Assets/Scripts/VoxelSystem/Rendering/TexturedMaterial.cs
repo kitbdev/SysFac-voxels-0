@@ -10,7 +10,7 @@ namespace VoxelSystem {
         // [Kutil.CustomDropDown(nameof(textureOverrides) + "." + nameof(TextureOverrides.choices), includeNullChoice: true)]
         // public string texname;
         [Kutil.ReadOnly]
-        public Vector2Int textureCoord;
+        public Vector2 textureCoord;
         // public TextureOverrides textureOverrides;
         // public Color tint = Color.white;
         public override void OnValidate(VoxelMaterialSetSO voxelMaterialSet) {
@@ -18,11 +18,13 @@ namespace VoxelSystem {
             // textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
             // textureOverrides.Initialize(voxelMaterialSet, textureCoord);
         }
-        public override void Initialize(VoxelMaterialSetSO voxelMaterialSet) {
+        public override void Initialize(VoxelMaterialSetSO voxelMaterialSet, int index = 0) {
             base.Initialize(voxelMaterialSet);
             // textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
             // textureOverrides.Initialize(voxelMaterialSet, textureCoord);
-            textureCoord = new Vector2Int(materialIndex, 0);// todo dont assume palette like this
+            // todo dont assume palette like this
+            // textureCoord = voxelMaterialSet.textureScale * new Vector2(index, 0);
+            // Debug.Log($"initing texturemat {index} matindex:{materialIndex} tc:{textureCoord}");
         }
     }
 

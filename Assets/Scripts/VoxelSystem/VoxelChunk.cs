@@ -96,6 +96,7 @@ namespace VoxelSystem {
         //     return (a, b) => a.sortOrder - b.sortOrder;// in descending order
         // }
         public void InitVoxels() {
+            // Debug.Log($"chfunk {chunkPos} initing {voxels.Length} voxels");
             for (int i = 0; i < voxels.Length; i++) {
                 // y,z,x
                 Vector3Int position = GetLocalPos(i);

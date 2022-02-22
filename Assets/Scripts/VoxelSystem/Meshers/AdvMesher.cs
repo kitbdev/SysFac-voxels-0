@@ -72,8 +72,9 @@ namespace VoxelSystem.Mesher {
             // Debug.Log($"faces:{preprocessMeshData.faceDatas.Length} v:{preprocessMeshData.numVertices} t:{preprocessMeshData.numTriangles}");
             // genmesh execute
             Bounds meshBounds = new Bounds(Vector3.one * world.chunkSize / 2f, Vector3.one * world.chunkSize);
+            float2 textureUVScale = float2(materialSet.textureScale.x, materialSet.textureScale.y);
             GenMeshJob.ScheduleParallel(
-                    meshData, preprocessMeshData, voxelSize, meshBounds, materialSet.textureScale,
+                    meshData, preprocessMeshData, voxelSize, meshBounds, textureUVScale,
                     4, default).Complete();
             preprocessMeshData.faceDatas.Dispose();
             preprocessMeshData.submeshDatas.Dispose();
@@ -130,9 +131,10 @@ namespace VoxelSystem.Mesher {
             var voxel = chunk.GetLocalVoxelAt(vpos);
             TexturedMaterial voxelMat = voxel.GetVoxelMaterial<TexturedMaterial>(materialSet);
             if (voxelMat == null) {
+                Debug.LogWarning("Could not get voxel material, using default");
                 voxelMat = materialSet.GetDefaultVoxelMaterial<TexturedMaterial>();
                 if (voxelMat == null) {
-                    Debug.LogWarning("Could not get voxel material");
+                    Debug.LogError("Could not get voxel material");
                     // voxelMat = materialSet.GetDefaultVoxelMaterial<TexturedMaterial>();
                     return;
                 }
@@ -184,7 +186,7 @@ namespace VoxelSystem.Mesher {
             [Unity.Collections.ReadOnly]
             float voxelSize;
             [Unity.Collections.ReadOnly]
-            float textureUVScale;
+            float2 textureUVScale;
             [Unity.Collections.ReadOnly]
             int batchSize;
 
@@ -196,7 +198,7 @@ namespace VoxelSystem.Mesher {
             }
             public static JobHandle ScheduleParallel(
                 Mesh.MeshData meshData, MeshGenPData meshGenPData, float voxelSize, Bounds meshBounds,
-                float textureUVScale,
+                float2 textureUVScale,
                 int jobLength, JobHandle dependency) {
                 var job = new GenMeshJob();
                 job.meshGenPData = meshGenPData;
@@ -231,8 +233,8 @@ namespace VoxelSystem.Mesher {
                     float4 tangent = math.float4(dirTangents[d], -1);
                     float3 vertexpos = faceData.voxelPos * voxelSize - math.float3(voxelSize / 2f);
                     vertexpos += vOffsets[d] * voxelSize;
-                    float2 uvfrom = faceData.texcoord * textureUVScale;
-                    float2 uvto = (faceData.texcoord + float2(1f)) * textureUVScale;
+                    float2 uvfrom = faceData.texcoord;// * textureUVScale;
+                    float2 uvto = (faceData.texcoord + float2(1f)* textureUVScale);
                     meshStream.SetFace(
                         vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto);
                     // vi += 4;

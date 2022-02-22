@@ -100,9 +100,9 @@ public class BlockTypeEditor : EditorWindow {
         });
     }
     void CreateBlockTypeAndMat(BlockTypeMaker data) {
-        if (data == null){
+        if (data == null) {
             // add empty to take id
-            blockTypesHolder?.AddBlockTypes(new BlockType(){idname="none"});
+            blockTypesHolder?.AddBlockTypes(new BlockType() { idname = "none" });
         }
         if (voxelMaterialSet == null || data == null || data.displayName == "") {
             return;
@@ -132,7 +132,7 @@ public class BlockTypeEditor : EditorWindow {
             return;
         }
         if (blockTypesHolder == null || voxelMaterialSet == null) {
-            Debug.LogWarning($"no mat or type");
+            Debug.LogWarning($"no mat or type holder");
             return;
         }
         string[] lines = blockTypesCSV.text.Split("\n");
@@ -172,11 +172,12 @@ public class BlockTypeEditor : EditorWindow {
             int ccol = 0;
             BlockTypeMaker nblock = new BlockTypeMaker();
             nblock.displayName = cols[ccol++];
-            ccol++;// ignore id
+            int.TryParse(cols[ccol++], out var blockid);
             nblock.vmat = new TypeSelector<VoxelMaterial>(new TexturedMaterial() {
                 isInvisible = ParseBool(cols[ccol++], defIsInvisible),
                 isTransparent = ParseBool(cols[ccol++], defIsTransparent),
                 hasCollision = ParseBool(cols[ccol++], defCol),
+                textureCoord = new Vector2(blockid-1, 0f) * voxelMaterialSet.textureScale,
             });
             // todo
             // nblock.customDatas

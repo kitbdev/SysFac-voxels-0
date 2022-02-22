@@ -152,12 +152,15 @@ public class MapSO : ScriptableObject {
             VoxelWorld.ChunkSaveData chunkSaveData = mapData.chunks[mapData.chunks.Keys.ToArray()[c]];
             for (int v = 0; v < chunkVol; v++) {
                 Voxel voxel = chunkSaveData.voxels[v];
+                // DefaultVoxelData defaultVoxelData = voxel.GetVoxelDataFor<DefaultVoxelData>();
+                // defaultVoxelData.localVoxelPos = VoxelChunk.GetLocalPos(v, chunkRes);
+                // defaultVoxelData.blockPos = defaultVoxelData.localVoxelPos + chunkSaveData.chunkPos * chunkRes;
                 BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
                 if (voxel.voxelMaterialId < maxBlockType) {
                     // if (voxel.voxelMaterialId == 0) {
                     int blockTypeId = voxel.voxelMaterialId;
-                    if (specialBlocksDict.ContainsKey(voxel.voxelMaterialId)){
-                        if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()){
+                    if (specialBlocksDict.ContainsKey(voxel.voxelMaterialId)) {
+                        if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()) {
                             blockTypeId = specialBlocksDict[voxel.voxelMaterialId].newblockType.blockid;
                         }
                         SpecialBlockType specialBlockType = specialBlocksDict[voxel.voxelMaterialId].specialType;
@@ -169,7 +172,7 @@ public class MapSO : ScriptableObject {
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
                         blockTypeRef = new BlockTypeRef().SetBlockId(blockTypeId)
                     });
-                        BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
+                    BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
                     // Debug.Log($"set {blockTypeVoxelData} id to {btypel.importMatId} now {blockTypeVoxelData1}");
                 } else {
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {

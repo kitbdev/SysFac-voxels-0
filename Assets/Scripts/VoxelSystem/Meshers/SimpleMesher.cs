@@ -12,7 +12,7 @@ namespace VoxelSystem.Mesher {
         // public override TypeChoice<VoxelData>[] neededDatas => new TypeChoice<VoxelData>[] {
         //                 typeof(MeshCacheVoxelData) };
 
-        float textureUVScale = 16f / 512;
+        Vector2 textureUVScale = Vector3.one;// = 16f / 512;
 
         Mesh mesh;
         List<Vector3> vertices;
@@ -177,6 +177,7 @@ namespace VoxelSystem.Mesher {
             vertices.Add(vertexpos + fromVec + Vector3.Scale(upTangent, toVec));
             vertices.Add(vertexpos + fromVec + Vector3.Scale(rightTangent + upTangent, toVec));
             // uvs
+            // todo dont mult by offset, just size?
             uvs.Add(textureUVScale * (texoffset + uvfrom));
             uvs.Add(textureUVScale * (texoffset + Vector2.right * uvto + uvfrom));
             uvs.Add(textureUVScale * (texoffset + Vector2.up * uvto + uvfrom));

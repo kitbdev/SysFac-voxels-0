@@ -108,7 +108,7 @@ namespace VoxelSystem {
             return neededData;
         }
 
-        [ContextMenu("Refresh")]
+        [ContextMenu("Refresh all chunks")]
         public void RefreshAll() {
             foreach (var chunk in activeChunks) {
                 chunk.Refresh();
@@ -205,6 +205,9 @@ namespace VoxelSystem {
 
         public void LoadChunksFromData(ChunkSaveData[] chunks, bool overwrite = false) {
             Debug.Log($"Loading chunks from data {chunks.Length}");
+            if (chunkPool == null) {
+                Initialize();
+            }
             List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];
@@ -219,7 +222,7 @@ namespace VoxelSystem {
                 }
                 VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
                 voxelChunk.OverrideVoxels(chunkSaveData.voxels);
-                voxelChunk.InitVoxels();
+                // voxelChunk.InitVoxels();// gets called in override
                 chunksToRefresh.Add(chunkSaveData.chunkPos);
             }
             RefreshChunks(chunksToRefresh.ToArray());

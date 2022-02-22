@@ -22,7 +22,7 @@ namespace Kutil {
 
         public TypeChoice<T> type {
             get => _type; set {
-                var old = _type;
+                // var old = _type;
                 _type = value;
                 UpdateObjectType();
             }
@@ -32,7 +32,7 @@ namespace Kutil {
             set => _objvalue = value;
         }
 
-        public TypeSelector() { 
+        public TypeSelector() {
             this._type = null;
             // inspector doesnt initialize values like this
             // this._type.onSelectCallback = (v) => { UpdateObjectType(); };
@@ -73,6 +73,19 @@ namespace Kutil {
 #endif
         }
         public void OnAfterDeserialize() { }
+
+        public override string ToString() {
+            return $"TypeSelector<{typeof(T).Name}>{{seltype:{type.selectedType.type.Name}, val:{objvalue}}}";
+        }
+        // public override bool Equals(object obj) {
+        //     if (this == null && obj == null) {
+        //         return true;
+        //     }
+        //     if (obj is TypeSelector<T> tobj) {
+        //         return type.Equals(tobj.type) && (objvalue?.Equals(tobj.objvalue) ?? tobj.objvalue == null);
+        //     }
+        //     return false;
+        // }
 
     }
 

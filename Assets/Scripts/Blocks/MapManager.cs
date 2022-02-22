@@ -36,9 +36,11 @@ public partial class MapManager : Singleton<MapManager> {
     private void Start() {
         StartLoad();
     }
+    [ContextMenu("Load")]
     void StartLoad() {
         // Debug.Log("Going to load");
         // load to world
+        world.Clear();
         if (mapHolder?.mapData != null || mapHolder?.mapData.chunks.Count == 0) {
             world.LoadChunksFromData(mapHolder.mapData.chunks.Values.ToArray());
         } else {

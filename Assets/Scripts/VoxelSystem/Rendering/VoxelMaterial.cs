@@ -17,7 +17,7 @@ namespace VoxelSystem {
         // public TextureAtlasPacker
         // public Texture2D
         public virtual void OnValidate(VoxelMaterialSetSO voxelMaterialSet) { }
-        public virtual void Initialize(VoxelMaterialSetSO voxelMaterialSet) { }
+        public virtual void Initialize(VoxelMaterialSetSO voxelMaterialSet, int index=0) { }
     }
     [System.Serializable]
     public class CuboidMaterial : VoxelMaterial {
@@ -63,8 +63,8 @@ namespace VoxelSystem {
             // textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
             // textureOverrides.Initialize(voxelMaterialSet, textureCoord);
         }
-        public override void Initialize(VoxelMaterialSetSO voxelMaterialSet) {
-            base.Initialize(voxelMaterialSet);
+        public override void Initialize(VoxelMaterialSetSO voxelMaterialSet, int index=0) {
+            base.Initialize(voxelMaterialSet, index);
             // textureCoord = voxelMaterialSet.GetTexCoordForName(texname);
             // textureOverrides.Initialize(voxelMaterialSet, textureCoord);
         }

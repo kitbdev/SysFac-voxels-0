@@ -15,124 +15,717 @@ MonoBehaviour:
   _allUsedMaterials:
   - {fileID: 2100000, guid: ec38bc7a4fbe85545980a4df9b43255e, type: 2}
   - {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
-  textureAtlas: {fileID: 11400000, guid: 8329e17f7f1688d4e84c4d723008c2c6, type: 2}
   activeType:
     _selectedType:
-      assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+      assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
+  textureScale: {x: 0.00390625, y: 1}
   _voxelMats:
   - _type:
       _selectedType:
-        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
     _objvalue:
-      rid: 4170073068073385993
+      rid: 4170073184823157387
   - _type:
       _selectedType:
-        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
     _objvalue:
-      rid: 4170073068073385995
+      rid: 4170073184823157388
   - _type:
       _selectedType:
-        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
     _objvalue:
-      rid: 4170073095837057030
+      rid: 4170073184823157389
   - _type:
       _selectedType:
-        assemblyName: VoxelSystem.BasicMaterial, VoxelSystem, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
     _objvalue:
-      rid: 4170073115006075058
+      rid: 4170073184823157390
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157391
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157392
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157393
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157394
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157395
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157396
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157397
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157398
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157399
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157400
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157401
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157402
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157403
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157404
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157405
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157406
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157407
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157408
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157409
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157410
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157411
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157412
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157413
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157414
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157415
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157416
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157417
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157418
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157419
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157420
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157421
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157422
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157423
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157424
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157425
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157426
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157427
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157428
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157429
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157430
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157431
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157432
+  - _type:
+      _selectedType:
+        assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    _objvalue:
+      rid: 4170073184823157433
   references:
     version: 2
     RefIds:
-    - rid: 4170073068073385993
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+    - rid: 4170073184823157387
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
       data:
         materialIndex: 0
+        hasCollision: 0
         material: {fileID: 0}
         isInvisible: 1
         isTransparent: 1
-        texname: 
+        textureCoord: {x: -0.00390625, y: 0}
+    - rid: 4170073184823157388
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
         textureCoord: {x: 0, y: 0}
-        textureOverrides:
-          texnameUp: 
-          texnameDown: 
-          texnameFront: 
-          texnameBack: 
-          texnameRight: 
-          texnameLeft: 
-          texcoordUp: {x: 0, y: 0}
-          texcoordDown: {x: 0, y: 0}
-          texcoordFront: {x: 0, y: 0}
-          texcoordBack: {x: 0, y: 0}
-          texcoordRight: {x: 0, y: 0}
-          texcoordLeft: {x: 0, y: 0}
-    - rid: 4170073068073385995
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+    - rid: 4170073184823157389
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
       data:
         materialIndex: 0
+        hasCollision: 1
         material: {fileID: 0}
         isInvisible: 0
         isTransparent: 0
-        texname: grass_block_side
-        textureCoord: {x: 2, y: 1}
-        textureOverrides:
-          texnameUp: dirt
-          texnameDown: dirt
-          texnameFront: 
-          texnameBack: 
-          texnameRight: 
-          texnameLeft: 
-          texcoordUp: {x: 1, y: 0}
-          texcoordDown: {x: 1, y: 0}
-          texcoordFront: {x: 2, y: 1}
-          texcoordBack: {x: 2, y: 1}
-          texcoordRight: {x: 2, y: 1}
-          texcoordLeft: {x: 2, y: 1}
-    - rid: 4170073095837057030
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+        textureCoord: {x: 0.00390625, y: 0}
+    - rid: 4170073184823157390
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
       data:
         materialIndex: 0
+        hasCollision: 1
         material: {fileID: 0}
         isInvisible: 0
         isTransparent: 0
-        texname: dirt
-        textureCoord: {x: 1, y: 0}
-        textureOverrides:
-          texnameUp: 
-          texnameDown: 
-          texnameFront: 
-          texnameBack: 
-          texnameRight: 
-          texnameLeft: 
-          texcoordUp: {x: 1, y: 0}
-          texcoordDown: {x: 1, y: 0}
-          texcoordFront: {x: 1, y: 0}
-          texcoordBack: {x: 1, y: 0}
-          texcoordRight: {x: 1, y: 0}
-          texcoordLeft: {x: 1, y: 0}
-    - rid: 4170073115006075058
-      type: {class: BasicMaterial, ns: VoxelSystem, asm: VoxelSystem}
+        textureCoord: {x: 0.03125, y: 0}
+    - rid: 4170073184823157391
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
       data:
-        materialIndex: 1
-        material: {fileID: 2100000, guid: 66ecebbd41b583b46902e60ca150b20a, type: 2}
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.03515625, y: 0}
+    - rid: 4170073184823157392
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.0390625, y: 0}
+    - rid: 4170073184823157393
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.04296875, y: 0}
+    - rid: 4170073184823157394
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.046875, y: 0}
+    - rid: 4170073184823157395
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.0625, y: 0}
+    - rid: 4170073184823157396
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.06640625, y: 0}
+    - rid: 4170073184823157397
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.0703125, y: 0}
+    - rid: 4170073184823157398
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.07421875, y: 0}
+    - rid: 4170073184823157399
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.078125, y: 0}
+    - rid: 4170073184823157400
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.09375, y: 0}
+    - rid: 4170073184823157401
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.09765625, y: 0}
+    - rid: 4170073184823157402
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.1015625, y: 0}
+    - rid: 4170073184823157403
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.10546875, y: 0}
+    - rid: 4170073184823157404
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.109375, y: 0}
+    - rid: 4170073184823157405
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.11328125, y: 0}
+    - rid: 4170073184823157406
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.1171875, y: 0}
+    - rid: 4170073184823157407
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
         isInvisible: 0
         isTransparent: 1
-        texname: glass
-        textureCoord: {x: 1, y: 1}
-        textureOverrides:
-          texnameUp: 
-          texnameDown: 
-          texnameFront: 
-          texnameBack: 
-          texnameRight: 
-          texnameLeft: 
-          texcoordUp: {x: 1, y: 1}
-          texcoordDown: {x: 1, y: 1}
-          texcoordFront: {x: 1, y: 1}
-          texcoordBack: {x: 1, y: 1}
-          texcoordRight: {x: 1, y: 1}
-          texcoordLeft: {x: 1, y: 1}
+        textureCoord: {x: 0.12109375, y: 0}
+    - rid: 4170073184823157408
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.125, y: 0}
+    - rid: 4170073184823157409
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.12890625, y: 0}
+    - rid: 4170073184823157410
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 1
+        textureCoord: {x: 0.15625, y: 0}
+    - rid: 4170073184823157411
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 1
+        textureCoord: {x: 0.18359375, y: 0}
+    - rid: 4170073184823157412
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 1
+        textureCoord: {x: 0.21875, y: 0}
+    - rid: 4170073184823157413
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.22265625, y: 0}
+    - rid: 4170073184823157414
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.2265625, y: 0}
+    - rid: 4170073184823157415
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.23046875, y: 0}
+    - rid: 4170073184823157416
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.25, y: 0}
+    - rid: 4170073184823157417
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.28125, y: 0}
+    - rid: 4170073184823157418
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.28515625, y: 0}
+    - rid: 4170073184823157419
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.2890625, y: 0}
+    - rid: 4170073184823157420
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.29296875, y: 0}
+    - rid: 4170073184823157421
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.3125, y: 0}
+    - rid: 4170073184823157422
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.31640625, y: 0}
+    - rid: 4170073184823157423
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.34375, y: 0}
+    - rid: 4170073184823157424
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.34765625, y: 0}
+    - rid: 4170073184823157425
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.3515625, y: 0}
+    - rid: 4170073184823157426
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.35546875, y: 0}
+    - rid: 4170073184823157427
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.59375, y: 0}
+    - rid: 4170073184823157428
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.65625, y: 0}
+    - rid: 4170073184823157429
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.66015625, y: 0}
+    - rid: 4170073184823157430
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.6640625, y: 0}
+    - rid: 4170073184823157431
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.66796875, y: 0}
+    - rid: 4170073184823157432
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.71875, y: 0}
+    - rid: 4170073184823157433
+      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
+      data:
+        materialIndex: 0
+        hasCollision: 1
+        material: {fileID: 0}
+        isInvisible: 0
+        isTransparent: 0
+        textureCoord: {x: 0.72265625, y: 0}
