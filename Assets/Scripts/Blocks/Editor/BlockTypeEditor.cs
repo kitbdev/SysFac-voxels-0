@@ -75,6 +75,8 @@ public class BlockTypeEditor : EditorWindow {
 
         container.Bind(serializedObject);
     }
+    void PreprocessMap() => mapData.ProcessImportData();
+    void ClearMap() => mapData.ClearMapData();
 
     void AddNewBlockType() {
         CreateBlockTypeAndMat(blockTypeToAdd);
@@ -102,7 +104,9 @@ public class BlockTypeEditor : EditorWindow {
     void CreateBlockTypeAndMat(BlockTypeMaker data) {
         if (data == null) {
             // add empty to take id
-            blockTypesHolder?.AddBlockTypes(new BlockType() { idname = "none" });
+            blockTypesHolder?.AddBlockTypes(new BlockType() {
+                idname = "none", voxelMaterialId = 1,// debug mat
+            });
         }
         if (voxelMaterialSet == null || data == null || data.displayName == "") {
             return;
@@ -111,11 +115,14 @@ public class BlockTypeEditor : EditorWindow {
         blockType.displayName = data.displayName;
         blockType.idname = ToIdName(data.displayName);
         blockType.customDatas = data.customDatas.Select(tsvd => tsvd.type).ToHashSet().ToArray();
-        // if (data.vmat.objvalue is TexturedMaterial bvm) {
-        //     if (bvm.texname == "") {
-        //         bvm.texname = blockType.idname;
-        //     }
-        // }
+        if (data.vmat.objvalue is TexturedMaterial bvm) {
+            if (bvm.isTransparent) {
+                bvm.materialIndex = 1;// todo set from file?
+            }
+            // if (bvm.texname == "") {
+            //     bvm.texname = blockType.idname;
+            // }
+        }
         VoxelMaterialId voxelMaterialId = voxelMaterialSet.AddVoxelMaterial(data.vmat.objvalue);
         blockType.voxelMaterialId = voxelMaterialId;
         blockTypesHolder?.AddBlockTypes(blockType);
@@ -172,12 +179,13 @@ public class BlockTypeEditor : EditorWindow {
             int ccol = 0;
             BlockTypeMaker nblock = new BlockTypeMaker();
             nblock.displayName = cols[ccol++];
+            // Debug.Log("Adding ");
             int.TryParse(cols[ccol++], out var blockid);
             nblock.vmat = new TypeSelector<VoxelMaterial>(new TexturedMaterial() {
                 isInvisible = ParseBool(cols[ccol++], defIsInvisible),
                 isTransparent = ParseBool(cols[ccol++], defIsTransparent),
                 hasCollision = ParseBool(cols[ccol++], defCol),
-                textureCoord = new Vector2(blockid-1, 0f) * voxelMaterialSet.textureScale,
+                textureCoord = new Vector2(blockid - 1, 0f) * voxelMaterialSet.textureScale,
             });
             // todo
             // nblock.customDatas
@@ -246,12 +254,6 @@ public class BlockTypeEditor : EditorWindow {
     //         Debug.Log($"Set block types, now prepocessing map");
     //         mapData.ProcessImportData();
     //     }
-    void PreprocessMap() {
-        mapData.ProcessImportData();
-    }
-    void ClearMap() {
-        mapData.ClearMapData();
-    }
 
     static int ParseInt(string col, int defVal) {
         if (int.TryParse(col.Trim(), out var intval)) {

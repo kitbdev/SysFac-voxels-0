@@ -18,6 +18,10 @@ public struct BlockTypeVoxelData : VoxelData {
         BlockManager.UpdateBlockType(voxel, blockTypeRef);
         // note: block type is now based on 
     }
+    [ContextMenu("Update mat")]
+    public void UpdateMatToType(){
+        // BlockManager.UpdateBlockType(voxel, blockTypeRef);
+    }
     /*
     
     */

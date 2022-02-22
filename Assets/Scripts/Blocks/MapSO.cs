@@ -41,6 +41,9 @@ public class MapSO : ScriptableObject {
         public int matid;
         public SpecialBlockType specialType;
         public BlockTypeRef newblockType;
+        public override string ToString() {
+            return $"matid:{matid} newType:{newblockType} special:{specialType}";
+        }
     }
 
     // [System.Serializable]
@@ -88,7 +91,9 @@ public class MapSO : ScriptableObject {
         // blockTypeLoadDict = allBlocksConverter.blockTypeConverter
         //             .ToDictionary((bid => bid.importMatId));
 #if UNITY_EDITOR
-        UnityEditor.Undo.RecordObject(this, "preprocess map");
+        // note no undo because it is too much
+        // UnityEditor.Undo.RecordObject(this, "preprocess map");
+        EditorUtility.SetDirty(this);
 #endif
         var mp = PreProcessMap(importedVoxelData.fullVoxelImportData, neededVoxelDatas.ToHashSet().ToArray());
         // todo? make sure chunk resolutions are the same
@@ -160,8 +165,12 @@ public class MapSO : ScriptableObject {
                     // if (voxel.voxelMaterialId == 0) {
                     int blockTypeId = voxel.voxelMaterialId;
                     if (specialBlocksDict.ContainsKey(voxel.voxelMaterialId)) {
-                        if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()) {
-                            blockTypeId = specialBlocksDict[voxel.voxelMaterialId].newblockType.blockid;
+                        SpecialBlocksMap specialBlock = specialBlocksDict[voxel.voxelMaterialId];
+                        Debug.Log($"found special {specialBlock} !");
+                        if (specialBlock.newblockType.IsValid()) {
+                            if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()) {
+                                blockTypeId = specialBlocksDict[voxel.voxelMaterialId].newblockType.blockid;
+                            }
                         }
                         SpecialBlockType specialBlockType = specialBlocksDict[voxel.voxelMaterialId].specialType;
                         if (specialBlockType == SpecialBlockType.PLAYER_SPAWN) {
@@ -175,6 +184,7 @@ public class MapSO : ScriptableObject {
                     BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
                     // Debug.Log($"set {blockTypeVoxelData} id to {btypel.importMatId} now {blockTypeVoxelData1}");
                 } else {
+                    Debug.Log($"set {blockTypeVoxelData} mat:{voxel.voxelMaterialId} block id to unknown type");
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
                         blockTypeRef = unkownBlockDefault
                     });

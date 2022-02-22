@@ -28,7 +28,7 @@ namespace VoxelSystem {
         [Space]
         // [SerializeField] GameObject voxelChunkPrefab;// todo? remove 
         [SerializeField] List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
-        Dictionary<Vector3Int, VoxelChunk> activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
+        SerializableDictionary<Vector3Int, VoxelChunk> activeChunksDict = new SerializableDictionary<Vector3Int, VoxelChunk>();
 
         UnityEngine.Pool.ObjectPool<GameObject> chunkPool;
 
@@ -54,11 +54,14 @@ namespace VoxelSystem {
         }
         private void Awake() {
             if (clearOnAwake) {
+                ClearPool();
                 Clear();
             }
         }
         private void OnEnable() {
             if (clearOnDisable || chunkPool == null) {
+                ClearPool();
+                Clear();
                 Initialize();
             }
         }
@@ -86,8 +89,11 @@ namespace VoxelSystem {
                 },
                 true, 50, 1000);
             // set active chunks dict
-            activeChunksDict = activeChunks?.ToDictionary(vc => vc.chunkPos);
+            FixDict();
             UpdateNeededData();
+        }
+        void FixDict(){
+            activeChunksDict ??= (SerializableDictionary<Vector3Int, VoxelChunk>)(activeChunks?.ToDictionary(vc => vc.chunkPos));
         }
         private void OnDisable() {
             if (clearOnDisable) {
@@ -124,7 +130,7 @@ namespace VoxelSystem {
         public void Clear() {
             if (activeChunks == null) {
                 activeChunks = new List<VoxelChunk>();
-                activeChunksDict = new Dictionary<Vector3Int, VoxelChunk>();
+                activeChunksDict = null;
                 // chunksToPopulate = new List<int>();
             } else {
                 for (int i = activeChunks.Count - 1; i >= 0; i--) {
@@ -137,7 +143,11 @@ namespace VoxelSystem {
                 activeChunksDict?.Clear();
                 // chunksToPopulate.Clear();
             }
+            if (chunkPool == null) {
+                Initialize();
+            }
         }
+        [ContextMenu("Clear pool")]
         void ClearPool() {
             chunkPool?.Dispose();
             for (int i = transform.childCount - 1; i >= 0; i--) {
@@ -379,6 +389,7 @@ namespace VoxelSystem {
 
 
         public bool HasChunkActiveAt(Vector3Int cpos) {
+            FixDict();
             // return world.Exists(c => c.chunkPos == pos);
             return activeChunksDict.ContainsKey(cpos);
         }

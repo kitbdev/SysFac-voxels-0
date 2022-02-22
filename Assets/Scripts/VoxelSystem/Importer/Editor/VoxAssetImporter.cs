@@ -14,17 +14,18 @@ namespace VoxelSystem.Importer {
         [Header("Data")]
         [ReadOnly]
         [SerializeField] int numModels;
-        // [SerializeField] OgtVox.OgtVoxImporter.ogt_vox_scene scene;
-        [System.Serializable]
-        struct Models {
-            public Vector3Int modelSize;
-            public Vector3Int offset;
-            public Vector3Int chunkCountAxis;
-            public int numChunks;
-        }
+        // [System.Serializable]
+        // struct Models {
+        //     public Vector3Int modelSize;
+        //     public Vector3Int offset;
+        //     public Vector3Int chunkCountAxis;
+        //     public int numChunks;
+        // }
         [ReadOnly]
-        [SerializeField] List<Models> models = new List<Models>();
-        // [SerializeField]
+        // [SerializeField] List<Models> models = new List<Models>();
+        // [SerializeField] List<VoxelModelImportData> models = new List<VoxelModelImportData>();
+
+        [SerializeField]
         FullVoxelImportData fullVoxelImportData;
         [Header("Settings")]
         public VoxelImportSettings voxelImportSettings = new VoxelImportSettings();
@@ -45,30 +46,28 @@ namespace VoxelSystem.Importer {
                 return;
             }
             numModels = fullVoxelImportData.models.Length;
-            models.Clear();
-            for (int i = 0; i < numModels; i++) {
-                models.Add(new Models() {
-                    modelSize = fullVoxelImportData.models[i].modelSize,
-                    numChunks = fullVoxelImportData.models[i].chunks.Length,
-                    offset = fullVoxelImportData.models[i].position,
-                    chunkCountAxis = fullVoxelImportData.models[i].numChunksByAxis,
-                });
-            }
+            // models.Clear();
             string filename = System.IO.Path.GetFileName(ctx.assetPath);
             if (asPrefab) {
                 GameObject maingo = new GameObject("voxel load");
-                VoxelWorld voxelWorld = maingo.AddComponent<VoxelWorld>();
-                voxelWorld.voxelSize = 0.5f;
-                voxelWorld.materialSet =
-                    AssetDatabase.LoadAssetAtPath<VoxelMaterialSetSO>("Assets/Data/defVoxelMaterialSet.asset");
-                // FixedChunkLoader fixedChunkLoader = maingo.AddComponent<FixedChunkLoader>();
-                // fixedChunkLoader.SetChunksToLoadOrigin();
-                // voxelWorld.SendMessage("OnEnable", SendMessageOptions.DontRequireReceiver);
-                voxelWorld.enableCollision = false;
-                voxelWorld.LoadFullImportVoxelData(fullVoxelImportData);
-                // fixedChunkLoader.LoadChunks();
-                // voxelWorld.set
-                // maingo.AddComponent<VoxelRenderer>()
+                for (int i = 0; i < numModels; i++) {
+                    VoxelModelImportData modelimportdata = fullVoxelImportData.models[i];
+                    GameObject vworldGo = new GameObject($"model {i} {modelimportdata.modelName}");
+                    vworldGo.transform.parent = maingo.transform;
+                    vworldGo.transform.localPosition = (Vector3)modelimportdata.position * fullVoxelImportData.voxelSize;
+                    VoxelWorld voxelWorld = vworldGo.AddComponent<VoxelWorld>();
+                    voxelWorld.voxelSize = 0.5f;
+                    voxelWorld.materialSet =
+                        AssetDatabase.LoadAssetAtPath<VoxelMaterialSetSO>("Assets/Data/defVoxelMaterialSet.asset");
+                    // FixedChunkLoader fixedChunkLoader = maingo.AddComponent<FixedChunkLoader>();
+                    // fixedChunkLoader.SetChunksToLoadOrigin();
+                    // voxelWorld.SendMessage("OnEnable", SendMessageOptions.DontRequireReceiver);
+                    voxelWorld.enableCollision = false;
+                    voxelWorld.LoadFullImportVoxelData(fullVoxelImportData);
+                    // fixedChunkLoader.LoadChunks();
+                    // voxelWorld.set
+                    // maingo.AddComponent<VoxelRenderer>()
+                }
                 ctx.AddObjectToAsset($"voxel {filename} prefab", maingo);
                 ctx.SetMainObject(maingo);
             } else {

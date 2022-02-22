@@ -135,8 +135,8 @@ namespace VoxelSystem.Mesher {
             Vector3 fromVec = Vector3.zero;
             Vector3 toVec = Vector3.one * chunk.world.voxelSize;
             Vector2 uvfrom = Vector2.zero;
-            Vector2 uvto = Vector2.one;
             Vector2 texoffset = voxelMat.textureCoord;
+            Vector2 uvto = Vector2.one * textureUVScale;
             // create faces
             for (int d = 0; d < Voxel.unitDirs.Length; d++)
             // int d = 0;
@@ -159,7 +159,7 @@ namespace VoxelSystem.Mesher {
                 if (!renderFace) {
                     continue;
                 }
-                texoffset = voxelMat.textureCoord;//.textureOverrides.textureCoords[d];
+                // texoffset = voxelMat.textureCoord;//.textureOverrides.textureCoords[d];
                 int submesh = voxelMat.materialIndex;
                 // add face
                 Vector3 vertexpos = (Vector3)vpos * voxelSize - Vector3.one * voxelSize / 2;
@@ -177,11 +177,10 @@ namespace VoxelSystem.Mesher {
             vertices.Add(vertexpos + fromVec + Vector3.Scale(upTangent, toVec));
             vertices.Add(vertexpos + fromVec + Vector3.Scale(rightTangent + upTangent, toVec));
             // uvs
-            // todo dont mult by offset, just size?
-            uvs.Add(textureUVScale * (texoffset + uvfrom));
-            uvs.Add(textureUVScale * (texoffset + Vector2.right * uvto + uvfrom));
-            uvs.Add(textureUVScale * (texoffset + Vector2.up * uvto + uvfrom));
-            uvs.Add(textureUVScale * (texoffset + Vector2.one * uvto + uvfrom));
+            uvs.Add((texoffset + uvfrom));
+            uvs.Add((texoffset + Vector2.right * uvto + uvfrom));
+            uvs.Add((texoffset + Vector2.up * uvto + uvfrom));
+            uvs.Add((texoffset + Vector2.one * uvto + uvfrom));
             // tris
             AddFaceTris(vcount, vcount + 1, vcount + 2, vcount + 3, submesh);
         }

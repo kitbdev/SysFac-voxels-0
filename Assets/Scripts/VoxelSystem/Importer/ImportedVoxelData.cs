@@ -16,6 +16,7 @@ namespace VoxelSystem.Importer {
     public class VoxelModelImportData {
         // public int id;
         // public UnityEngine.Vector3 offset;
+        public string modelName = "";
         public Vector3Int modelSize;
         public Vector3Int numChunksByAxis;
         public Vector3Int position;
@@ -26,6 +27,7 @@ namespace VoxelSystem.Importer {
     [System.Serializable]
     public class ChunkImportData {
         public Vector3Int chunkPos;
+        [HideInInspector]
         public ImportedVoxel[] voxels;
     }
     [System.Serializable]
@@ -38,6 +40,8 @@ namespace VoxelSystem.Importer {
         [HideInInspector]
         public string filepath;
         // public VoxelMaterialSetSO voxelMaterialSet;
+
+        public bool worldChunkAlignment = true;
         public float voxelSize = 1f;
         public int chunkResolution = 16;
         public Vector3Int chunkPosOffset;

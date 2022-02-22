@@ -31,19 +31,19 @@ namespace VoxelSystem.Importer.VoxCore {
         }
 
         static VoxelModelImportData LoadModel(FileToVoxCore.Vox.VoxelData vdata,
-            FileToVoxCore.Vox.Chunks.TransformNodeChunk tra,
+            FileToVoxCore.Vox.Chunks.TransformNodeChunk tnode,
             VoxelImportSettings importSettings) {
             var chunkRes = importSettings.chunkResolution;
             Vector3Int modelSize = new Vector3Int(vdata.VoxelsWide, vdata.VoxelsDeep, vdata.VoxelsTall);
-            Vector3 worldPositionFrame = Convert(tra.TranslationAt());
-            Vector3Int worldPos = Vector3Int.FloorToInt(worldPositionFrame);
+            Vector3Int worldPos = ConvertI(tnode.TranslationAt()) - modelSize / 2;
             // if (worldPositionFrame == FileToVoxCore.Schematics.Tools.Vector3.zero)
             //     return null;
-            if (debug) Debug.Log($"LoadModel size {modelSize} wp:{worldPositionFrame}");
+            string modelName = tnode.Name;
+            if (debug) Debug.Log($"Load Model '{modelName}' size:{modelSize} wp:{worldPos}");
             Vector3Int numChunksPerDir = Vector3Int.one + (modelSize - Vector3Int.one) / chunkRes;
-            bool worldChunkAlignment = true;
             Vector3Int startChunkPos = Vector3Int.zero;
             Vector3Int localOffset = Vector3Int.zero;
+            var worldChunkAlignment = importSettings.worldChunkAlignment;
             if (worldChunkAlignment) {
                 startChunkPos = VoxelWorld.ChunkPosWithBlock(worldPos, chunkRes);
                 var endChunkPos = VoxelWorld.ChunkPosWithBlock(worldPos + modelSize, chunkRes) + Vector3Int.one;
@@ -120,9 +120,10 @@ namespace VoxelSystem.Importer.VoxCore {
                 }
             }
             Matrix4x4 matrix4x4 = Convert(FileToVoxCore.Utils.VoxUtils.ReadMatrix4X4FromRotation(
-                tra.RotationAt(), tra.TranslationAt()));
+                tnode.RotationAt(), tnode.TranslationAt()));
             var modelImportData = new VoxelModelImportData() {
                 // id = 
+                modelName = modelName,
                 modelSize = modelSize,
                 position = worldPos,
                 trMatrix = matrix4x4,

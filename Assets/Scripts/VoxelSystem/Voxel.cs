@@ -53,7 +53,6 @@ namespace VoxelSystem {
         //     return voxel;
         // }
 
-
         public void Initialize(VoxelChunk chunk, Vector3Int localVoxelPos) {
             foreach (var voxelData in voxelDatas) {
                 voxelData.Initialize(this, chunk, localVoxelPos);
