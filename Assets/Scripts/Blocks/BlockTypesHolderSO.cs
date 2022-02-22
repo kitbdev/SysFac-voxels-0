@@ -28,7 +28,7 @@ add block
 [CreateAssetMenu(fileName = "BlockTypesHolder", menuName = "SysFac/BlockTypesHolder", order = 0)]
 public class BlockTypesHolderSO : ScriptableObject {
 
-    [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
+    // [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
     public BlockType[] blockTypes;
 
     // private void OnValidate() {
@@ -66,6 +66,5 @@ public class BlockTypesHolderSO : ScriptableObject {
     public void ClearAllBlockTypes() {
         blockTypes = new BlockType[0];
     }
-
 
 }

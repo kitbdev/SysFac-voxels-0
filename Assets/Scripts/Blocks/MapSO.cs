@@ -20,15 +20,15 @@ using UnityEditor;
 [System.Serializable]
 public class MapData {
     // todo compress? its a lot of voxels in a lot of chunks
-    public Vector3 playerSpawn;
+    public Vector3Int playerSpawn;
+    public int chunkResolution;
     public Vector3[] otherStuff;
     public SerializableDictionary<Vector3Int, VoxelWorld.ChunkSaveData> chunks;
 }
 [CreateAssetMenu(fileName = "MapData", menuName = "SysFac/Map", order = 0)]
 public class MapSO : ScriptableObject {
 
-
-    enum SpecialBlocks {
+    public enum SpecialBlocks {
         NONE,
         UNKNOWN,
         MAP_BORDER,
@@ -38,19 +38,20 @@ public class MapSO : ScriptableObject {
     }
 
     [System.Serializable]
-    struct BlockTypeLoad {
+    public struct BlockLoadConverter {
         public int importMatId;
         // public int importMatIdEnd;
         public SpecialBlocks specialType;
         public BlockTypeRef blockType;
     }
     [System.Serializable]
-    class AllBlockTypeLoadData {
-        public BlockTypeLoad[] blockTypeLoadData;
-        public Dictionary<int, BlockTypeLoad> blockTypeLoadDict;
+    public class AllBlockTypeLoadData {
+        public BlockLoadConverter[] blockTypeConverter;
     }
+    Dictionary<int, BlockLoadConverter> blockTypeLoadDict;
 
 
+    [HideInInspector]
     public MapData mapData;
     [SerializeReference]
     public ImportedVoxelData importedVoxelData;
@@ -59,15 +60,20 @@ public class MapSO : ScriptableObject {
 
     public BlockTypeRef unkownBlockDefault;
     [SerializeField]
-    AllBlockTypeLoadData blockTypeLoad;
+    public AllBlockTypeLoadData allBlocksConverter;
 
     void ResetNeededData() {
         neededVoxelDatas = new TypeChoice<VoxelData>[] { new TypeChoice<VoxelData>(typeof(DefaultVoxelData)) };
     }
 
+    [ContextMenu("Clear map data")]
+    public void ClearMapData() {
+        mapData = null;
+    }
+
     [ContextMenu("Preprocess")]
     public void ProcessImportData() {
-        blockTypeLoad.blockTypeLoadDict = blockTypeLoad.blockTypeLoadData
+        blockTypeLoadDict = allBlocksConverter.blockTypeConverter
                     .ToDictionary((bid => bid.importMatId));
         var mp = PreProcessMap(importedVoxelData.fullVoxelImportData, neededVoxelDatas.ToHashSet().ToArray());
         // todo? make sure chunk resolutions are the same
@@ -87,26 +93,32 @@ public class MapSO : ScriptableObject {
 
         // todo enemies, fine tune things, vd configuration
 
+        // todo save to a file (json?) or something the mapdata size is currently too large to hold in the SO comfortably(causes editor lag) and will only get bigger
+        // todo also look into compressing data
+
         MapData mapData = new MapData();
+        mapData.chunkResolution = chunkRes;
         mapData.chunks = new SerializableDictionary<Vector3Int, VoxelWorld.ChunkSaveData>();
         int chunkVol = chunkRes * chunkRes * chunkRes;
 
         for (int m = 0; m < fullImportData.models.Length; m++) {
             VoxelModelImportData voxelModelImportData = fullImportData.models[m];
             for (int c = 0; c < voxelModelImportData.chunks.Length; c++) {
+                // todo models may be non chunk aligned, need to properly convert to chunks on our grid
                 ChunkImportData chunkImportData = voxelModelImportData.chunks[c];
-                if (mapData.chunks.ContainsKey(chunkImportData.chunkPos)) {
+                Vector3Int chunkImportCPos = chunkImportData.chunkPos + voxelModelImportData.position / chunkRes;
+                if (mapData.chunks.ContainsKey(chunkImportCPos)) {
                     // add intersection
                     for (int v = 0; v < chunkVol; v++) {
-                        Voxel existingVoxel = mapData.chunks[chunkImportData.chunkPos].voxels[v];
-                        if (existingVoxel.voxelMaterialId == 0) {
-                            mapData.chunks[chunkImportData.chunkPos].voxels[v] = new Voxel(chunkImportData.voxels[v].materialId, createVoxelDatas.ToArray());
+                        Voxel existingVoxel = mapData.chunks[chunkImportCPos].voxels[v];
+                        if (existingVoxel.voxelMaterialId == 0 && chunkImportData.voxels[v].materialId != 0) {
+                            mapData.chunks[chunkImportCPos].voxels[v] = new Voxel(chunkImportData.voxels[v].materialId, createVoxelDatas.ToArray());
                         }
                     }
                     continue;
                 }
                 VoxelWorld.ChunkSaveData chunkSaveData = new VoxelWorld.ChunkSaveData();
-                chunkSaveData.chunkPos = chunkImportData.chunkPos;
+                chunkSaveData.chunkPos = chunkImportCPos;
                 chunkSaveData.voxels = new Voxel[chunkVol];
                 for (int v = 0; v < chunkVol; v++) {
                     // todo add more vd based on type? or that will happen later?
@@ -121,9 +133,9 @@ public class MapSO : ScriptableObject {
             for (int v = 0; v < chunkVol; v++) {
                 Voxel voxel = chunkSaveData.voxels[v];
                 BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-                if (voxel.voxelMaterialId != 0 && blockTypeLoad.blockTypeLoadDict.ContainsKey(voxel.voxelMaterialId)) {
+                if (voxel.voxelMaterialId != 0 && blockTypeLoadDict.ContainsKey(voxel.voxelMaterialId)) {
                     // if (voxel.voxelMaterialId == 0) {
-                    BlockTypeLoad btypel = blockTypeLoad.blockTypeLoadDict[voxel.voxelMaterialId];
+                    BlockLoadConverter btypel = blockTypeLoadDict[voxel.voxelMaterialId];
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
                         blockTypeRef = btypel.blockType
                     });

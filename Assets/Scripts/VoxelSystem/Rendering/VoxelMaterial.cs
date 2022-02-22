@@ -12,6 +12,7 @@ namespace VoxelSystem {
     public class VoxelMaterial {
         // public Rect textureRect;
         public int materialIndex;
+        public bool hasCollision;
         public Material material;//todo? dont serialize this
         // public TextureAtlasPacker
         // public Texture2D
