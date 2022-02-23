@@ -116,9 +116,9 @@ public class BlockTypeEditor : EditorWindow {
         blockType.idname = ToIdName(data.displayName);
         blockType.customDatas = data.customDatas.Select(tsvd => tsvd.type).ToHashSet().ToArray();
         if (data.vmat.objvalue is TexturedMaterial bvm) {
-            if (bvm.isTransparent) {
-                bvm.materialIndex = 1;// todo set from file?
-            }
+            // if (bvm.isTransparent) {
+            //     bvm.materialIndex = 1;// todo set from file?
+            // }
             // if (bvm.texname == "") {
             //     bvm.texname = blockType.idname;
             // }
@@ -161,6 +161,7 @@ public class BlockTypeEditor : EditorWindow {
         defccol++;
         // 1 id
         defccol++;
+        var defMaterialIndex = ParseInt(defcols[defccol++], 0);
         var defIsInvisible = ParseBool(defcols[defccol++], false);
         var defIsTransparent = ParseBool(defcols[defccol++], false);
         var defCol = ParseBool(defcols[defccol++], true);
@@ -182,11 +183,13 @@ public class BlockTypeEditor : EditorWindow {
             // Debug.Log("Adding ");
             int.TryParse(cols[ccol++], out var blockid);
             nblock.vmat = new TypeSelector<VoxelMaterial>(new TexturedMaterial() {
+                materialIndex = ParseInt(cols[ccol++], defMaterialIndex),
                 isInvisible = ParseBool(cols[ccol++], defIsInvisible),
                 isTransparent = ParseBool(cols[ccol++], defIsTransparent),
                 hasCollision = ParseBool(cols[ccol++], defCol),
                 textureCoord = new Vector2(blockid - 1, 0f) * voxelMaterialSet.textureScale,
             });
+            int flamability = ParseInt(cols[ccol++], defFlam);
             // todo
             // nblock.customDatas
             blockTypeMakers.Add(nblock);

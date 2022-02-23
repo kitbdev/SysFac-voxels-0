@@ -13,6 +13,7 @@ public partial class MapManager : Singleton<MapManager> {
     [SerializeField] VoxelWorld world;
     [SerializeField] MapSO mapHolder;
     [SerializeField] bool loadOnStart = true;
+    public Color[] voxelLightColors;
 
     MapData baseMapData;
 
@@ -36,12 +37,25 @@ public partial class MapManager : Singleton<MapManager> {
             LoadMap();
         }
     }
+    struct LightVoxelData : VoxelData {// todo move
+        // color?
+        int color;
+    }
     [ContextMenu("Load")]
     void LoadMap() {
         // Debug.Log("Going to load");
         // load to world
         world.Clear();
         var mapData = mapHolder.GetMapData();
+        foreach (var chunk in mapData.chunks) {
+            foreach (var vox in chunk.voxels) {
+                if (vox.HasVoxelDataFor<LightVoxelData>()) { 
+                    // todo add a point light source with the accurate color
+                    // ! but only activate it if there isnt too many
+                    // voxel light system(manager)?
+                }
+            }
+        }
         // baseMapData // todo keep?
         // todo load only part of the map, around the player
         if (mapData != null || mapData.chunks.Length == 0) {
