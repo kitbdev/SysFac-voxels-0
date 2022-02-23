@@ -6,6 +6,8 @@ namespace VoxelSystem {
     public interface VoxelData {
         /// <summary>lower is earlier</summary>
         // int sortOrder => 0;
+        /// <summary>should this VoxelData be saved to disk</summary>
+        bool shouldSave => true;
         void CopyValuesFrom(VoxelData from);
         void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
@@ -28,10 +30,15 @@ namespace VoxelSystem {
     }
     [System.Serializable]
     public struct DefaultVoxelData : VoxelData {
+
+        public bool shouldSave => false;
         // [SerializeReference]
         // public Voxel voxel;
+        [Kutil.ReadOnly]
         public Vector3Int localVoxelPos;
+        [Kutil.ReadOnly]
         public Vector3Int blockPos;
+        [Kutil.ReadOnly]
         [SerializeReference]
         public VoxelChunk chunk;
 
@@ -76,6 +83,7 @@ namespace VoxelSystem {
     }
     [System.Serializable]
     public struct UndoRedoVoxelData : VoxelData {
+        public bool shouldSave => false;
         public Queue<Voxel> history;
         public void CopyValuesFrom(VoxelData from) {
             if (from is UndoRedoVoxelData vd) {

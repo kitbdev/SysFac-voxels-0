@@ -104,6 +104,28 @@ public class MapSO : ScriptableObject {
             Debug.LogError($"Failed to process import data {importedVoxelData.name} to map");
         }
     }
+    private static void SaveMapData(MapData mapData, string filename, bool toPersistentOverLocal=false){
+        SaveSystem.SaveBuilder saveBuilder = SaveSystem.StartSave();
+        if (toPersistentOverLocal){
+            saveBuilder.InPersistentDataPath(filename);
+        }else{
+            saveBuilder.InLocalDataPath(filename);
+        }
+        saveBuilder.Content(mapData);
+        // todo as binary
+        saveBuilder.AsJSON().TrySave();
+    }
+    private static MapData LoadMapData(string filename, bool toPersistentOverLocal=false){
+        SaveSystem.SaveBuilder saveBuilder = SaveSystem.StartLoad();
+        if (toPersistentOverLocal){
+            saveBuilder.InPersistentDataPath(filename);
+        }else{
+            saveBuilder.InLocalDataPath(filename);
+        }
+        // todo as binary
+        saveBuilder.AsJSON().TryLoad<MapData>(out var mapData);
+        return mapData;
+    }
     private MapData PreProcessMap(FullVoxelImportData fullImportData, TypeChoice<VoxelData>[] neededVoxelDatas) {
         if (fullImportData == null) return null;
         // find player spawn pos

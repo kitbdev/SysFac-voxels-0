@@ -14,9 +14,14 @@ namespace VoxelSystem {
         [SerializeField, ReadOnly] VoxelWorld _world;
         [SerializeField, ReadOnly] Vector3Int _chunkPos;
         int _resolution;
+        /// <summary>Cleared when visuals are refreshed</summary>
+        public bool hasDirtyVisuals = false;
+        // todo not managed here
+        public bool updatedSinceLoad = false;
         [SerializeField, ReadOnly] Voxel[] _voxels;
         [SerializeField, ReadOnly]
         private VoxelRenderer visuals;
+
 
         public bool showDebug = false;
 
@@ -43,8 +48,9 @@ namespace VoxelSystem {
                 InitVoxels();
             }
             if (world.enableCollision) { // todo: only colliders on some chunks
-                AddColliders();
+                UpdateColliders();
             }
+            updatedSinceLoad = false;
         }
         public void OverrideVoxels(Voxel[] voxels) {
             this.voxels = voxels;
@@ -131,6 +137,7 @@ namespace VoxelSystem {
         }
         public void Refresh(bool andNeighbors = false) {
             visuals.UpdateMesh();
+            hasDirtyVisuals = false;
             UpdateColliders();
             if (andNeighbors) {//todo only 4(6)-way neighbors
                 // updates the 7 neighbors behind, below, and left (otherwise recursion?)
@@ -147,87 +154,28 @@ namespace VoxelSystem {
             visuals.UpdateMeshAt(pos);
         }
 
-        private void UpdateColliders() {
-            RemoveBoxColliders();
-            if (world.enableCollision) {
-                if (world.useBoxColliders) {
-                    AddBoxColliders();
-                } else {
-                    if (gameObject.TryGetComponent<MeshCollider>(out var mc)) {
-                        // might need to be re-set to update
-                        mc.sharedMesh = visuals?.GetMesh();
-                    }
-                }
-            }
-        }
-        // private void LocalUpdateColliders(Vector3Int pos) {
-        //     RemoveBoxColliders();
-        //     if (world.enableCollision) {
-        //         if (world.useBoxColliders) {
-        //             AddBoxColliders();
-        //         }
-        //     }
-        // }
-        public void AddColliders() {
-            // todo? cache this useBoxColliders
-            // if (!world.enableCollision) return;
-            if (world.useBoxColliders) {
-                RemoveMeshCollider();
-                AddBoxColliders();
-            } else {
-                RemoveBoxColliders();
-                if (!gameObject.TryGetComponent<MeshCollider>(out _)) {
-                    var mc = gameObject.AddComponent<MeshCollider>();
-                    mc.sharedMesh = visuals?.GetMesh();
-                }
-            }
-        }
-        public void RemoveColliders() {
-            RemoveBoxColliders();
-            RemoveMeshCollider();
-        }
-        private void RemoveMeshCollider() {
-            if (gameObject.TryGetComponent<MeshCollider>(out var mcol)) {
-                if (Application.isPlaying) {
-                    Destroy(mcol);
-                } else {
-                    DestroyImmediate(mcol);
-                }
-            }
-        }
-        private void AddBoxColliders() {
-            var collgo = new GameObject($"chunk {chunkPos} col");
-            collgo.transform.parent = transform;
-            collgo.transform.localPosition = Vector3.zero;
-            List<Bounds> surfaceVoxels = new List<Bounds>();
-            for (int i = 0; i < volume; i++) {
-                Vector3Int vpos = GetLocalPos(i);
-                Voxel voxel = GetLocalVoxelAt(i);
-                var vmat = voxel.GetVoxelMaterial<TexturedMaterial>(world.materialSet);
-                if (vmat.isInvisible) {// todo? seperate collider data?
-                    continue;
-                }
-                bool hidden = IsVoxelHidden(vpos);
-                if (!hidden) {
-                    surfaceVoxels.Add(new Bounds(((Vector3)vpos) * world.voxelSize, Vector3.one * world.voxelSize));
-                }
-            }
-            foreach (var survox in surfaceVoxels) {
-                BoxCollider boxCollider = collgo.AddComponent<BoxCollider>();
-                boxCollider.center = survox.center;
-                boxCollider.size = survox.size;
-            }
-        }
-        private void RemoveBoxColliders() {
-            if (transform.childCount > 0) {
-                if (Application.isPlaying) {
-                    Destroy(transform.GetChild(0).gameObject);
-                } else {
-                    DestroyImmediate(transform.GetChild(0).gameObject);
-                }
-            }
+        public Mesh GetMesh() {
+            return visuals.GetMesh();
         }
 
+        public void UpdateColliders() {
+            if (world.enableCollision) {
+                VoxelCollider vcol;
+                if (!TryGetComponent<VoxelCollider>(out vcol)) {
+                    vcol = gameObject.AddComponent<VoxelCollider>();
+                    vcol.chunk = this;
+                }
+                vcol.enableCollision = world.enableCollision;
+                vcol.colliderType = world.useBoxColliders ?
+                    VoxelCollider.ColliderType.BOXES : VoxelCollider.ColliderType.MESH;
+                vcol.UpdateColliders();
+            } else {
+                if (TryGetComponent<VoxelCollider>(out var vcol)) {
+                    vcol.enableCollision = world.enableCollision;
+                    vcol.UpdateColliders();
+                }
+            }
+        }
 
         // public void SetVoxelMaterial(int index, VoxelMaterialId voxelMaterialId) {
         //     voxels[index].SetVoxelMaterialId(world.materialSet, voxelMaterialId);

@@ -1,5 +1,11 @@
 using UnityEngine;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System;
+using System.Xml.Serialization;
+using System.Xml;
+using System.IO.Compression;
 
 namespace Kutil {
     public static class SaveSystem {
@@ -8,12 +14,12 @@ namespace Kutil {
             public enum SerializeType {
                 NONE,
                 JSON, JSONPRETTY,
-                TEXT,
-                BINARY,
-                // TODO
-                // CUSTOM,
+                // TEXT,== none
                 XML,
+                // TODO
                 YAML,
+                // CUSTOM,
+                // others?
             }
             [System.Serializable]
             public class SaveBuilderData {
@@ -22,16 +28,21 @@ namespace Kutil {
                 public string filename;
                 public string fileExtension;
                 // [SerializeReference]
-                public System.Object content;
+                public object content;
                 public string contentStr;
                 public byte[] contentBytes;
+                public bool saveAsBytes = false;
                 public bool createDirIfDoesntExistOnSave = false;
                 public bool saveOverwrite = false;
                 public bool saveIncrement = false;
-                public System.Text.Encoding encoding = System.Text.Encoding.Default;
+                public Encoding encoding = Encoding.Default;
+                // todo test encryption and compression save and load and xml
+                public bool useEncryption = false;
+                public byte[] encryptionKey;
+                public bool isCompressedZip = false;
+                public System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.Optimal;
             }
             public SaveBuilderData data = new SaveBuilderData();
-            // todo encryption
 
             string fullPath => data.filepath + data.filename + data.fileExtension;
 
@@ -39,18 +50,39 @@ namespace Kutil {
 
             private bool IsValid() {
                 return (data.filepath != null && data.filename != null && data.fileExtension != null
-                                    && data.serializeType != SerializeType.NONE);
+                    && data.filepath != ""
+                    && data.serializeType != SerializeType.NONE);
             }
-            private bool TryConvertFromJSON<T>(out T tContent) {
+            private static bool TryConvertFromJSON<T>(string s, out T tContent) {
                 try {
-                    tContent = JsonUtility.FromJson<T>(data.contentStr);
+                    tContent = JsonUtility.FromJson<T>(s);
                     if (tContent == null) {
-                        Debug.LogWarning($"failed to convert '{data.contentStr}' JSON to {typeof(T).Name}");
+                        Debug.LogWarning($"Load failed: failed to convert '{s}' JSON to {typeof(T).Name}");
                         return false;
                     }
                     return true;
                 } catch (System.Exception e) {
-                    Debug.LogWarning($"failed to convert '{data.contentStr}' JSON to {typeof(T).Name}. \nError: {e.ToString()}");
+                    Debug.LogWarning($"Load failed: failed to convert '{s}' JSON to {typeof(T).Name}. \nError: {e.ToString()}");
+                    tContent = default;
+                    return false;
+                }
+            }
+            private static bool TryConvertFromXML<T>(string s, out T tContent) {
+                try {
+                    XmlSerializer xmlser = new XmlSerializer(typeof(T));
+                    using (var stringReader = new StringReader(s)) {
+                        using (XmlReader reader = XmlReader.Create(stringReader)) {
+                            if (xmlser.CanDeserialize(reader)) {
+                                tContent = (T)xmlser.Deserialize(reader);
+                                return true;
+                            }
+                            Debug.LogWarning($"Load failed: cannot to convert '{s}' XML to {typeof(T).Name}");
+                            tContent = default;
+                            return false;
+                        }
+                    }
+                } catch (System.Exception e) {
+                    Debug.LogWarning($"Load failed: failed to convert '{s}' XML to {typeof(T).Name}. \nError: {e.ToString()}");
                     tContent = default;
                     return false;
                 }
@@ -62,40 +94,82 @@ namespace Kutil {
             /// <returns>True if successful</returns>
             public bool TrySave() {
                 if (!IsValid()) {
-                    Debug.LogWarning("Some SaveBuilder data not set");
+                    Debug.LogWarning("Save failed: Some SaveBuilder data not set");
                     return false;
                 }
                 // actually save
                 // serialize content
                 if (data.serializeType == SerializeType.JSON || data.serializeType == SerializeType.JSONPRETTY) {
                     if (data.content == null) {
-                        Debug.LogWarning("object content not set!");
+                        Debug.LogWarning("Save failed: cant serialize, object content not set!");
                         return false;
                     }
                     // json
                     data.contentStr = JsonUtility.ToJson(data.content, data.serializeType == SerializeType.JSONPRETTY);
-                } else if (data.serializeType == SerializeType.BINARY) {
-                    if (data.contentBytes == null) {
-                        Debug.LogWarning("Binary content bytes not set");
-                        return false;
-                    }
-                } else if (data.serializeType == SerializeType.TEXT) {
+                } else if (data.serializeType == SerializeType.NONE) {// = plaintext
                     if (data.contentStr == null) {
-                        Debug.LogWarning("string content not set!");
+                        Debug.LogWarning("Save failed: string content not set!");
                         return false;
                     }
-                    // } else if (data.serializeType == SerializeType.XML) {
-                    // todo
+                } else if (data.serializeType == SerializeType.XML) {
+                    if (data.content == null) {
+                        Debug.LogWarning("Save failed: cant serialize, object content not set!");
+                        return false;
+                    }
+                    XmlSerializer xmlser = new XmlSerializer(data.content.GetType());
+                    using (var stringWriter = new StringWriter()) {
+                        using (XmlWriter writer = XmlWriter.Create(stringWriter)) {
+                            xmlser.Serialize(writer, data.content);
+                            data.contentStr = stringWriter.ToString();
+                        }
+                    }
+                }
+                if (data.saveAsBytes) {
+                    if (data.contentBytes == null) {
+                        if (data.contentStr != null) {
+                            data.contentBytes = data.encoding.GetBytes(data.contentStr);
+                        }
+                    }
+                    if (data.contentBytes == null) {
+                        if (data.contentStr != null) {
+                            Debug.LogError($"Binary Save failed: unsupported serialization type {data.serializeType.ToString()}");
+                        } else {
+                            Debug.LogError($"Binary Save failed: bytes not set");
+                        }
+                        return false;
+                    }
                 } else {
-                    Debug.LogError($"Save failed unsupported serialization type {data.serializeType.ToString()}");
-                    return false;
+                    if (data.contentStr == null) {
+                        Debug.LogError($"Plaintext Save failed: no content or unsupported serialization type {data.serializeType.ToString()}");
+                        return false;
+                    }
+                }
+                // encryption
+                if (data.useEncryption) {
+                    if (data.encryptionKey == null) {
+                        Debug.LogError($"Save failed: using encryption but no key set");
+                        return false;
+                    }
+                    if (data.saveAsBytes) {
+                        data.contentBytes = EncryptBytes(data.contentBytes, data.encryptionKey);
+                    } else {
+                        data.contentStr = EncryptString(data.contentStr, data.encryptionKey);
+                    }
+                }
+                if (data.isCompressedZip) {
+                    if (data.saveAsBytes) {
+                        data.contentBytes = CompressBytes(data.contentBytes, data.compressionLevel);
+                    } else {
+                        Debug.LogWarning("Cannot compress and save as plaintext!");
+                        // data.contentStr = EncryptString(data.contentStr, data.encryptionKey);
+                    }
                 }
                 // check directory
                 if (!Directory.Exists(data.filepath)) {
                     if (data.createDirIfDoesntExistOnSave) {
                         Directory.CreateDirectory(data.filepath);
                     } else {
-                        Debug.LogError($"Save failed directory '{data.filepath}' does not exist");
+                        Debug.LogError($"Save failed: directory '{data.filepath}' does not exist");
                         return false;
                     }
                 }
@@ -104,7 +178,7 @@ namespace Kutil {
                 string incrementer = "";
                 bool baseFileExists = File.Exists(fullPath);
                 if (baseFileExists && !data.saveOverwrite && !data.saveIncrement) {
-                    Debug.LogWarning($"File '{fullPath}' already exists");
+                    Debug.LogWarning($"Save failed: File '{fullPath}' already exists");
                     return false;
                 }
                 // increment
@@ -113,7 +187,7 @@ namespace Kutil {
                 }
                 // save
                 string saveFullPath = savepath + incrementer + data.fileExtension;
-                if (data.serializeType == SerializeType.BINARY) {
+                if (data.saveAsBytes) {
                     File.WriteAllBytes(saveFullPath, data.contentBytes);
                 } else {
                     File.WriteAllText(saveFullPath, data.contentStr, data.encoding);
@@ -149,31 +223,51 @@ namespace Kutil {
 
             public bool TryLoadText(out string text) {
                 if (!IsValid()) {
-                    Debug.LogWarning("Some SaveBuilder data not set!");
+                    Debug.LogWarning("Load Failed: Some SaveBuilder data not set!");
                     text = default;
                     return false;
                 }
                 if (File.Exists(fullPath)) {
                     text = File.ReadAllText(fullPath);
+                    // encryption
+                    if (data.useEncryption) {
+                        if (data.encryptionKey == null) {
+                            Debug.LogError($"Load failed: using encryption but no key set");
+                            return false;
+                        }
+                        text = DecryptString(text, data.encryptionKey);
+                    }
                     Debug.Log($"Loaded '{fullPath}'");
                     return true;
                 }
-                Debug.LogWarning($"File '{fullPath}' does not exist");
+                Debug.LogWarning($"Load Failed: File '{fullPath}' does not exist");
                 text = null;
                 return false;
             }
-            public bool TryLoadBin(out byte[] bytes) {
+            public bool TryLoadBytes(out byte[] bytes) {
                 if (!IsValid()) {
-                    Debug.LogWarning("Some SaveBuilder data not set!");
+                    Debug.LogWarning("Load Failed: Some SaveBuilder data not set!");
                     bytes = default;
                     return false;
                 }
                 if (File.Exists(fullPath)) {
                     bytes = File.ReadAllBytes(fullPath);
+                    // decompression
+                    if (data.isCompressedZip){
+                        bytes = DecompressBytes(bytes);
+                    }
+                    // encryption
+                    if (data.useEncryption) {
+                        if (data.encryptionKey == null) {
+                            Debug.LogError($"Load failed: using encryption but no key set");
+                            return false;
+                        }
+                        bytes = DecryptBytes(bytes, data.encryptionKey);
+                    }
                     Debug.Log($"Loaded '{fullPath}'");
                     return true;
                 }
-                Debug.LogWarning($"File '{fullPath}' does not exist");
+                Debug.LogWarning($"Load Failed: File '{fullPath}' does not exist");
                 bytes = default;
                 return false;
             }
@@ -187,17 +281,32 @@ namespace Kutil {
                     loadContent = default;
                     return false;
                 }
-                if (TryLoadText(out data.contentStr)) {
+                if (data.saveAsBytes) {
+                    if (TryLoadBytes(out var b)) {
+                        char[] chars = data.encoding.GetChars(b);
+                        data.contentStr = new string(chars);
+                    }
+                } else {
+                    TryLoadText(out data.contentStr);
+                }
+                if (data.contentStr != null) {
                     if (data.serializeType == SerializeType.JSON || data.serializeType == SerializeType.JSONPRETTY) {
-                        if (TryConvertFromJSON<T>(out loadContent)) {
+                        if (TryConvertFromJSON<T>(data.contentStr, out loadContent)) {
                             // loaded and converted successfully
                             return true;
                         }
+                    } else if (data.serializeType == SerializeType.XML) {
+                        if (TryConvertFromXML<T>(data.contentStr, out loadContent)) {
+                            return true;
+                        }
+                    } else {
+                        Debug.LogError($"Load failed: unsupported serialization type {data.serializeType.ToString()}");
+                        loadContent = default;
+                        return false;
                     }
-                    // todo xml
-                } else {
-                    Debug.LogError($"Load failed unsupported serialization type {data.serializeType.ToString()}");
+                    // otherwise cannot convert text to object type 
                 }
+                Debug.LogWarning($"Load failed: no data");
                 loadContent = default;
                 return false;
             }
@@ -207,13 +316,13 @@ namespace Kutil {
                 this.data = new SaveBuilderData();
                 return this;
             }
-            public SaveBuilder Content(Object saveObject) {
+            public SaveBuilder Content(object saveObject) {
                 this.data.content = saveObject;
                 return this;
             }
             public SaveBuilder Content(byte[] contentBytes) {
                 this.data.contentBytes = contentBytes;
-                return this.As(SerializeType.BINARY);
+                return this.AsBinary();
             }
             public SaveBuilder Content(string contentStr) {
                 this.data.contentStr = contentStr;
@@ -257,17 +366,28 @@ namespace Kutil {
                 this.data.serializeType = prettyFormat ? SerializeType.JSONPRETTY : SerializeType.JSON;
                 return this;
             }
+            public SaveBuilder AsXML() {
+                // todo? any xml opitons
+                return this.As(SerializeType.XML);
+            }
             public SaveBuilder AsText() {
-                return this.As(SerializeType.TEXT);
+                this.data.fileExtension ??= ".txt";
+                this.data.saveAsBytes = false;
+                return this;
+            }
+            public SaveBuilder AsBinary() {
+                this.data.saveAsBytes = true;
+                this.data.fileExtension ??= ".bin";
+                return this;
             }
             public SaveBuilder As(SerializeType serializeType) {
                 this.data.serializeType = serializeType;
                 if (serializeType == SerializeType.JSON || serializeType == SerializeType.JSONPRETTY) {
                     this.data.fileExtension ??= ".json";
-                } else if (serializeType == SerializeType.TEXT) {
-                    this.data.fileExtension ??= ".txt";
-                } else if (serializeType == SerializeType.BINARY) {
-                    this.data.fileExtension ??= ".bin";
+                    // } else if (serializeType == SerializeType.TEXT) {
+                    //     this.data.fileExtension ??= ".txt";
+                    // } else if (serializeType == SerializeType.BINARY) {
+                    //     this.data.fileExtension ??= ".bin";
                 } else if (serializeType == SerializeType.XML) {
                     this.data.fileExtension ??= ".xml";
                 } else if (serializeType == SerializeType.YAML) {
@@ -295,6 +415,131 @@ namespace Kutil {
                 this.data.encoding = encoding;
                 return this;
             }
+            public SaveBuilder IsCompressed(bool compressedZip = true, System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.Optimal) {
+                this.data.isCompressedZip = compressedZip;
+                this.data.compressionLevel = compressionLevel;
+                return this;
+            }
+            public SaveBuilder EncryptedWith(string symmetricKey) {
+                this.data.useEncryption = true;
+                // this.data.encryptionKey = this.data.encoding.GetBytes(key);
+                this.data.encryptionKey = Encoding.UTF8.GetBytes(symmetricKey);
+                // Encoding.UTF8.GetChars(data.encryptionKey);
+                return this;
+            }
+            public SaveBuilder EncryptedWith(byte[] symmetricKey) {
+                this.data.useEncryption = true;
+                this.data.encryptionKey = symmetricKey;
+                return this;
+            }
+
+            static byte[] CompressBytes(byte[] data, System.IO.Compression.CompressionLevel compressionLevel) {
+                using (MemoryStream memoryStream = new MemoryStream()) {
+                    using (GZipStream gzip = new GZipStream(memoryStream, compressionLevel)) {
+                        gzip.Write(data);//,0,data.Length
+                    }
+                    return memoryStream.ToArray();
+                }
+            }
+            static byte[] DecompressBytes(byte[] zippedData) {
+                // Create a GZIP stream with decompression mode.
+                // ... Then create a buffer and write into while reading from the GZIP stream.
+                using (GZipStream stream = new GZipStream(new MemoryStream(zippedData), CompressionMode.Decompress)) {
+                    const int size = 4096;
+                    byte[] buffer = new byte[size];
+                    using (MemoryStream memory = new MemoryStream()) {
+                        int count = 0;
+                        do {
+                            count = stream.Read(buffer, 0, size);
+                            if (count > 0) {
+                                memory.Write(buffer, 0, count);
+                            }
+                        }
+                        while (count > 0);
+                        return memory.ToArray();
+                    }
+                }
+            }
+
+
+            // from https://www.c-sharpcorner.com/article/encryption-and-decryption-using-a-symmetric-key-in-c-sharp/
+            static string EncryptString(string plainText, byte[] key) {
+                byte[] iv = new byte[16];
+                byte[] array;
+                using (Aes aes = Aes.Create()) {
+                    aes.Key = key;
+                    aes.IV = iv;
+                    ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                    using (MemoryStream memoryStream = new MemoryStream()) {
+                        using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write)) {
+                            using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream)) {
+                                streamWriter.Write(plainText);
+                            }
+                            array = memoryStream.ToArray();
+                        }
+                    }
+                }
+
+                return Convert.ToBase64String(array);
+            }
+            static string DecryptString(string cipherText, byte[] key) {
+                byte[] iv = new byte[16];
+                byte[] buffer = Convert.FromBase64String(cipherText);
+                using (Aes aes = Aes.Create()) {
+                    aes.Key = key;
+                    aes.IV = iv;
+                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                    using (MemoryStream memoryStream = new MemoryStream(buffer)) {
+                        using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read)) {
+                            using (StreamReader streamReader = new StreamReader((Stream)cryptoStream)) {
+                                return streamReader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+            // from https://stackoverflow.com/questions/53653510/c-sharp-aes-encryption-byte-array
+            static byte[] EncryptBytes(byte[] data, byte[] key) {
+                byte[] iv = new byte[16];
+                using (var aes = Aes.Create()) {
+                    aes.KeySize = 128;
+                    aes.BlockSize = 128;
+                    aes.Padding = PaddingMode.Zeros;
+
+                    aes.Key = key;
+                    aes.IV = iv;
+
+                    using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV)) {
+                        return PerformCryptography(data, encryptor);
+                    }
+                }
+            }
+
+            static byte[] DecryptBytes(byte[] data, byte[] key) {
+                byte[] iv = new byte[16];
+                using (var aes = Aes.Create()) {
+                    aes.KeySize = 128;
+                    aes.BlockSize = 128;
+                    aes.Padding = PaddingMode.Zeros;
+
+                    aes.Key = key;
+                    aes.IV = iv;
+
+                    using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV)) {
+                        return PerformCryptography(data, decryptor);
+                    }
+                }
+            }
+
+            static byte[] PerformCryptography(byte[] data, ICryptoTransform cryptoTransform) {
+                using (var ms = new MemoryStream())
+                using (var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write)) {
+                    cryptoStream.Write(data, 0, data.Length);
+                    cryptoStream.FlushFinalBlock();
+
+                    return ms.ToArray();
+                }
+            }
         }
 
         static string localPath = Application.dataPath + "/";
@@ -310,117 +555,5 @@ namespace Kutil {
             return new SaveBuilder();
         }
 
-
-        // [System.Obsolete("Obsolete. use StartSave or StartLoad instead")]
-        //         public static void SaveLocal(string filename, string content, bool overwrite = true) {
-        //             if (!System.IO.Directory.Exists(localDataPath)) {
-        //                 System.IO.Directory.CreateDirectory(localDataPath);
-        //             }
-        //             string savePath = localDataPath + filename;
-        //             if (!overwrite) {
-        //                 int saveNum = 0;
-        //                 string checkPath = savePath;
-        //                 while (File.Exists(checkPath + savedataext)) {
-        //                     saveNum++;
-        //                     checkPath = savePath + "_" + saveNum;
-        //                 }
-        //                 savePath = checkPath;
-        //             }
-        //             savePath += savedataext;
-        //             Debug.Log($"Saved to {savePath}!");
-        //             File.WriteAllText(savePath, content);
-        // #if UNITY_EDITOR
-        //             UnityEditor.AssetDatabase.Refresh();
-        // #endif
-        //         }
-        //         public static string LoadLocal(string filename) {
-        //             string savePath = localDataPath + filename + savedataext;
-        //             if (File.Exists(savePath)) {
-        //                 Debug.Log($"Loaded {savePath}!");
-        //                 return File.ReadAllText(savePath);
-        //             }
-        //             return null;
-        //         }
-
-        //         public static bool TrySaveLocal<T>(string filename, T obj, bool overwrite) {
-        //             string jsonstr = JsonUtility.ToJson(obj);
-        //             if (jsonstr == "{}") {
-        //                 Debug.LogWarning("failed to convert " + obj.ToString());
-        //                 return false;
-        //             }
-        //             SaveLocal(filename, jsonstr, overwrite);
-        //             return true;
-        //         }
-        //         public static bool TryLoadLocal<T>(string filename, out T obj) {
-        //             var content = LoadLocal(filename);
-        //             try {
-        //                 obj = JsonUtility.FromJson<T>(content);
-        //                 if (obj == null) {
-        //                     Debug.LogWarning("failed to load, null");
-        //                     return false;
-        //                 }
-        //                 return true;
-        //             } catch (System.Exception e) {
-        //                 Debug.LogWarning("failed to load " + e.ToString());
-        //                 obj = default;
-        //                 return false;
-        //                 // throw;
-        //             }
-        //             // obj = default;
-        //             // return false;
-        //         }
-
-        //         public static bool TrySave(string filename, string content, string ext = null) {
-        //             ext ??= savedataext;
-        //             string savepath = persistentPath + filename + ext;
-        //             if (File.Exists(savepath)) {
-        //                 try {
-        //                     File.WriteAllText(savepath, content);
-        //                 } catch (System.Exception e) {
-        //                     Debug.LogWarning($"failed to save {filename} {e.ToString()}");
-        //                     return false;
-        //                     // throw;
-        //                 }
-        //                 return true;
-        //             }
-        //             return false;
-        //         }
-        //         public static bool TryLoad(string filename, out string content) {
-        //             string savepath = persistentPath + filename;
-        //             if (File.Exists(savepath)) {
-        //                 try {
-        //                     content = File.ReadAllText(savepath);
-        //                 } catch (System.Exception e) {
-        //                     Debug.LogWarning($"failed to load {filename} {e.ToString()}");
-        //                     content = null;
-        //                     return false;
-        //                     // throw;
-        //                 }
-        //             }
-        //             content = null;
-        //             return false;
-        //         }
-        //         public static bool TrySave<T>(string filename, T obj) {
-        //             string jsonstr = JsonUtility.ToJson(obj);
-        //             if (TrySave(filename, jsonstr)) {
-        //                 return true;
-        //             }
-        //             return false;
-        //         }
-        //         public static bool TryLoad<T>(string filename, out T obj) {
-        //             if (TryLoad(filename, out var content)) {
-        //                 try {
-        //                     obj = JsonUtility.FromJson<T>(content);
-        //                     return true;
-        //                 } catch (System.Exception e) {
-        //                     Debug.LogWarning($"failed to load {filename} {e.ToString()}");
-        //                     obj = default;
-        //                     return false;
-        //                     // throw;
-        //                 }
-        //             }
-        //             obj = default;
-        //             return false;
-        //         }
     }
 }

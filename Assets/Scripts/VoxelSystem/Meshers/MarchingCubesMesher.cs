@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VoxelSystem.Mesher {
     [System.Serializable]
-    public class MarchingCubesMesher : MonoBehaviour {
+    public class MarchingCubesMesher {
 
     }
 }
