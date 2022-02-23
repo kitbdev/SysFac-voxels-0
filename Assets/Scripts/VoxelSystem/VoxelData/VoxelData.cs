@@ -8,7 +8,7 @@ namespace VoxelSystem {
         // int sortOrder => 0;
         /// <summary>should this VoxelData be saved to disk</summary>
         bool shouldSave => true;
-        void CopyValuesFrom(VoxelData from);
+        void CopyValuesFrom(VoxelData from){ } // todo is this actually used?
         void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         // void OnMaterialChange(Voxel voxel, VoxelMaterial voxelMaterial) { }

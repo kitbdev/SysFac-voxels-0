@@ -23,7 +23,7 @@ public class MapData {
     public Vector3Int playerSpawn;
     public int chunkResolution;
     public Vector3[] otherStuff;
-    public SerializedType[] baseSavedTypes;
+    // public SerializedType[] baseSavedTypes;
     public VoxelWorld.ChunkSaveData[] chunks;
     // public SerializableDictionary<Vector3Int, VoxelWorld.ChunkSaveData> chunks;
 }
@@ -48,11 +48,11 @@ public class MapSO : ScriptableObject {
         }
     }
 
-    [HideInInspector]
-    // public MapData mapData;// todo dont store, it lags the inspector and should be file anyway
     [SerializeReference]
     public ImportedVoxelData importedVoxelData;
     public string filename = "mapdata";
+    public bool overwrite = true;
+    public bool autoIncrement = false;
     [ContextMenuItem("Reset needed voxel data", nameof(ResetNeededData))]
     public TypeChoice<VoxelData>[] neededVoxelDatas = new TypeChoice<VoxelData>[] { new TypeChoice<VoxelData>(typeof(DefaultVoxelData)) };
 
@@ -96,10 +96,11 @@ public class MapSO : ScriptableObject {
     public MapData GetMapData() {
         MapData mapData = LoadMapData(filename, false);
         // add unsaved needed data
+        // todo? do this in world? but then it would happen every time we add a chunk individually
         VoxelData[] toAddVoxelDatas = neededVoxelDatas.Select(tc => tc.CreateInstance())
                                                         .Where(vd => !vd.shouldSave)
                                                         .ToArray();
-        
+
         for (int c = 0; c < mapData.chunks.Length; c++) {
             VoxelWorld.ChunkSaveData chunkSaveData = mapData.chunks[c];
             int chunkVolume = mapData.chunkResolution * mapData.chunkResolution * mapData.chunkResolution;
@@ -110,7 +111,7 @@ public class MapSO : ScriptableObject {
         }
         return mapData;
     }
-    private static void SaveMapData(MapData mapData, string filename, bool toPersistentOverLocal = false) {
+    private static void SaveMapData(MapData mapData, string filename, bool toPersistentOverLocal = false, bool overwrite = true, bool increment = false) {
         SaveSystem.SaveBuilder saveBuilder = SaveSystem.StartSave();
         if (toPersistentOverLocal) {
             saveBuilder.InPersistentDataPath(filename);
@@ -119,7 +120,12 @@ public class MapSO : ScriptableObject {
         }
         saveBuilder.CustomExtension("map");
         saveBuilder.CreateDirIfDoesntExist();
-        saveBuilder.CanOverwrite();
+        if (overwrite) {
+            saveBuilder.CanOverwrite();
+        }
+        if (increment) {
+            saveBuilder.AutoIncrement();
+        }
         // todo test
         saveBuilder.Content(mapData);
         saveBuilder.AsJSON().Zip().Save();

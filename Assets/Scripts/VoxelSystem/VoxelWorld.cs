@@ -28,7 +28,7 @@ namespace VoxelSystem {
 
         [Space]
         // [SerializeField] GameObject voxelChunkPrefab;// todo? remove 
-        [SerializeField] 
+        [SerializeField]
         List<VoxelChunk> _activeChunks = new List<VoxelChunk>();
         [SerializeField, HideInInspector]
         SerializableDictionary<Vector3Int, VoxelChunk> activeChunksDict = new SerializableDictionary<Vector3Int, VoxelChunk>();
@@ -224,8 +224,8 @@ namespace VoxelSystem {
             // todo! this will make the world use these voxels and they will be modified by the game logic
             // todo? should make a copy or do we want this?
             // if its loaded from a file, will just have to reload to get original state, and saving becomes trivial
-                // todo probably, check that everything is properly updates, like voxdatas
-        // todo doesnt have all needed data, only the stuff that was saved
+            // todo probably, check that everything is properly updates, like voxdatas
+            // todo doesnt have all needed data, only the stuff that was saved
             List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];
@@ -235,7 +235,7 @@ namespace VoxelSystem {
                         VoxelChunk chunkOverwrite = GetChunkAt(chunkSaveData.chunkPos);
                         chunkOverwrite.OverrideVoxels(chunkSaveData.voxels);
                         chunksToRefresh.Add(chunkSaveData.chunkPos);
-                    }else{
+                    } else {
                         Debug.LogWarning($"chunk {chunkSaveData.chunkPos} exists, ignoring");
                     }
                     // todo additive mode
