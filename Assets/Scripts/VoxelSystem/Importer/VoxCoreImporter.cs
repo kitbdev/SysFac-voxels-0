@@ -9,6 +9,7 @@ namespace VoxelSystem.Importer.VoxCore {
         static bool debug = true;
 
         public static FullVoxelImportData Load(VoxelImportSettings importSettings) {
+            debug = importSettings.debugMode;
             VoxReader voxReader = new VoxReader();
             VoxModel model = voxReader.LoadModel(importSettings.filepath);
             if (model == null) return null;
@@ -17,11 +18,33 @@ namespace VoxelSystem.Importer.VoxCore {
             fullVoxelImportData.chunkResolution = importSettings.chunkResolution;
             fullVoxelImportData.voxelSize = importSettings.voxelSize;
             fullVoxelImportData.models = new VoxelModelImportData[0];
+
+            if (debug) {
+                int i = 0;
+                string palmap = model.PaletteColorIndex?.Aggregate("", (s, v) => {
+                    i++;
+                    if (i == v) {
+                        return s;
+                    } else {
+                        return s += $"{i}:{v},";
+                    }
+                });
+                Debug.Log($"PaletteColorIndex:[{palmap}]");
+            }
+            // model.PaletteColorIndex.to
             List<VoxelModelImportData> voxelRoomModelImportDatas = fullVoxelImportData.models.ToList();
             for (int i = 0; i < model.VoxelFrames.Count; i++) {
                 FileToVoxCore.Vox.Chunks.TransformNodeChunk transformNodeChunk = model.TransformNodeChunks[i + 1];
 
                 VoxelModelImportData voxelModelImportData = LoadModel(model.VoxelFrames[i], transformNodeChunk, importSettings);
+                // convert mat id to use correct index
+                if (importSettings.applyPaletteIndexCorrection) {
+                    foreach (var chunk in voxelModelImportData.chunks) {
+                        for (int v = 0; v < chunk.voxels.Length; v++) {
+                            chunk.voxels[v].materialId = model.PaletteColorIndex[chunk.voxels[v].materialId] - 1;
+                        }
+                    }
+                }
                 if (voxelModelImportData != null) {
                     voxelRoomModelImportDatas.Add(voxelModelImportData);
                 }
@@ -29,6 +52,7 @@ namespace VoxelSystem.Importer.VoxCore {
             fullVoxelImportData.models = voxelRoomModelImportDatas.ToArray();
             return fullVoxelImportData;
         }
+
 
         static VoxelModelImportData LoadModel(FileToVoxCore.Vox.VoxelData vdata,
             FileToVoxCore.Vox.Chunks.TransformNodeChunk tnode,

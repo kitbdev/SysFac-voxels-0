@@ -22,13 +22,26 @@ public struct BlockTypeRef {
     public int blockid;
 
     public CustomDropDownData choicesData => CustomDropDownData.Create<int>(choicesint, choices,
-        preFormatValueFunc: v => BlockManager.Instance?.GetBlockTypeAtIndex(v)?.idname,
+        preFormatValueFunc: v => {
+            if (v < 0) return "n\\a";
+            BlockType b = BlockManager.Instance?.GetBlockTypeAtIndex(v);
+            if (b == null) return "missing";
+            return $"{b.idname}({b.id})";
+        },
         noElementsText: "No Types! check BlockManager");
-    public string[] choices => BlockManager.Instance?.blockTypes.Select((b) => b.idname).ToArray() ?? null;
-    public IEnumerable<int> choicesint => Enumerable.Range(0, choices.Length);
+    public string[] choices {
+        get {
+            List<string> btypelist = BlockManager.Instance?.blockTypes.Select((b) => $"{b.idname}({b.id})").ToList();
+            btypelist?.Insert(0, "n\\a");
+            return btypelist?.ToArray() ?? null;
+        }
+    }
+
+    public IEnumerable<int> choicesint => Enumerable.Range(-1, choices.Length);
 
     public BlockTypeRef(BlockTypeRef other) {
         this.blockid = other.blockid;
+        // blockIdInt = blockid;
     }
     public BlockTypeRef SetBlockName(string idname) {
         this.blockid = BlockManager.Instance?.GetBlockType(idname)?.id ?? -1;

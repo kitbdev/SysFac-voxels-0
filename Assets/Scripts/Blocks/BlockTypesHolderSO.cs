@@ -28,18 +28,35 @@ add block
 [CreateAssetMenu(fileName = "BlockTypesHolder", menuName = "SysFac/BlockTypesHolder", order = 0)]
 public class BlockTypesHolderSO : ScriptableObject {
 
+    // to help find blocktypes
+    [SerializeField]
+    string findType = "";
+    [SerializeField]
+    int findTypeId;
+    [SerializeField]
+    BlockTypeRef findTypeRef;
+    [SerializeField, ReadOnly]
+    BlockType foundType;
+
     // [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
     public BlockType[] blockTypes;
 
-    // private void OnValidate() {
-    //     for (int i = 0; i < blockTypes.Length; i++) {
-    //         blockTypes[i].id = i;
-    //         // if (blockTypes[i].displayName == "") {
-    //         //     blockTypes[i].displayName = blockTypes[i].idname;
-    //         // }
-    //     }
-    //     // blockTypeToAdd.vmat.objvalue.OnValidate(voxelMaterialSet);
-    // }
+    private void OnValidate() {
+        if (findType != "") {
+            foundType = blockTypes.FirstOrDefault(bt => bt.idname == findType);
+        } else if (findTypeId > 0) {
+            foundType = blockTypes.FirstOrDefault(bt => bt.id == findTypeId);
+        } else if (findTypeRef.IsValid()) {
+            foundType = blockTypes.FirstOrDefault(bt => bt.id == findTypeRef.blockid);
+        }
+        //     for (int i = 0; i < blockTypes.Length; i++) {
+        //         blockTypes[i].id = i;
+        //         // if (blockTypes[i].displayName == "") {
+        //         //     blockTypes[i].displayName = blockTypes[i].idname;
+        //         // }
+        //     }
+        //     // blockTypeToAdd.vmat.objvalue.OnValidate(voxelMaterialSet);
+    }
 
     public BlockType GetBlockTypeAtIndex(int index) {
         if (index >= 0 && index < blockTypes.Length) {
@@ -59,6 +76,10 @@ public class BlockTypesHolderSO : ScriptableObject {
     // }
     public void AddBlockTypes(params BlockType[] newBlockTypes) {
         List<BlockType> btlist = blockTypes.ToList();
+        for (int i = 0; i < newBlockTypes.Length; i++) {
+            BlockType bt = newBlockTypes[i];
+            bt.id = btlist.Count + i;
+        }
         btlist.AddRange(newBlockTypes);
         blockTypes = btlist.ToArray();
         // blockTypeDict = newBlockTypes.ToDictionary((b) => b.idname);

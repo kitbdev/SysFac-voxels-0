@@ -39,6 +39,7 @@ namespace Kutil {
                 public bool saveAsBytes = false;
                 // extra
                 public Encoding encoding = Encoding.Default;
+                public bool quiet = false;
                 // todo test encryption and compression save and load and xml
                 public bool useEncryption = false;
                 public byte[] encryptionKey;
@@ -207,7 +208,7 @@ namespace Kutil {
                 } else {
                     File.WriteAllText(saveFullPath, data.contentStr, data.encoding);
                 }
-                Debug.Log($"Saved to '{saveFullPath}'");
+                if (!data.quiet) Debug.Log($"Saved to '{saveFullPath}'");
 #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.Refresh();
 #endif
@@ -252,7 +253,7 @@ namespace Kutil {
                         }
                         text = DecryptString(text, data.encryptionKey);
                     }
-                    Debug.Log($"Loaded '{fullPath}'");
+                    if (!data.quiet) Debug.Log($"Loaded '{fullPath}'");
                     return true;
                 }
                 Debug.LogError($"Load Failed: File '{fullPath}' does not exist");
@@ -279,7 +280,7 @@ namespace Kutil {
                         }
                         bytes = DecryptBytes(bytes, data.encryptionKey);
                     }
-                    Debug.Log($"Loaded '{fullPath}'");
+                    if (!data.quiet) Debug.Log($"Loaded '{fullPath}'");
                     return true;
                 }
                 Debug.LogError($"Load Failed: File '{fullPath}' does not exist");
@@ -457,6 +458,10 @@ namespace Kutil {
             public SaveBuilder EncryptedWith(byte[] symmetricKey) {
                 this.data.useEncryption = true;
                 this.data.encryptionKey = symmetricKey;
+                return this;
+            }
+            public SaveBuilder Quietly(bool isQuiet=true) {
+                this.data.quiet = isQuiet;
                 return this;
             }
 

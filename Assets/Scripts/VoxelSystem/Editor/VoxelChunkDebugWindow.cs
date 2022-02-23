@@ -10,6 +10,7 @@ namespace VoxelSystem {
         [SerializeField] VoxelWorld world;
         [SerializeField] VoxelChunk targetChunk;
         [SerializeField] bool clickToSelectVoxel = true;
+        // [SerializeField] bool absorbClick = false;
         // [SerializeField] bool takekeyboard = true;
         // [Kutil.ReadOnly]
         [SerializeField] Vector3Int targetBlockPos = Vector3Int.zero;
@@ -37,6 +38,7 @@ namespace VoxelSystem {
             svcontainer.Add(new PropertyField(serializedObject.FindProperty(nameof(world))));
             svcontainer.Add(new PropertyField(serializedObject.FindProperty(nameof(layerMask))));
             svcontainer.Add(new PropertyField(serializedObject.FindProperty(nameof(clickToSelectVoxel))));
+            // svcontainer.Add(new PropertyField(serializedObject.FindProperty(nameof(absorbClick))));
             PropertyField blockposfield = new PropertyField(serializedObject.FindProperty(nameof(targetBlockPos)));
             blockposfield.RegisterValueChangeCallback(_ => UpdateVoxelFromBlockPos());
             svcontainer.Add(blockposfield);
@@ -106,7 +108,7 @@ namespace VoxelSystem {
             SceneView.duringSceneGui -= OnScene;
         }
         void OnSelChange() {
-            if (Selection.activeGameObject==null) return;
+            if (Selection.activeGameObject == null) return;
             if (Selection.activeGameObject.TryGetComponent<VoxelChunk>(out var chunk)) {
                 targetChunk = chunk;
                 world = chunk.world;
@@ -133,7 +135,9 @@ namespace VoxelSystem {
                     // get block pos
                     targetBlockPos = world.WorldposToBlockpos(hit.point + mouseRay.direction * 0.001f);
                     // take mousedown?
-                    //e.Use();
+                    // if (absorbClick) {
+                    //     e.Use();
+                    // }
                 }
                 // sceneView.Repaint();
             }

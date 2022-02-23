@@ -45,6 +45,8 @@ namespace VoxelSystem.Importer {
         public float voxelSize = 1f;
         public int chunkResolution = 16;
         public Vector3Int chunkPosOffset;
+        public bool applyPaletteIndexCorrection = true;
+        public bool debugMode = false;
 
         public override string ToString() {
             return "VoxelImportSettings" +

@@ -12,7 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63a403a76d9672c468451a6f47961c02, type: 3}
   m_Name: defblocktypes
   m_EditorClassIdentifier: 
-  voxelMaterialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  findType: fire
+  findTypeId: 0
+  findTypeRef:
+    blockid: -1
+  foundType:
+    id: 177
+    idname: fire
+    displayName: fire
+    voxelMaterialId:
+      id: 58
+    customDatas: []
+    maxStack: 0
+    itemid: 0
   blockTypes:
   - id: 0
     idname: air
@@ -22,45 +34,2043 @@ MonoBehaviour:
     customDatas: []
     maxStack: 0
     itemid: 0
-  - id: 0
-    idname: block
-    displayName: block
+  - id: 1
+    idname: error
+    displayName: error
     voxelMaterialId:
       id: 1
     customDatas: []
     maxStack: 0
     itemid: 0
-  blockTypeToAdd:
+  - id: 2
+    idname: border
+    displayName: border
+    voxelMaterialId:
+      id: 2
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 3
+    idname: playerspawn
+    displayName: player spawn
+    voxelMaterialId:
+      id: 3
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 4
+    idname: none
     displayName: 
-    vmat:
-      _type:
-        _selectedType:
-          assemblyName: VoxelSystem.TexturedMaterial, VoxelSystem, Version=0.0.0.0,
-            Culture=neutral, PublicKeyToken=null
-      _objvalue:
-        rid: 4170073165739589636
-  references:
-    version: 2
-    RefIds:
-    - rid: 4170073165739589636
-      type: {class: TexturedMaterial, ns: VoxelSystem, asm: VoxelSystem}
-      data:
-        materialIndex: 0
-        material: {fileID: 0}
-        isInvisible: 0
-        isTransparent: 0
-        texname: 
-        textureCoord: {x: 0, y: 0}
-        textureOverrides:
-          texnameUp: 
-          texnameDown: 
-          texnameFront: 
-          texnameBack: 
-          texnameRight: 
-          texnameLeft: 
-          texcoordUp: {x: 0, y: 0}
-          texcoordDown: {x: 0, y: 0}
-          texcoordFront: {x: 0, y: 0}
-          texcoordBack: {x: 0, y: 0}
-          texcoordRight: {x: 0, y: 0}
-          texcoordLeft: {x: 0, y: 0}
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 5
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 6
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 7
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 8
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 9
+    idname: wood
+    displayName: wood
+    voxelMaterialId:
+      id: 4
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 10
+    idname: stone
+    displayName: stone
+    voxelMaterialId:
+      id: 5
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 11
+    idname: sand
+    displayName: sand
+    voxelMaterialId:
+      id: 6
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 12
+    idname: concrete
+    displayName: concrete
+    voxelMaterialId:
+      id: 7
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 13
+    idname: plaster?
+    displayName: plaster?
+    voxelMaterialId:
+      id: 8
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 14
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 15
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 16
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 17
+    idname: hardwood
+    displayName: hard wood
+    voxelMaterialId:
+      id: 9
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 18
+    idname: hardstone
+    displayName: hard stone
+    voxelMaterialId:
+      id: 10
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 19
+    idname: stoneblock
+    displayName: stone block
+    voxelMaterialId:
+      id: 11
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 20
+    idname: hstoneblock
+    displayName: hstone block
+    voxelMaterialId:
+      id: 12
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 21
+    idname: sandstoneblock
+    displayName: sandstone block
+    voxelMaterialId:
+      id: 13
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 22
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 23
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 24
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 25
+    idname: dirt
+    displayName: dirt
+    voxelMaterialId:
+      id: 14
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 26
+    idname: grass
+    displayName: grass
+    voxelMaterialId:
+      id: 15
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 27
+    idname: plant
+    displayName: plant
+    voxelMaterialId:
+      id: 16
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 28
+    idname: vine
+    displayName: vine
+    voxelMaterialId:
+      id: 17
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 29
+    idname: stem?
+    displayName: stem?
+    voxelMaterialId:
+      id: 18
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 30
+    idname: shroom
+    displayName: shroom
+    voxelMaterialId:
+      id: 19
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 31
+    idname: shroomstalk
+    displayName: shroomstalk
+    voxelMaterialId:
+      id: 20
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 32
+    idname: leaf
+    displayName: leaf
+    voxelMaterialId:
+      id: 21
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 33
+    idname: packeddirt
+    displayName: packeddirt
+    voxelMaterialId:
+      id: 22
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 34
+    idname: bark
+    displayName: bark
+    voxelMaterialId:
+      id: 23
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 35
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 36
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 37
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 38
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 39
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 40
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 41
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 42
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 43
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 44
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 45
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 46
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 47
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 48
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 49
+    idname: glass
+    displayName: glass
+    voxelMaterialId:
+      id: 24
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 50
+    idname: glassred
+    displayName: glass red
+    voxelMaterialId:
+      id: 25
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 51
+    idname: glassorange
+    displayName: glass orange
+    voxelMaterialId:
+      id: 26
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 52
+    idname: glassyellow
+    displayName: glass yellow
+    voxelMaterialId:
+      id: 27
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 53
+    idname: glassgreen
+    displayName: glass green
+    voxelMaterialId:
+      id: 28
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 54
+    idname: glasscyan
+    displayName: glass cyan
+    voxelMaterialId:
+      id: 29
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 55
+    idname: glassblue
+    displayName: glass blue
+    voxelMaterialId:
+      id: 30
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 56
+    idname: glasspink
+    displayName: glass pink
+    voxelMaterialId:
+      id: 31
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 57
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 58
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 59
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 60
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 61
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 62
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 63
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 64
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 65
+    idname: slime
+    displayName: slime
+    voxelMaterialId:
+      id: 32
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 66
+    idname: hardslime
+    displayName: hardslime
+    voxelMaterialId:
+      id: 33
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 67
+    idname: sliudge
+    displayName: sliudge
+    voxelMaterialId:
+      id: 34
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 68
+    idname: speedgel
+    displayName: speedgel
+    voxelMaterialId:
+      id: 35
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 69
+    idname: jumpgel
+    displayName: jumpgel
+    voxelMaterialId:
+      id: 36
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 70
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 71
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 72
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 73
+    idname: crystal
+    displayName: crystal
+    voxelMaterialId:
+      id: 37
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 74
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 75
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 76
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 77
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 78
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 79
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 80
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 81
+    idname: thorn
+    displayName: thorn
+    voxelMaterialId:
+      id: 38
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 82
+    idname: spike
+    displayName: spike
+    voxelMaterialId:
+      id: 39
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 83
+    idname: toxicgas
+    displayName: toxicgas
+    voxelMaterialId:
+      id: 40
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 84
+    idname: projectile
+    displayName: projectile
+    voxelMaterialId:
+      id: 41
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 85
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 86
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 87
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 88
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 89
+    idname: ice
+    displayName: ice
+    voxelMaterialId:
+      id: 42
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 90
+    idname: hardice
+    displayName: hard ice
+    voxelMaterialId:
+      id: 43
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 91
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 92
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 93
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 94
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 95
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 96
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 97
+    idname: water
+    displayName: water
+    voxelMaterialId:
+      id: 44
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 98
+    idname: acid
+    displayName: acid
+    voxelMaterialId:
+      id: 45
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 99
+    idname: lava
+    displayName: lava
+    voxelMaterialId:
+      id: 46
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 100
+    idname: oil
+    displayName: oil
+    voxelMaterialId:
+      id: 47
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 101
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 102
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 103
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 104
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 105
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 106
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 107
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 108
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 109
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 110
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 111
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 112
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 113
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 114
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 115
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 116
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 117
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 118
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 119
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 120
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 121
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 122
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 123
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 124
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 125
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 126
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 127
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 128
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 129
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 130
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 131
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 132
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 133
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 134
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 135
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 136
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 137
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 138
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 139
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 140
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 141
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 142
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 143
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 144
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 145
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 146
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 147
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 148
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 149
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 150
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 151
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 152
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 153
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 154
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 155
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 156
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 157
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 158
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 159
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 160
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 161
+    idname: light
+    displayName: light
+    voxelMaterialId:
+      id: 48
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 162
+    idname: lightred
+    displayName: light red
+    voxelMaterialId:
+      id: 49
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 163
+    idname: lightorange
+    displayName: light orange
+    voxelMaterialId:
+      id: 50
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 164
+    idname: lightyellow
+    displayName: light yellow
+    voxelMaterialId:
+      id: 51
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 165
+    idname: lightgreen
+    displayName: light green
+    voxelMaterialId:
+      id: 52
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 166
+    idname: lightcyan
+    displayName: light cyan
+    voxelMaterialId:
+      id: 53
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 167
+    idname: lightblue
+    displayName: light blue
+    voxelMaterialId:
+      id: 54
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 168
+    idname: lightpink
+    displayName: light pink
+    voxelMaterialId:
+      id: 55
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 169
+    idname: lightdim
+    displayName: light dim
+    voxelMaterialId:
+      id: 56
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 170
+    idname: lightbright
+    displayName: light bright
+    voxelMaterialId:
+      id: 57
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 171
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 172
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 173
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 174
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 175
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 176
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 177
+    idname: fire
+    displayName: fire
+    voxelMaterialId:
+      id: 58
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 178
+    idname: smoke
+    displayName: smoke
+    voxelMaterialId:
+      id: 59
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 179
+    idname: sparkle
+    displayName: sparkle
+    voxelMaterialId:
+      id: 60
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 180
+    idname: steam
+    displayName: steam
+    voxelMaterialId:
+      id: 61
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 181
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 182
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 183
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 184
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 185
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 186
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 187
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 188
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 189
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 190
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 191
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 192
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 193
+    idname: creaturecore
+    displayName: creature core
+    voxelMaterialId:
+      id: 62
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 194
+    idname: flesh
+    displayName: flesh
+    voxelMaterialId:
+      id: 63
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 195
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 196
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 197
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 198
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 199
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 200
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 201
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 202
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 203
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 204
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 205
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 206
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 207
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 208
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 209
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 210
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 211
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 212
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 213
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 214
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 215
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 216
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 217
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 218
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 219
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 220
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 221
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 222
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 223
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 224
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 225
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 226
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 227
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 228
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 229
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 230
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 231
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 232
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 233
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 234
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 235
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 236
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 237
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 238
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 239
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 240
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 241
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 242
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 243
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 244
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 245
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 246
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 247
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 248
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 249
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 250
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 251
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 252
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 253
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 254
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0
+  - id: 255
+    idname: none
+    displayName: 
+    voxelMaterialId:
+      id: 1
+    customDatas: []
+    maxStack: 0
+    itemid: 0

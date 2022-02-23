@@ -90,7 +90,7 @@ public class MapSO : ScriptableObject {
             SaveMapData(mp, filename, false);
             Debug.Log($"Finished processing import data {importedVoxelData.name} to map");
         } else {
-            Debug.LogError($"Failed to process import data {importedVoxelData.name} to map");
+            Debug.LogError($"Failed to process import data {importedVoxelData?.name} to map");
         }
     }
     public MapData GetMapData() {
@@ -189,7 +189,7 @@ public class MapSO : ScriptableObject {
         mapData.chunks = chunkDict.Values.ToArray();
         int maxBlockType = 256;
         Dictionary<int, SpecialBlocksMap> specialBlocksDict = specialBlocksMap.ToDictionary(sb => sb.matid);
-        // set block types
+        // assign block types
         for (int c = 0; c < mapData.chunks.Length; c++) {
             VoxelWorld.ChunkSaveData chunkSaveData = mapData.chunks[c];
             for (int v = 0; v < chunkVol; v++) {
@@ -214,7 +214,9 @@ public class MapSO : ScriptableObject {
                             mapData.playerSpawn = VoxelChunk.GetLocalPos(v, chunkRes) + chunkSaveData.chunkPos * chunkRes;
                         }
                     }
-
+                    // if (blockTypeId != voxel.voxelMaterialId) {
+                    //     Debug.Log($"assigning {voxel.voxelMaterialId} to {blockTypeId}");
+                    // }
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
                         blockTypeRef = new BlockTypeRef().SetBlockId(blockTypeId)
                     });
