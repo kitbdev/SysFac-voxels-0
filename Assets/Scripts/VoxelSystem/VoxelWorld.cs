@@ -63,8 +63,10 @@ namespace VoxelSystem {
             }
         }
         private void OnEnable() {
-            if (clearOnDisable || chunkPool == null) {
+            if (clearOnDisable) {
                 Clear();
+            }
+            if (chunkPool == null) {
                 Initialize();
             }
         }
@@ -443,7 +445,7 @@ namespace VoxelSystem {
             if (chunk) {
                 Voxel voxel = chunk.GetLocalVoxelAt(BlockPosToLocalVoxelPos(blockpos, chunk.chunkPos));
                 if (voxel == null) {
-                    Debug.LogWarning($"Error getting block type cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToLocalVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
+                    Debug.LogWarning($"Error getting voxel cp{chunk.chunkPos} bp{blockpos} vp{BlockPosToLocalVoxelPos(blockpos, chunk.chunkPos)} v{voxel}");
                     return null;
                 }
                 return voxel;

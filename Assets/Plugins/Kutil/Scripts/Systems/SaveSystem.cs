@@ -40,7 +40,7 @@ namespace Kutil {
                 // extra
                 public Encoding encoding = Encoding.Default;
                 public bool quiet = false;
-                // todo test encryption and compression save and load and xml
+                // todo test encryption save and load and xml
                 public bool useEncryption = false;
                 public byte[] encryptionKey;
                 public bool isCompressedZip = false;

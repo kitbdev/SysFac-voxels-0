@@ -126,9 +126,10 @@ public class MapSO : ScriptableObject {
         if (increment) {
             saveBuilder.AutoIncrement();
         }
-        // todo test
         saveBuilder.Content(mapData);
-        saveBuilder.AsJSON().Zip().Save();
+        // todo switch to optimal? if too big
+        saveBuilder.AsJSON().Zip(true, System.IO.Compression.CompressionLevel.Fastest);
+        saveBuilder.Save();
     }
     private static MapData LoadMapData(string filename, bool toPersistentOverLocal = false) {
         SaveSystem.SaveBuilder saveBuilder = SaveSystem.StartLoad();

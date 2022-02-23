@@ -158,6 +158,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _world: {fileID: 1520212562}
   _chunkPos: {x: 0, y: 0, z: 0}
+  hasDirtyVisuals: 0
+  updatedSinceLoad: 0
   _voxels: []
   visuals: {fileID: 0}
   showDebug: 0
@@ -1505,7 +1507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2114283753834967213
 Transform:
   m_ObjectHideFlags: 0
@@ -1539,7 +1541,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &2114283754330233425
 Light:
   m_ObjectHideFlags: 0

@@ -139,19 +139,53 @@ namespace VoxelSystem {
             visuals.UpdateMesh();
             hasDirtyVisuals = false;
             UpdateColliders();
-            if (andNeighbors) {//todo only 4(6)-way neighbors
-                // updates the 7 neighbors behind, below, and left (otherwise recursion?)
-                for (int i = 1; i < Voxel.cubePositions.Length; i++) {
-                    Vector3Int dir = -Voxel.cubePositions[i];
+            // todo only update the neighbors we need to
+            if (andNeighbors) {
+                // updates the 6 neighboring chunks (if they exist)
+                for (int i = 0; i < Voxel.unitDirs.Length; i++) {
+                    Vector3Int dir = Voxel.unitDirs[i];
                     VoxelChunk neighbor = world.GetNeighbor(this, dir);
                     if (neighbor) {
+                        // todo invoke so it happens on the next frame?
                         neighbor.Refresh(false);
                     }
                 }
             }
         }
-        public void LocalRefresh(Vector3Int pos, int size) {
-            visuals.UpdateMeshAt(pos);
+        public void LocalRefresh(Vector3Int localpos, int size, bool updateNeighbors = false) {
+            visuals.UpdateMeshAt(localpos);
+            UpdateColliders();
+            if (updateNeighbors) {
+                BoundsInt refreshBounds = new BoundsInt(localpos, Vector3Int.one * size);
+                // update the neighbors that need to be updated
+                List<Vector3Int> neighborsToRefresh = new List<Vector3Int>();
+                if (refreshBounds.xMin <= 0 && refreshBounds.xMax >= 0) {
+                    neighborsToRefresh.Add(Voxel.unitDirs[(int)VoxelDirection.LEFT]);
+                }
+                if (refreshBounds.xMin <= resolution && refreshBounds.xMax >= resolution) {
+                    neighborsToRefresh.Add(Voxel.unitDirs[(int)VoxelDirection.RIGHT]);
+                }
+                if (refreshBounds.yMin <= 0 && refreshBounds.yMax >= 0) {
+                    neighborsToRefresh.Add(Voxel.unitDirs[(int)VoxelDirection.DOWN]);
+                }
+                if (refreshBounds.yMin <= resolution && refreshBounds.yMax >= resolution) {
+                    neighborsToRefresh.Add(Voxel.unitDirs[(int)VoxelDirection.UP]);
+                }
+                if (refreshBounds.zMin <= 0 && refreshBounds.zMax >= 0) {
+                    neighborsToRefresh.Add(Voxel.unitDirs[(int)VoxelDirection.BACK]);
+                }
+                if (refreshBounds.zMin <= resolution && refreshBounds.zMax >= resolution) {
+                    neighborsToRefresh.Add(Voxel.unitDirs[(int)VoxelDirection.FORWARD]);
+                }
+                foreach (var neighdir in neighborsToRefresh) {
+                    VoxelChunk neighbor = world.GetNeighbor(this, neighdir);
+                    if (neighbor) {
+                        // todo invoke so it happens on the next frame?
+                        // todo? give neighbors a localrefresh? probably not
+                        neighbor.Refresh(false);
+                    }
+                }
+            }
         }
 
         public Mesh GetMesh() {

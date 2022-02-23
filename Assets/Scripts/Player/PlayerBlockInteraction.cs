@@ -135,6 +135,6 @@ public class PlayerBlockInteraction : MonoBehaviour {
         BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
         // Debug.Log($"Set {blockTypeVoxelData} at {blockPos} to {blocktype}");
         VoxelChunk voxelChunk = world.GetChunkWithBlock(blockPos);
-        voxelChunk.Refresh();
+        voxelChunk.Refresh(true);
     }
 }
