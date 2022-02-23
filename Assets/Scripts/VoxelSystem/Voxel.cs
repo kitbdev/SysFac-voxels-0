@@ -27,7 +27,7 @@ namespace VoxelSystem {
             this.voxelMaterialId = voxelMaterialId;
             this.voxelDatas = voxelDatas;
         }
-        public Voxel(Voxel voxel){
+        public Voxel(Voxel voxel) {
             voxelMaterialId = voxel.voxelMaterialId;
             voxelDatas = voxel.voxelDatas.ToArray();// theyre structs, so this makes a copy
         }
@@ -148,12 +148,24 @@ namespace VoxelSystem {
         //     }
         //     voxelDatas = newVoxelDatas.ToArray();
         // }
-        public void SetOrAddVoxelDataFor<T>(T data, bool set = true, bool add = true, bool reinit = false) where T : VoxelData {
-            if (HasVoxelDataFor<T>()) {
+        public void SetOrAddVoxelDataFor(VoxelData[] data, bool set = true, bool add = true, bool reinit = false) {
+            foreach (var d in data) {
+                SetOrAddVoxelDataFor(d, set, add, false);
+            }
+            if (reinit) {
+                foreach (var d in data) {
+                    DefaultVoxelData defaultVoxelData = GetVoxelDataFor<DefaultVoxelData>();
+                    d.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
+                }
+            }
+        }
+        public void SetOrAddVoxelDataFor(VoxelData data, bool set = true, bool add = true, bool reinit = false) {
+            if (HasVoxelDataFor(data.GetType())) {
                 if (set) {
                     RawSetVoxelDataFor(data);
                 } else {
-                    Debug.LogWarning($"Voxel {this} alrady has {typeof(T)} data, cannot add {data}");
+                    // ignoring
+                    // Debug.LogWarning($"Voxel {this} already has {data.GetType()} data, cannot add {data}");
                     return;
                 }
             } else {
@@ -161,7 +173,7 @@ namespace VoxelSystem {
                     // List<VoxelData> newVoxelDatas = voxelDatas.ToList();
                     // newVoxelDatas.Add(data);
                     // voxelDatas = newVoxelDatas.ToArray();
-                    // voxelDataList.Sort(VoxelDataSortComparer());
+                    // voxelDataList.Sort(VoxelDataSortComparer());// tolist is slow
                     voxelDatas = voxelDatas.Append(data).ToArray();// todo sort?
                 }
             }
@@ -244,13 +256,13 @@ namespace VoxelSystem {
         public void CopyValuesFrom(Voxel voxel) {
             voxelMaterialId = voxel.voxelMaterialId;
             voxelDatas = voxel.voxelDatas.ToArray();// theyre structs, so this makes a copy
-            // List<VoxelData> datas = new List<VoxelData>();
-            // foreach (var voxelData in voxel.voxelDatas) {
-                // needs to be typechoice to instantiate child stuff
-                // VoxelData nvoxl = ((TypeChoice<VoxelData>)voxelData.GetType()).CreateInstance();
-                // nvoxl.CopyValuesFrom(voxelData);
-                // datas.Add(nvoxl);
-            // }
+                                                    // List<VoxelData> datas = new List<VoxelData>();
+                                                    // foreach (var voxelData in voxel.voxelDatas) {
+                                                    // needs to be typechoice to instantiate child stuff
+                                                    // VoxelData nvoxl = ((TypeChoice<VoxelData>)voxelData.GetType()).CreateInstance();
+                                                    // nvoxl.CopyValuesFrom(voxelData);
+                                                    // datas.Add(nvoxl);
+                                                    // }
         }
 
         public string ToStringFull() {

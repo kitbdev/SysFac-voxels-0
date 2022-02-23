@@ -198,7 +198,7 @@ namespace VoxelSystem {
             // Debug.Log($"added volume-1 {voxels[volume - 1]}");
             // todo jobs?
             for (int i = 0; i < volume; i++) {
-                voxels[i].SetOrAddVoxelDataFor<T>(data[i], true, true);
+                voxels[i].SetOrAddVoxelDataFor(data[i], true, true);
             }
         }
         public void SetVoxelDatas<T>(T[] data) where T : VoxelData {
@@ -210,7 +210,7 @@ namespace VoxelSystem {
             // voxels[0].SetOrAddVoxelDataFor<T>(data[0]);
             // Debug.Log($"added 0 {voxels[0]}");
             for (int i = 0; i < volume; i++) {
-                voxels[i].SetOrAddVoxelDataFor<T>(data[i], true, false);
+                voxels[i].SetOrAddVoxelDataFor(data[i], true, false);
             }
         }
         public void SetVoxelMaterials(VoxelMaterialId voxelMaterialId) {

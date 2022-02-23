@@ -69,14 +69,14 @@ public class BlockTypeEditor : EditorWindow {
         Button preprocessmapbtn = new Button(() => PreprocessMap());
         preprocessmapbtn.text = "Preprocess Map Data";
         container.Add(preprocessmapbtn);
-        Button clearmapdatabtn = new Button(() => ClearMap());
-        clearmapdatabtn.text = "Clear Map Data";
-        container.Add(clearmapdatabtn);
+        // Button clearmapdatabtn = new Button(() => ClearMap());
+        // clearmapdatabtn.text = "Clear Map Data";
+        // container.Add(clearmapdatabtn);
 
         container.Bind(serializedObject);
     }
     void PreprocessMap() => mapData.ProcessImportData();
-    void ClearMap() => mapData.ClearMapData();
+    // void ClearMap() => mapData.ClearMapData();
 
     void AddNewBlockType() {
         CreateBlockTypeAndMat(blockTypeToAdd);

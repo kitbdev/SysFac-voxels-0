@@ -71,7 +71,7 @@ public class BlockManager : Singleton<BlockManager> {
         var oldType = blockTypeVoxelData.blockTypeRef;
         // Debug.Log($"Setting |{voxel.ToStringFull()}| to |{newBlockType}|"); 
         blockTypeVoxelData.blockTypeRef = newBlockType;
-        voxel.SetOrAddVoxelDataFor<BlockTypeVoxelData>(blockTypeVoxelData, true, false, false);
+        voxel.SetOrAddVoxelDataFor(blockTypeVoxelData, true, false, false);
         UpdateBlockType(voxel, newBlockType, oldType);
         // Debug.Log($"Setdone |{voxel.ToStringFull()}| to |{newBlockType}|");
     }

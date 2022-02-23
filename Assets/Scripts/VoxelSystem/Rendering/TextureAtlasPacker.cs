@@ -75,11 +75,11 @@ public class TextureAtlasPacker : ScriptableObject {
             var savebuilder = SaveSystem.StartSave()
                 .Content(atlas.EncodeToPNG()).CustomExtension("png").InLocalDataPath(atlasName);
             if (saveIncrement) {
-                savebuilder.IncrementIfExists();
+                savebuilder.AutoIncrement();
             } else {
                 savebuilder.CanOverwrite();
             }
-            savebuilder.TrySave();
+            savebuilder.Save();
         }
         finishedPackingEvent?.Invoke();
     }

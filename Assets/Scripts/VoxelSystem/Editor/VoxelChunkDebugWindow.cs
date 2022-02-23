@@ -147,7 +147,7 @@ namespace VoxelSystem {
                 // draw contrast
                 Handles.color = Color.white;
                 Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
-                Handles.DrawWireCube(wpos, Vector3.one * (world.voxelSize + 0.0f));
+                Handles.DrawWireCube(wpos, Vector3.one * (world.voxelSize + 0.001f));
                 // draw over box xray
                 Handles.color = new Color(0.1f, 0.1f, 0.2f, 0.7f);
                 Handles.zTest = UnityEngine.Rendering.CompareFunction.Always;
@@ -155,7 +155,7 @@ namespace VoxelSystem {
                 // draw on top of box
                 Handles.color = Color.black;
                 Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
-                Handles.DrawWireCube(wpos, Vector3.one * (world.voxelSize + 0.02f));
+                Handles.DrawWireCube(wpos, Vector3.one * (world.voxelSize + 0.01f));
                 // default
                 Handles.color = Color.white;
                 Handles.zTest = UnityEngine.Rendering.CompareFunction.Always;

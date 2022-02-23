@@ -225,15 +225,18 @@ namespace VoxelSystem {
             // todo? should make a copy or do we want this?
             // if its loaded from a file, will just have to reload to get original state, and saving becomes trivial
                 // todo probably, check that everything is properly updates, like voxdatas
-            // todo have a save to file somewhere for processed map data
+        // todo doesnt have all needed data, only the stuff that was saved
             List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
             for (int i = 0; i < chunks.Length; i++) {
                 ChunkSaveData chunkSaveData = chunks[i];
                 if (HasChunkActiveAt(chunkSaveData.chunkPos)) {
                     if (overwrite) {
                         Debug.LogWarning($"Overwriting chunk {chunkSaveData.chunkPos}");
-                        GetChunkAt(chunkSaveData.chunkPos).OverrideVoxels(chunkSaveData.voxels);
+                        VoxelChunk chunkOverwrite = GetChunkAt(chunkSaveData.chunkPos);
+                        chunkOverwrite.OverrideVoxels(chunkSaveData.voxels);
                         chunksToRefresh.Add(chunkSaveData.chunkPos);
+                    }else{
+                        Debug.LogWarning($"chunk {chunkSaveData.chunkPos} exists, ignoring");
                     }
                     // todo additive mode
                     continue;

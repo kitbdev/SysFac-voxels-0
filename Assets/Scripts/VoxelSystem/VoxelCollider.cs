@@ -15,15 +15,16 @@ namespace VoxelSystem {
         public bool enableCollision = true;
         [SerializeField]
         private ColliderType _colliderType;
-
-
-
         public ColliderType colliderType {
             get => _colliderType;
             set {
                 _colliderType = value;
                 // UpdateColliders();
             }
+        }
+
+        private void Reset() {
+            chunk ??= GetComponent<VoxelChunk>();
         }
 
         public void UpdateColliders() {
