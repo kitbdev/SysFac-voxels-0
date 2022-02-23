@@ -65,6 +65,14 @@
 # Other
 *.exe filter=lfs diff=lfs merge=lfs -text 
 
+*.sln binary
+*.suo binary
+*.vcxproj binary
+
 # Custom
 *.map filter=lfs diff=lfs merge=lfs -text
 *.mapdata filter=lfs diff=lfs merge=lfs -text
+voxeltest.unity filter=lfs diff=lfs merge=lfs -text
+
+*.map binary
+*.mapdata binary
