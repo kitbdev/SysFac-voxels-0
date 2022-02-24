@@ -1,226 +1,286 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kutil;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-// based off of first person controller
-
-[RequireComponent(typeof(CharacterController))]
-#if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
-[RequireComponent(typeof(PlayerInput))]
-#endif
+[SelectionBase, DisallowMultipleComponent]
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMove : MonoBehaviour {
-    [Header("Player")]
-    [Tooltip("Move speed of the character in m/s")]
-    public float MoveSpeed = 4.0f;
-    [Tooltip("Sprint speed of the character in m/s")]
-    public float SprintSpeed = 6.0f;
-    [Tooltip("Rotation speed of the character")]
-    public float RotationSpeed = 1.0f;
-    [Tooltip("Acceleration and deceleration")]
-    public float SpeedChangeRate = 10.0f;
 
-    [Space(10)]
-    [Tooltip("The height the player can jump")]
-    public float JumpHeight = 1.2f;
-    [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    public float Gravity = -15.0f;
+    [Header("Movement")]
+    [SerializeField] float moveSpeed = 5;
+    [SerializeField] float sprintSpeed = 8;
+    [SerializeField, Min(0f)] float moveAcceleration = 10;
+    [SerializeField, Range(0f, 90f)] float maxGroundAngle = 25f;
+    [SerializeField] LayerMask groundLayerMask = Physics.DefaultRaycastLayers;
+    [Header("Steps")]
+    [SerializeField, Range(0f, 1f)] float stepSmoothing = 0.1f;
+    [SerializeField, Range(0f, 5f)] float maxStepHeight = 0.3f;
+    // jump and gravity
+    [Header("Jump")]
+    [SerializeField, Min(0)] float jumpHeight = 1;
+    [SerializeField, Min(0)] float jumpDist = 2;
+    [SerializeField, Min(0)] float jumpHeldHeight = 2.1f;
+    [SerializeField, Min(0)] float jumpHeldDist = 5.6f;
+    [SerializeField, Range(0f, 0.999f)] float fastFallSpeed = 0.1f;
+    [SerializeField, Min(0)] float coyoteJumpDur = 0.1f;
+    [SerializeField] float maxFallSpeed = 100;
+    // [SerializeField] Transform headRot;
+    [Header("Out of Bounds")]
+    [SerializeField] bool doOutOfBoundsCheck = true;
+    [SerializeField] float oobMinHeight = -10;// todo full V3 min and max distances
+    [SerializeField] event System.Action onOOBEvent;
 
-    [Space(10)]
-    [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-    public float JumpTimeout = 0.1f;
-    [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
-    public float FallTimeout = 0.15f;
+    [SerializeField, ReadOnly] float jumpDur;
+    [SerializeField, ReadOnly] float heldJumpDur;
+    [SerializeField, ReadOnly] float jumpVel;
+    [SerializeField, ReadOnly] float jumpGrav;
+    [SerializeField, ReadOnly] float holdJumpGrav;
+    [SerializeField, ReadOnly] float ffallGrav;
+    [SerializeField, ReadOnly] float curGrav;
 
-    [Header("Player Grounded")]
-    [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
-    public bool Grounded = true;
-    [Tooltip("Useful for rough ground")]
-    public float GroundedOffset = -0.14f;
-    [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
-    public float GroundedRadius = 0.5f;
-    [Tooltip("What layers the character uses as ground")]
-    public LayerMask GroundLayers;
+    // [SerializeField, ReadOnly] bool inWater;
 
-    [Header("Cinemachine")]
-    [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-    public GameObject CinemachineCameraTarget;
-    [Tooltip("How far in degrees can you move the camera up")]
-    public float TopClamp = 90.0f;
-    [Tooltip("How far in degrees can you move the camera down")]
-    public float BottomClamp = -90.0f;
+    [SerializeField, ReadOnly] bool isGrounded;
+    [SerializeField, ReadOnly] Vector3 velocity;
+    [SerializeField, ReadOnly] Vector3 connectionVelocity;
 
-    // cinemachine
-    private float _cinemachineTargetPitch;
+    Vector3 connectionWorldPosition, connectionLocalPosition;
+    float lastGroundedTime = 0f;
+    // in physics steps
+    int stepsSinceLastGrounded, stepsSinceLastJump;
+    float minGroundNormalDP = 0;
 
-    // player
-    private float _speed;
-    private float _rotationVelocity;
-    private float _verticalVelocity;
-    private float _terminalVelocity = 53.0f;
+    Rigidbody connectedBody, prevConnectedBody;
 
-    // timeout deltatime
-    private float _jumpTimeoutDelta;
-    private float _fallTimeoutDelta;
+    [SerializeField, ReadOnly] PlayerInputControls playerInputControls;
 
-    private PlayerInput _playerInput;
-    private CharacterController _controller;
-    private StarterAssets.StarterAssetsInputs _input;
-    private GameObject _mainCamera;
+    [SerializeField] CapsuleCollider capsuleCollider;
+    Rigidbody rb;
 
-    private const float _threshold = 0.01f;
-
-    private bool IsCurrentDeviceMouse => _playerInput.currentControlScheme == "KeyboardMouse";
+    private void OnValidate() {
+        minGroundNormalDP = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
+        CalculateJumpVel();
+    }
+    private void Reset() {
+        playerInputControls = GetComponent<PlayerInputControls>();
+        capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+    }
 
     private void Awake() {
-        // get a reference to our main camera
-        if (_mainCamera == null) {
-            _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        rb = GetComponent<Rigidbody>();
+        playerInputControls = GetComponent<PlayerInputControls>();
+        capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.useGravity = false;
+        // headRot ??= transform.GetChild(0);
+        OnValidate();
+    }
+    void CalculateJumpVel() {
+        //http://www.mathforgameprogrammers.com/gdc2016/GDC2016_Pittman_Kyle_BuildingABetterJump.pdf
+        float CalcJumpVel(float jumpHeight, float peakTime) {
+            return 2 * jumpHeight / peakTime;
         }
+        float CalcGrav(float jumpHeight, float peakTime) {
+            return -2 * jumpHeight / (peakTime * peakTime);
+        }
+        jumpDur = jumpDist / moveSpeed;
+        heldJumpDur = jumpHeldDist / moveSpeed;
+
+        float ffrate = (fastFallSpeed + 1) / 2f;
+        float pjumpDur = jumpDur * ffrate;
+        float pheldJumpDur = heldJumpDur * ffrate;
+        float pffallDur = jumpDur * (1f - ffrate);
+
+        jumpVel = CalcJumpVel(jumpHeldHeight, pheldJumpDur);
+        jumpGrav = CalcGrav(jumpHeight, pjumpDur);
+        holdJumpGrav = CalcGrav(jumpHeldHeight, pheldJumpDur);
+        // ? need ffallheldgrav?
+        ffallGrav = CalcGrav(jumpHeight, pffallDur);
+
     }
 
-    private void Start() {
-        _controller = GetComponent<CharacterController>();
-        _input = GetComponent<StarterAssets.StarterAssetsInputs>();
-        _playerInput = GetComponent<PlayerInput>();
-
-        // reset our timeouts on start
-        _jumpTimeoutDelta = JumpTimeout;
-        _fallTimeoutDelta = FallTimeout;
+    private void OnEnable() {
+        playerInputControls.inputJumpReleased = true;
     }
+    private void OnDisable() {
 
-    private void Update() {
-        JumpAndGravity();
-        GroundedCheck();
+    }
+    // private void Update() {
+    // }
+    void ClearPhysState() {
+        isGrounded = false;
+        prevConnectedBody = connectedBody;
+        connectedBody = null;
+    }
+    private void FixedUpdate() {
+        ClearPhysState();
+        CheckGrounded();
         Move();
-    }
-
-    private void LateUpdate() {
-        CameraRotation();
-    }
-
-    private void GroundedCheck() {
-        // set sphere position, with offset
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
-        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
-    }
-
-    private void CameraRotation() {
-        // if there is an input
-        if (_input.look.sqrMagnitude >= _threshold) {
-            //Don't multiply mouse input by Time.deltaTime
-            float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-            _cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
-            _rotationVelocity = _input.look.x * RotationSpeed * deltaTimeMultiplier;
-
-            // clamp our pitch rotation
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-            // Update Cinemachine camera target pitch
-            CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
-
-            // rotate the player left and right
-            transform.Rotate(Vector3.up * _rotationVelocity);
+        // check if player somehow fell out of world
+        if (doOutOfBoundsCheck) {
+            if (transform.position.y <= oobMinHeight) {
+                if (onOOBEvent != null) {
+                    // respawn handled elsewhere
+                    onOOBEvent.Invoke();
+                } else {
+                    float safeHeight = 10;
+                    // force back up
+                    transform.position = new Vector3(transform.position.x, safeHeight, transform.position.z);
+                    rb.velocity = Vector3.zero;
+                    velocity = Vector3.zero;
+                }
+            }
+        }
+        if (maxFallSpeed >= 0 && velocity.y <= -maxFallSpeed) {
+            velocity.y = -maxFallSpeed;
+            rb.velocity = new Vector3(rb.velocity.x, -maxFallSpeed, rb.velocity.z);
         }
     }
-
-    private void Move() {
-        // set target speed based on move speed, sprint speed and if sprint is pressed
-        float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
-        // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-        // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is no input, set the target speed to 0
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
-        // a reference to the players current horizontal velocity
-        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
-        float speedOffset = 0.1f;
-        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-
-        // accelerate or decelerate to target speed
-        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset) {
-            // creates curved result rather than a linear one giving a more organic speed change
-            // note T in Lerp is clamped, so we don't need to clamp our speed
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
-
-            // round speed to 3 decimal places
-            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+    void Move() {
+        // input movement
+        stepsSinceLastGrounded += 1;
+        stepsSinceLastJump += 1;
+        Vector3 desVel = Vector3.zero;
+        if (playerInputControls.inputMove.sqrMagnitude > 0.0001f) {
+            desVel = new Vector3(playerInputControls.inputMove.x, 0, playerInputControls.inputMove.y);
+            desVel = Vector3.ClampMagnitude(desVel, 1f);
+            desVel = transform.TransformDirection(desVel);
+            float targetSpeed = playerInputControls.inputSprint ? sprintSpeed : moveSpeed;
+            desVel *= targetSpeed;
+        }
+        if (moveAcceleration > 0f) {
+            // ignore y val
+            // ? seperate accel and deaccel
+            velocity = rb.velocity;
+            float vy = velocity.y;
+            velocity = Vector3.Lerp(velocity, desVel, Time.deltaTime * moveAcceleration);
+            velocity.y = vy;
         } else {
-            _speed = targetSpeed;
+            velocity = desVel;
         }
+        // gravity
 
-        // clamp input direction for controller small inputs
-        Vector3 inputDirection = Vector3.ClampMagnitude(new Vector3(_input.move.x, 0.0f, _input.move.y), 1f);
-
-        // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is a move input rotate player when the player is moving
-        if (_input.move != Vector2.zero) {
-            // move
-            inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
-        }
-
-        // move the player
-        _controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-    }
-
-    private void JumpAndGravity() {
-        // todo jump while holding
-        if (Grounded) {
-            // reset the fall timeout timer
-            _fallTimeoutDelta = FallTimeout;
-
-            // stop our velocity dropping infinitely when grounded
-            if (_verticalVelocity < 0.0f) {
-                _verticalVelocity = -2f;
-            }
-
-            // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f) {
-                // the square root of H * -2 * G = how much velocity needed to reach desired height
-                _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-            }
-
-            // jump timeout
-            if (_jumpTimeoutDelta >= 0.0f) {
-                _jumpTimeoutDelta -= Time.deltaTime;
-            }
+        if (isGrounded || SnapToGround()) {
+            stepsSinceLastGrounded = 0;
+            float groundGrav = -0.1f;
+            curGrav = groundGrav;
+            velocity.y = curGrav;
         } else {
-            // reset the jump timeout timer
-            _jumpTimeoutDelta = JumpTimeout;
-
-            // fall timeout
-            if (_fallTimeoutDelta >= 0.0f) {
-                _fallTimeoutDelta -= Time.deltaTime;
+            if (playerInputControls.inputJumpHold && rb.velocity.y > 0) {
+                // player is holding jump, lower than usual gravity
+                curGrav = holdJumpGrav;
+            } else if (fastFallSpeed > 0 && rb.velocity.y <= 0) {
+                // player is falling down, fast fall
+                curGrav = ffallGrav;
+            } else {
+                // player is finishing normal jump arc after releasing jump, normal grav
+                curGrav = jumpGrav;
             }
+            velocity.y += curGrav * Time.deltaTime;
+        }
+        ClimbStep();
 
-            // if we are not grounded, do not jump
-            _input.jump = false;
+        // connected body
+        if (connectedBody) {
+            // filter small rigidbodies
+            // if (connectedBody.isKinematic || connectedBody.mass >= rb.mass) {
+
+        }
+        // jump
+        if (playerInputControls.inputJumpHold && playerInputControls.inputJumpReleased) {
+            bool canJump = isGrounded || Time.time < lastGroundedTime + coyoteJumpDur;
+            if (canJump) {
+                // jump
+                stepsSinceLastJump = 0;
+                float jumpSpeed = jumpVel;
+                if (velocity.y > 0f) {
+                    jumpSpeed = Mathf.Max(jumpSpeed - velocity.y, 0f);
+                }
+                velocity.y += jumpSpeed;
+                isGrounded = false;
+                lastGroundedTime = Time.time;
+            }
+            playerInputControls.inputJumpReleased = false;
         }
 
-        // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-        if (_verticalVelocity < _terminalVelocity) {
-            _verticalVelocity += Gravity * Time.deltaTime;
+        rb.velocity = velocity;
+    }
+    bool SnapToGround() {
+        if (stepsSinceLastGrounded > 1 || stepsSinceLastJump <= 2) {
+            return false;
         }
+        if (!Physics.SphereCast(rb.position, 0.1f, Vector3.down, out RaycastHit hit, 1, groundLayerMask, QueryTriggerInteraction.Ignore)) {
+            return false;
+        }
+        if (hit.normal.y < minGroundNormalDP) {
+            return false;
+        }
+        float speed = velocity.magnitude;
+        float dot = Vector3.Dot(velocity, hit.normal);
+        if (dot > 0f) {
+            // Debug.Log("Snapping to ground");
+            velocity = (velocity - hit.normal * dot).normalized * speed;
+            return true;
+        }
+        return false;
     }
 
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax) {
-        if (lfAngle < -360f) lfAngle += 360f;
-        if (lfAngle > 360f) lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    bool ClimbStep() {
+        // if (!isGrounded) {
+        //     // ? can we step while in air? sure
+        //     return false;
+        // }
+        Vector3 checkDir = velocity.normalized;
+        checkDir.y = 0;
+        if (checkDir.sqrMagnitude <= 0.1f) {
+            // not moving horizontally enough to need to step
+            return false;
+        }
+        Vector3 origin = transform.position + Vector3.up * 0.02f;
+        Ray stepCheckRay = new Ray(origin, checkDir);
+        float dist = 0.4f;
+        float neededSpace = 0.2f;
+        // Debug.DrawRay(stepCheckRay.origin, stepCheckRay.direction * dist, Color.red);
+        if (Physics.Raycast(stepCheckRay, out var hit, dist, groundLayerMask, QueryTriggerInteraction.Ignore)) {
+            // we are being blocked
+            Ray stepHighCheckRay = new Ray(transform.position + Vector3.up * maxStepHeight, checkDir);
+            // todo capsule cast to check if we have clearance
+            // var p1 = capsuleCollider.center + transform.position + Vector3.up * maxStepHeight;
+            // var p2 = p1;
+            // p1.y += -capsuleCollider.height / 2f + capsuleCollider.radius;
+            // p2.y -= -capsuleCollider.height / 2f + capsuleCollider.radius;
+            // if (!Physics.CapsuleCast(p1,p2,capsuleCollider.radius,checkDir, dist, groundLayerMask,QueryTriggerInteraction.Ignore)){
+            if (!Physics.Raycast(stepHighCheckRay, dist + neededSpace, groundLayerMask, QueryTriggerInteraction.Ignore)) {
+                // enough space to step
+                // top down check to get the height
+                Ray stepDownRay = new Ray(stepHighCheckRay.origin + checkDir * (dist + neededSpace / 2f), Vector3.down);
+                if (Physics.Raycast(stepDownRay, out var tophit, maxStepHeight + 0.02f, groundLayerMask, QueryTriggerInteraction.Ignore)) {
+                    float stepHeight = tophit.point.y - transform.position.y;
+                    // rb.position += Vector3.up * stepSmoothing;
+                    // rb.AddForce(transform.up * stepSmoothing, ForceMode.VelocityChange);
+                    float stepVel = Mathf.Sqrt(-2f * jumpGrav * stepHeight);
+                    velocity.y += stepVel * (1f - stepSmoothing);
+                    // stepsSinceLastJump = 0;// stop snap to ground
+                    // Debug.Log($"Stepping! {stepHeight} v{stepVel}");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
-
-    private void OnDrawGizmosSelected() {
-        Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
-        Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
-        if (Grounded) Gizmos.color = transparentGreen;
-        else Gizmos.color = transparentRed;
-
-        // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
-        Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
+    void CheckGrounded() {
+        // sets isGrounded to true if we detect an object below us with a vertical facing normal
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        float rad = 0.08f;
+        float dist = 0.1f;
+        // Debug.DrawRay(origin, Vector3.down * (dist + rad), Color.red, 0.05f);
+        if (Physics.SphereCast(origin, rad, Vector3.down, out var hit, dist, groundLayerMask, QueryTriggerInteraction.Ignore)) {
+            if (hit.normal.y >= minGroundNormalDP) {
+                isGrounded = true;
+                lastGroundedTime = Time.time;
+                connectedBody = hit.rigidbody;
+            }
+        }
     }
 }

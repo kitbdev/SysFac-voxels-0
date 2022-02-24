@@ -19,9 +19,12 @@ namespace Kutil {
         [SerializeField] bool pauseOnStart = false;
         public bool blockPause = false;
         public bool allowUnpausing = true;
+        public bool autoPauseWhenFocusLost = true;
+        public bool autoUnpauseWhenFocusGainedAfterAutoPause = false;
+        [SerializeField, ReadOnly] bool didAutoPause = false;
 
 #if ENABLE_INPUT_SYSTEM
-    [SerializeField] InputActionReference togglePauseButton;
+        [SerializeField] InputActionReference togglePauseButton;
 #endif
         IEnumerator pauseLerpCo;
 
@@ -30,10 +33,10 @@ namespace Kutil {
 
         protected void OnEnable() {
 #if ENABLE_INPUT_SYSTEM
-        if (togglePauseButton) {
-            togglePauseButton.action.Enable();
-            togglePauseButton.action.performed += c => TogglePause();
-        }
+            if (togglePauseButton) {
+                togglePauseButton.action.Enable();
+                togglePauseButton.action.performed += c => TogglePause();
+            }
 #endif
         }
         private void OnDisable() {
@@ -94,6 +97,22 @@ namespace Kutil {
                 Time.timeScale = interp;
             }
             Time.timeScale = target;
+        }
+        private void OnApplicationFocus(bool hasFocus) {
+            if (hasFocus) {
+                if (didAutoPause && autoUnpauseWhenFocusGainedAfterAutoPause) {
+                    UnPause();
+                    didAutoPause = false;
+                }
+            } else {
+                if (autoPauseWhenFocusLost) {
+                    Pause();
+                    didAutoPause = true;
+                }
+            }
+        }
+        void OnApplicationPause(bool pauseStatus) {
+            OnApplicationFocus(!pauseStatus);
         }
     }
 }

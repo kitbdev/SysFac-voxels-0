@@ -21,6 +21,7 @@ namespace VoxelSystem {
         public bool useBoxColliders = true;
         public bool clearOnAwake = true;
         public bool clearOnDisable = true;
+        public bool dontSaveChunks = false;// todo better solution than this
         public VoxelMaterialSetSO materialSet;
 
         [Header("voxel creation settings")]
@@ -79,6 +80,9 @@ namespace VoxelSystem {
                     //     chunk = Instantiate(voxelChunkPrefab, transform);
                     // } else {
                     chunk = new GameObject("Voxel chunk", typeof(VoxelChunk), typeof(VoxelRenderer));
+                    if (dontSaveChunks) {
+                        chunk.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+                    }
                     chunk.transform.parent = transform;
                     // }
                     return chunk;
