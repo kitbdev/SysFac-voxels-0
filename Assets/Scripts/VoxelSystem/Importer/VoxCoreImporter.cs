@@ -132,11 +132,11 @@ namespace VoxelSystem.Importer.VoxCore {
                         // if (matid != 0) {
                         // Debug.Log($"found {chunkpos} {voxelpos} is {matid} ({data_index})");
                         // }
-                        if (VoxelChunk.IndexAt(localpos, chunkRes) < 0) {
+                        if (VoxelVolume.IndexAt(localpos, chunkRes) < 0) {
                             Debug.LogError($"Vox importer failed to get voxel id of ci:{chunkIndex} cp:{chunkpos} ncpd:{numChunksPerDir} vp:{voxelpos} lp:{localpos} bp:{blockpos} chunkres:{chunkRes}");
                             return default;
                         }
-                        chunkData.voxels[VoxelChunk.IndexAt(localpos, chunkRes)] = new ImportedVoxel() {
+                        chunkData.voxels[VoxelVolume.IndexAt(localpos, chunkRes)] = new ImportedVoxel() {
                             materialId = matid,
                             // materialColor = color
                         };

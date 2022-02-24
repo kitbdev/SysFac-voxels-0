@@ -1,3 +1,4 @@
+using Kutil;
 using UnityEngine;
 
 namespace VoxelSystem {
@@ -6,10 +7,11 @@ namespace VoxelSystem {
         // todo change so only needed data is here, must be set from a loader?
         //? multiple atlas management?
         public bool isInvisible;// dont mesh
-        public bool isTransparent;
+        public bool isTransparent;// todo need an index to seperate ones that should be drawn together?
+        // public bool alsoDrawInterior;// todo? actually use mat bothsides
         // [Kutil.CustomDropDown(nameof(textureOverrides) + "." + nameof(TextureOverrides.choices), includeNullChoice: true)]
         // public string texname;
-        [Kutil.ReadOnly]
+        [ReadOnly]
         public Vector2 textureCoord;
         // public TextureOverrides textureOverrides;
         // public Color tint = Color.white;

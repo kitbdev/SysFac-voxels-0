@@ -14,11 +14,13 @@ namespace Kutil {
             return root;
         }
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-            property.serializedObject.Update();
-            property.Next(true);
-            int val = property.intValue;
-            property.intValue = EditorGUI.LayerField(position, label, val);
-            property.serializedObject.ApplyModifiedProperties();
+            SerializedProperty layerProp = property.FindPropertyRelative(nameof(Layer.layerValue));
+            int val = layerProp.intValue;
+            int newval = EditorGUI.LayerField(position, label, val);
+            if (val != newval) {
+                layerProp.intValue = newval;
+                property.serializedObject.ApplyModifiedProperties();
+            }
         }
     }
 }

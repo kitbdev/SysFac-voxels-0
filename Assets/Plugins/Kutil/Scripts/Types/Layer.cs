@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Kutil {
     [System.Serializable]
     public class Layer {
-        [SerializeField] int layerValue;
+        public int layerValue;
 
         public Layer(int layer) {
             this.layerValue = layer;

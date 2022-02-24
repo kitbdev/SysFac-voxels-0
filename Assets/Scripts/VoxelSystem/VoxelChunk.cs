@@ -18,7 +18,7 @@ namespace VoxelSystem {
         public bool hasDirtyVisuals = false;
         // todo not managed here
         public bool updatedSinceLoad = false;
-        [SerializeField, ReadOnly] Voxel[] _voxels;
+        [SerializeField, ReadOnly] Voxel[] _voxels;// todo hold a voxel volume instead
         [SerializeField, ReadOnly]
         private VoxelRenderer visuals;
 
@@ -73,7 +73,6 @@ namespace VoxelSystem {
             }
 
             for (int i = 0; i < volume; i++) {
-                // y,z,x
                 Vector3Int position = GetLocalPos(i);
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialId, voxelDatas);
                 voxels[i] = voxel;
@@ -91,7 +90,6 @@ namespace VoxelSystem {
             }
             // Debug.Log($"populating voxels. needs {neededData.Count} {neededData.Aggregate("", (s, tcvd) => s + tcvd.selectedType + ",")}");
             for (int i = 0; i < volume; i++) {
-                // y,z,x
                 // Vector3Int position = GetLocalPos(i);
                 // voxeldata is a struct, so it is passed by value and doesnt need to be copied
                 Voxel voxel = Voxel.CreateVoxel(voxelMaterialIds[i], voxelDatas.ToArray());
@@ -193,6 +191,7 @@ namespace VoxelSystem {
         }
 
         public void UpdateColliders() {
+            if (voxels == null) return;
             if (world.enableCollision) {
                 VoxelCollider vcol;
                 if (!TryGetComponent<VoxelCollider>(out vcol)) {

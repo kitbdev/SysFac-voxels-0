@@ -171,6 +171,7 @@ namespace VoxelSystem.Mesher {
             bool renderFace;
             if (renderNullSides) {
                 // render face if neighbor is invisible or one of us is transparent
+                // todo this is rendering faces transparents have with solids
                 renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
             } else {
                 renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));

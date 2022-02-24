@@ -226,6 +226,10 @@ namespace VoxelSystem {
         }
 
         public void LoadChunksFromData(ChunkSaveData[] chunks, bool overwrite = false) {
+            // if (Application.isPlaying){
+            //     StartCoroutine(LoadChunksFromDataCo(chunks, overwrite));
+            //     return;
+            // }
             Debug.Log($"Loading chunks from data {chunks.Length}");
             if (chunkPool == null) {
                 Initialize();
@@ -254,6 +258,39 @@ namespace VoxelSystem {
                 voxelChunk.OverrideVoxels(chunkSaveData.voxels);
                 // voxelChunk.InitVoxels();// gets called in override
                 chunksToRefresh.Add(chunkSaveData.chunkPos);
+            }
+            RefreshChunks(chunksToRefresh.ToArray());
+        }
+        public IEnumerator LoadChunksFromDataCo(ChunkSaveData[] chunks, bool overwrite = false) {
+            Debug.Log($"Loading chunks from data {chunks.Length}");
+            if (chunkPool == null) {
+                Initialize();
+            }
+            // todo! this will make the world use these voxels and they will be modified by the game logic
+            // todo? should make a copy or do we want this?
+            // if its loaded from a file, will just have to reload to get original state, and saving becomes trivial
+            // todo probably, check that everything is properly updates, like voxdatas
+            // todo doesnt have all needed data, only the stuff that was saved
+            List<Vector3Int> chunksToRefresh = new List<Vector3Int>();
+            for (int i = 0; i < chunks.Length; i++) {
+                ChunkSaveData chunkSaveData = chunks[i];
+                if (HasChunkActiveAt(chunkSaveData.chunkPos)) {
+                    if (overwrite) {
+                        Debug.LogWarning($"Overwriting chunk {chunkSaveData.chunkPos}");
+                        VoxelChunk chunkOverwrite = GetChunkAt(chunkSaveData.chunkPos);
+                        chunkOverwrite.OverrideVoxels(chunkSaveData.voxels);
+                        chunksToRefresh.Add(chunkSaveData.chunkPos);
+                    } else {
+                        Debug.LogWarning($"chunk {chunkSaveData.chunkPos} exists, ignoring");
+                    }
+                    // todo additive mode
+                    continue;
+                }
+                VoxelChunk voxelChunk = CreateChunk(chunkSaveData.chunkPos, false);
+                voxelChunk.OverrideVoxels(chunkSaveData.voxels);
+                // voxelChunk.InitVoxels();// gets called in override
+                chunksToRefresh.Add(chunkSaveData.chunkPos);
+                yield return null;
             }
             RefreshChunks(chunksToRefresh.ToArray());
         }
