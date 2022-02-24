@@ -23,6 +23,7 @@ namespace VoxelSystem {
         public bool clearOnDisable = true;
         public bool dontSaveChunks = false;// todo better solution than this
         public VoxelMaterialSetSO materialSet;
+        public Layer setChunkLayer = Layer.DefaultLayer;
 
         [Header("voxel creation settings")]
         [SerializeField] private List<TypeChoice<VoxelData>> additionalData = new List<TypeChoice<VoxelData>>();
@@ -81,8 +82,10 @@ namespace VoxelSystem {
                     // } else {
                     chunk = new GameObject("Voxel chunk", typeof(VoxelChunk), typeof(VoxelRenderer));
                     if (dontSaveChunks) {
-                        chunk.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+                        // chunk.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+                        chunk.hideFlags = HideFlags.DontSave;
                     }
+                    chunk.layer = setChunkLayer;
                     chunk.transform.parent = transform;
                     // }
                     return chunk;

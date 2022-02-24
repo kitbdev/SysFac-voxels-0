@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &203844587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -648,6 +648,8 @@ MonoBehaviour:
   clearOnDisable: 1
   dontSaveChunks: 0
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  setChunkLayer:
+    layerValue: 1
   additionalData:
   - _selectedType:
       assemblyName: BlockTypeVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
@@ -1787,6 +1789,18 @@ MonoBehaviour:
   fastFallSpeed: 0.02
   coyoteJumpDur: 0.1
   maxFallSpeed: 100
+  submergenceOffset: 0.5
+  submergenceRange: 1
+  waterDrag: 1
+  buoyancy: 1
+  waterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  doOutOfBoundsCheck: 1
+  oobMinHeight: -10
+  isGrounded: 0
+  velocity: {x: 0, y: 0, z: 0}
+  connectionVelocity: {x: 0, y: 0, z: 0}
   jumpDur: 0.4
   heldJumpDur: 1.12
   jumpVel: 7.3529406
@@ -1794,11 +1808,8 @@ MonoBehaviour:
   holdJumpGrav: -12.872795
   ffallGrav: -52.061634
   curGrav: 0
-  isGrounded: 0
-  velocity: {x: 0, y: 0, z: 0}
-  connectionVelocity: {x: 0, y: 0, z: 0}
+  submergence: 0
   playerInputControls: {fileID: 0}
-  capsuleCollider: {fileID: 0}
 --- !u!54 &1626699638
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -72,6 +72,7 @@ namespace VoxelSystem {
         // }
         private void AddBoxColliders() {
             var collgo = new GameObject($"chunk {chunk.chunkPos} col");
+            collgo.layer = gameObject.layer;
             // collgo.hideFlags = HideFlags.HideAndDontSave;// todo?
             collgo.transform.parent = transform;
             collgo.transform.localPosition = Vector3.zero;
@@ -80,11 +81,11 @@ namespace VoxelSystem {
                 Vector3Int vpos = chunk.GetLocalPos(i);
                 Voxel voxel = chunk.GetLocalVoxelAt(i);
                 var vmat = voxel.GetVoxelMaterial<TexturedMaterial>(chunk.world.materialSet);
-                if (vmat.isInvisible) {// todo? seperate collider data?
+                if (!vmat.hasCollision) {
                     continue;
                 }
-                bool hidden = chunk.IsVoxelHidden(vpos);
-                if (!hidden) {
+                bool isHiddenCol = IsHiddenCol(vpos);
+                if (!isHiddenCol) {
                     surfaceVoxels.Add(new Bounds(((Vector3)vpos) * chunk.world.voxelSize, Vector3.one * chunk.world.voxelSize));
                 }
             }
@@ -94,6 +95,20 @@ namespace VoxelSystem {
                 boxCollider.size = survox.size;
             }
         }
+
+        private bool IsHiddenCol(Vector3Int vpos) {
+            bool allNeighborsHaveColliders = true;
+            foreach (Vector3Int dir in Voxel.unitDirs) {
+                Voxel nvoxel = chunk.GetVoxelN(vpos + dir);
+                var nvmat = nvoxel?.GetVoxelMaterial<TexturedMaterial>(chunk.world.materialSet);
+                if (nvoxel != null && nvmat.hasCollision) {
+                    allNeighborsHaveColliders = false;
+                    break;
+                }
+            }
+            return allNeighborsHaveColliders;
+        }
+
         public void RemoveColliders() {
             RemoveBoxColliders();
             RemoveMeshCollider();

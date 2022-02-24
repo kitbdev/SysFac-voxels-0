@@ -6,5 +6,7 @@ using Unity.Mathematics;
 using System.Linq;
 
 namespace VoxelSystem {
-    
+    class VoxelVolume {
+        
+    }
 }

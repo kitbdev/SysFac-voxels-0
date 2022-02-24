@@ -25,11 +25,25 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField, Range(0f, 0.999f)] float fastFallSpeed = 0.1f;
     [SerializeField, Min(0)] float coyoteJumpDur = 0.1f;
     [SerializeField] float maxFallSpeed = 100;
-    // [SerializeField] Transform headRot;
+    [Header("Water")]
+    [SerializeField]
+    float submergenceOffset = 0.5f;
+    [SerializeField, Min(0.1f)]
+    float submergenceRange = 1f;
+    [SerializeField, Range(0f, 10f)]
+    float waterDrag = 1f;
+    [SerializeField] float buoyancy = 1f;
+    [SerializeField] LayerMask waterLayer;
+
     [Header("Out of Bounds")]
     [SerializeField] bool doOutOfBoundsCheck = true;
     [SerializeField] float oobMinHeight = -10;// todo full V3 min and max distances
-    [SerializeField] event System.Action onOOBEvent;
+    [SerializeField] public event System.Action onOOBEvent; //? unity event?
+
+    [Space]
+    [SerializeField, ReadOnly] bool isGrounded;
+    [SerializeField, ReadOnly] Vector3 velocity;
+    [SerializeField, ReadOnly] Vector3 connectionVelocity;
 
     [SerializeField, ReadOnly] float jumpDur;
     [SerializeField, ReadOnly] float heldJumpDur;
@@ -39,11 +53,9 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField, ReadOnly] float ffallGrav;
     [SerializeField, ReadOnly] float curGrav;
 
-    // [SerializeField, ReadOnly] bool inWater;
+    [SerializeField, ReadOnly] float submergence;
 
-    [SerializeField, ReadOnly] bool isGrounded;
-    [SerializeField, ReadOnly] Vector3 velocity;
-    [SerializeField, ReadOnly] Vector3 connectionVelocity;
+    [SerializeField] bool inWater => submergence > 0f;
 
     Vector3 connectionWorldPosition, connectionLocalPosition;
     float lastGroundedTime = 0f;
@@ -55,7 +67,7 @@ public class PlayerMove : MonoBehaviour {
 
     [SerializeField, ReadOnly] PlayerInputControls playerInputControls;
 
-    [SerializeField] CapsuleCollider capsuleCollider;
+    // [SerializeField] CapsuleCollider capsuleCollider;
     Rigidbody rb;
 
     private void OnValidate() {
@@ -64,13 +76,13 @@ public class PlayerMove : MonoBehaviour {
     }
     private void Reset() {
         playerInputControls = GetComponent<PlayerInputControls>();
-        capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+        // capsuleCollider = GetComponentInChildren<CapsuleCollider>();
     }
 
     private void Awake() {
         rb = GetComponent<Rigidbody>();
         playerInputControls = GetComponent<PlayerInputControls>();
-        capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+        // capsuleCollider = GetComponentInChildren<CapsuleCollider>();
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.useGravity = false;
         // headRot ??= transform.GetChild(0);
@@ -281,6 +293,36 @@ public class PlayerMove : MonoBehaviour {
                 lastGroundedTime = Time.time;
                 connectedBody = hit.rigidbody;
             }
+        }
+    }
+
+    // https://catlikecoding.com/unity/tutorials/movement/swimming/
+    void EvaluateSubmergence() {
+        if (Physics.Raycast(
+            rb.position + Vector3.up * submergenceOffset,
+            Vector3.down, out RaycastHit hit, submergenceRange + 1f,
+            waterLayer, QueryTriggerInteraction.Collide
+        )) {
+            submergence = 1f - hit.distance / submergenceRange;
+        } else {
+            submergence = 1f;
+        }
+    }
+    private void OnTriggerEnter(Collider other) {
+        // check water
+        if (((Layer)other.gameObject.layer).InLayerMask(waterLayer)) {
+            EvaluateSubmergence();
+        }
+    }
+    void OnTriggerStay(Collider other) {
+        if (!rb.IsSleeping() &&
+            ((Layer)other.gameObject.layer).InLayerMask(waterLayer)) {
+            EvaluateSubmergence();
+        }
+    }
+    private void OnTriggerExit(Collider other) {
+        if (((Layer)other.gameObject.layer).InLayerMask(waterLayer)) {
+            EvaluateSubmergence();
         }
     }
 }

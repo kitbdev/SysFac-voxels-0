@@ -25,14 +25,14 @@ RenderSettings:
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
-  m_SubtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
+  m_SubtractiveShadowColor: {r: 0.33962262, g: 0, b: 0, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 304b2ee573c97f045a0348f62ce3dd0d, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -533,6 +533,70 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &990202700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 990202701}
+  - component: {fileID: 990202702}
+  m_Layer: 0
+  m_Name: world
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &990202701
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990202700}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1047866632}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &990202702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990202700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b386b9fb75644c544a7164d412e14d3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  voxelSize: 1
+  chunkResolution: 16
+  mesher:
+    _selectedType:
+      assemblyName: VoxelSystem.Mesher.AdvMesher, VoxelSystem, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+  renderNullSides: 1
+  enableCollision: 1
+  useBoxColliders: 1
+  clearOnAwake: 1
+  clearOnDisable: 1
+  dontSaveChunks: 0
+  materialSet: {fileID: 0}
+  setChunkLayer:
+    layerValue: 0
+  additionalData: []
+  _activeChunks: []
+  activeChunksDict:
+    keys: []
+    values: []
 --- !u!1 &1047866630
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,7 +642,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 990202701}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -628,6 +693,8 @@ MonoBehaviour:
   clearOnDisable: 0
   dontSaveChunks: 1
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  setChunkLayer:
+    layerValue: 6
   additionalData:
   - _selectedType:
       assemblyName: BlockTypeVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
@@ -1008,7 +1075,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99a514714c88ff243adcf6e7f381102f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  world: {fileID: 0}
+  world: {fileID: 1191201396}
   chunksToLoad:
   - {x: 0, y: 0, z: 0}
   callOnStart: 1
@@ -1144,6 +1211,8 @@ MonoBehaviour:
   clearOnDisable: 1
   dontSaveChunks: 0
   materialSet: {fileID: 11400000, guid: f438ab7900e59d947a4b829872a03811, type: 2}
+  setChunkLayer:
+    layerValue: 1
   additionalData: []
   _activeChunks: []
   activeChunksDict:

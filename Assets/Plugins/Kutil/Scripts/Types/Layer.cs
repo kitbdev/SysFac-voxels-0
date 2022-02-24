@@ -20,12 +20,6 @@ namespace Kutil {
             return 1 << layerValue;
         }
 
-        public static Layer NameToLayer(string layerName) => LayerMask.NameToLayer(layerName);
-        public static string LayerToName(Layer layer) => LayerMask.LayerToName(layer);
-
-        public static implicit operator int(Layer l) => l.layerValue;
-        public static implicit operator Layer(int l) => new Layer(l);
-
         public void SetLayer(GameObject go) {
             go.layer = layerValue;
         }
@@ -40,5 +34,13 @@ namespace Kutil {
                 SetLayerAllChildren(go.transform.GetChild(i).gameObject, ignoreLayers);
             }
         }
+
+        public static Layer DefaultLayer => 0;
+        public static Layer NameToLayer(string layerName) => LayerMask.NameToLayer(layerName);
+        public static string LayerToName(Layer layer) => LayerMask.LayerToName(layer);
+
+        public static implicit operator int(Layer l) => l.layerValue;
+        public static implicit operator Layer(int l) => new Layer(l);
+
     }
 }

@@ -285,23 +285,23 @@ namespace VoxelSystem {
             return copy;
         }
 
-        /// <summary>
-        /// True if voxel has nontransparent voxels on all sides
-        /// </summary>
-        /// <param name="vpos"></param>
-        /// <returns></returns>
-        public bool IsVoxelHidden(Vector3Int vpos) {
-            bool hidden = true;
-            foreach (Vector3Int dir in Voxel.unitDirs) {
-                Voxel voxel = GetVoxelN(vpos + dir);
-                var vmat = voxel?.GetVoxelMaterial<TexturedMaterial>(world.materialSet);
-                if (voxel != null && vmat.isTransparent) {
-                    hidden = false;
-                    break;
-                }
-            }
-            return hidden;
-        }
+        // /// <summary>
+        // /// True if voxel has nontransparent voxels on all sides
+        // /// </summary>
+        // /// <param name="vpos"></param>
+        // /// <returns></returns>
+        // public bool IsVoxelHidden(Vector3Int vpos) {
+        //     bool hidden = true;
+        //     foreach (Vector3Int dir in Voxel.unitDirs) {
+        //         Voxel voxel = GetVoxelN(vpos + dir);
+        //         var vmat = voxel?.GetVoxelMaterial<TexturedMaterial>(world.materialSet);
+        //         if (voxel != null && vmat.isTransparent) {
+        //             hidden = false;
+        //             break;
+        //         }
+        //     }
+        //     return hidden;
+        // }
 
         /// <summary>
         /// local position of voxel at index i

@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63a403a76d9672c468451a6f47961c02, type: 3}
   m_Name: defblocktypes
   m_EditorClassIdentifier: 
-  findType: fire
+  findType: light
   findTypeId: 0
   findTypeRef:
     blockid: -1
   foundType:
-    id: 177
-    idname: fire
-    displayName: fire
+    id: 161
+    idname: light
+    displayName: light
     voxelMaterialId:
-      id: 58
+      id: 48
     customDatas: []
     maxStack: 0
     itemid: 0
