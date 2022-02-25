@@ -114,7 +114,7 @@ public class BlockTypeEditor : EditorWindow {
         BlockType blockType = new BlockType();
         blockType.displayName = data.displayName;
         blockType.idname = ToIdName(data.displayName);
-        blockType.customDatas = data.customDatas.Select(tsvd => tsvd.type).ToHashSet().ToArray();
+        blockType.customDatas = data.customDatas.ToHashSet().ToArray();
         if (data.vmat.objvalue is TexturedMaterial bvm) {
             // if (bvm.isTransparent) {
             //     bvm.materialIndex = 1;// todo set from file?
@@ -165,10 +165,12 @@ public class BlockTypeEditor : EditorWindow {
         var defIsInvisible = ParseBool(defcols[defccol++], false);
         var defIsTransparent = ParseBool(defcols[defccol++], false);
         var defCol = ParseBool(defcols[defccol++], true);
+        int defLight = ParseInt(defcols[defccol++], 0);
         int defHardness = ParseInt(defcols[defccol++], 0);
         int defDens = ParseInt(defcols[defccol++], 0);
         int defFlam = ParseInt(defcols[defccol++], 0);
         int defBurntoid = ParseInt(defcols[defccol++], 0);
+        int defliquid = ParseInt(defcols[defccol++], 0);
         int defDissolv = ParseInt(defcols[defccol++], 0);
         for (int i = 2; i < lines.Length; i++) {
             if (lines[i] == "") continue; // ignore empty lines
@@ -179,6 +181,7 @@ public class BlockTypeEditor : EditorWindow {
             }
             int ccol = 0;
             BlockTypeMaker nblock = new BlockTypeMaker();
+            nblock.customDatas = new List<TypeSelector<VoxelData>>();
             nblock.displayName = cols[ccol++];
             // Debug.Log("Adding ");
             int.TryParse(cols[ccol++], out var blockid);
@@ -189,9 +192,39 @@ public class BlockTypeEditor : EditorWindow {
                 hasCollision = ParseBool(cols[ccol++], defCol),
                 textureCoord = new Vector2(blockid - 1, 0f) * voxelMaterialSet.textureScale,
             });
+            // ? light amount
+            int lightLevel = ParseInt(cols[ccol++], defLight);
+            int lightColor = (nblock.displayName.Contains("red") ? 1 :
+                        (nblock.displayName.Contains("orange") ? 2 :
+                        (nblock.displayName.Contains("yellow") ? 3 :
+                        (nblock.displayName.Contains("green") ? 4 :
+                        (nblock.displayName.Contains("cyan") ? 5 :
+                        (nblock.displayName.Contains("blue") ? 6 :
+                        (nblock.displayName.Contains("pink") ? 7 : 0
+                        )))))));
+            if (lightLevel > 0) {
+                nblock.customDatas.Add(new TypeSelector<VoxelData>(new LightVoxelData() {
+                    intensity = lightLevel,
+                    color = lightColor,
+                }));
+            }
+            int hardness = ParseInt(cols[ccol++], defHardness);
+            int density = ParseInt(cols[ccol++], defDens);
             int flamability = ParseInt(cols[ccol++], defFlam);
+            // int burnto;
+            ccol++;
+            if (flamability > 0) {
+                nblock.customDatas.Add(new TypeSelector<VoxelData>(new FlamabilityDataVD() {
+                    flamability = flamability,
+                }));
+            }
+            int liquidType = ParseInt(cols[ccol++], defliquid);
+            if (liquidType > 0) {
+                nblock.customDatas.Add(new TypeSelector<VoxelData>(new LiquidDataVD() {
+                    liquidType = liquidType,
+                }));
+            }
             // todo
-            // nblock.customDatas
             blockTypeMakers.Add(nblock);
         }
         Debug.Log($"Parsed csv {blockTypesCSV.name}, {blockTypeMakers.Count} lines, now setting data");

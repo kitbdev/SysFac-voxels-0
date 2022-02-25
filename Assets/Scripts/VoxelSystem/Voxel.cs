@@ -205,7 +205,7 @@ namespace VoxelSystem {
         //     data.objvalue.Initialize(this, defaultVoxelData.chunk, defaultVoxelData.localVoxelPos);
         // }
         public void RemoveVoxelDataFor<T>() where T : VoxelData {
-            GetVoxelDataFor<T>().OnRemove(this);
+            // GetVoxelDataFor<T>().OnRemove(this); //todo would this even work? its a struct
             voxelDatas = voxelDatas.ToList().Where(vd => vd.GetType() != typeof(T)).ToArray();
         }
         // public void RemoveVoxelDataFor(System.Type type) {

@@ -150,6 +150,7 @@ public class PlayerMove : MonoBehaviour {
         }
     }
     void Move() {
+        velocity = rb.velocity;
         // input movement
         stepsSinceLastGrounded += 1;
         stepsSinceLastJump += 1;
@@ -164,7 +165,6 @@ public class PlayerMove : MonoBehaviour {
         if (moveAcceleration > 0f) {
             // ignore y val
             // ? seperate accel and deaccel
-            velocity = rb.velocity;
             float vy = velocity.y;
             velocity = Vector3.Lerp(velocity, desVel, Time.deltaTime * moveAcceleration);
             velocity.y = vy;
@@ -172,7 +172,9 @@ public class PlayerMove : MonoBehaviour {
             velocity = desVel;
         }
         // gravity
-
+        // if (inWater) {
+        //     velocity.y += jumpGrav * ((1f - buoyancy * submergence) * Time.deltaTime);
+        // } else
         if (isGrounded || SnapToGround()) {
             stepsSinceLastGrounded = 0;
             float groundGrav = -0.1f;
@@ -216,10 +218,14 @@ public class PlayerMove : MonoBehaviour {
             playerInputControls.inputJumpReleased = false;
         }
 
+        if (inWater) {
+            velocity *= 1f - waterDrag * submergence * Time.deltaTime;
+        }
+        submergence = 0;
         rb.velocity = velocity;
     }
     bool SnapToGround() {
-        if (stepsSinceLastGrounded > 1 || stepsSinceLastJump <= 2) {
+        if (stepsSinceLastGrounded > 1 || stepsSinceLastJump <= 2 || inWater) {
             return false;
         }
         if (!Physics.SphereCast(rb.position, 0.1f, Vector3.down, out RaycastHit hit, 1, groundLayerMask, QueryTriggerInteraction.Ignore)) {
@@ -232,8 +238,14 @@ public class PlayerMove : MonoBehaviour {
         float dot = Vector3.Dot(velocity, hit.normal);
         if (dot > 0f) {
             // Debug.Log("Snapping to ground");
-            velocity = (velocity - hit.normal * dot).normalized * speed;
-            return true;
+            Vector3 nvel = (velocity - hit.normal * dot).normalized * speed;
+            if (!float.IsNaN(nvel.x) && !float.IsNaN(nvel.y) && !float.IsNaN(nvel.z)) {
+                // todo slight chance for invalid value, why?
+                velocity = nvel;
+                return true;
+            } else {
+                Debug.LogWarning($"snap to ground invalid vel {nvel}");
+            }
         }
         return false;
     }
@@ -303,7 +315,7 @@ public class PlayerMove : MonoBehaviour {
             Vector3.down, out RaycastHit hit, submergenceRange + 1f,
             waterLayer, QueryTriggerInteraction.Collide
         )) {
-            submergence = 1f - hit.distance / submergenceRange;
+            submergence = Mathf.Min(0f, 1f - hit.distance / submergenceRange);
         } else {
             submergence = 1f;
         }
@@ -315,8 +327,7 @@ public class PlayerMove : MonoBehaviour {
         }
     }
     void OnTriggerStay(Collider other) {
-        if (!rb.IsSleeping() &&
-            ((Layer)other.gameObject.layer).InLayerMask(waterLayer)) {
+        if (((Layer)other.gameObject.layer).InLayerMask(waterLayer)) {
             EvaluateSubmergence();
         }
     }

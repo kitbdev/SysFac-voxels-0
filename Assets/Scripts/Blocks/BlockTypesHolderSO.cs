@@ -40,6 +40,7 @@ public class BlockTypesHolderSO : ScriptableObject {
 
     // [SerializeField] VoxelMaterialSetSO voxelMaterialSet;
     public BlockType[] blockTypes;
+    public LiquidType[] liquidTypes;
 
     private void OnValidate() {
         if (findType != "") {

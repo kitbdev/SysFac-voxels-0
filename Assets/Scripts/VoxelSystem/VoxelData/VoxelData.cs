@@ -12,7 +12,7 @@ namespace VoxelSystem {
         void OnDeserialized(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         void Initialize(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         // void OnMaterialChange(Voxel voxel, VoxelMaterial voxelMaterial) { }
-        void OnRemove(Voxel voxel) { }
+        void OnRemove(Voxel voxel, VoxelChunk chunk, Vector3Int localVoxelPos) { }
         // public virtual void OnTick(){}
         // public override string ToString() {
         //     return $"{this.GetType().Name} ";

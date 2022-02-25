@@ -40,8 +40,8 @@ namespace VoxelSystem {
 
         public event System.Action<Vector3Int> generateChunkEvent;
         public event System.Action<Importer.ImportedVoxel, Voxel> loadImportPopulateEvent;
-        // public event System.Action<Vector3Int> onChunkLoadEvent;
-        // public event System.Action<Vector3Int> onChunkUnLoadEvent;
+        public event System.Action<Vector3Int> onChunkLoadEvent;
+        public event System.Action<Vector3Int> onChunkPreUnloadEvent;
 
         public float chunkSize => voxelSize * chunkResolution;
 
@@ -260,6 +260,9 @@ namespace VoxelSystem {
                 chunksToRefresh.Add(chunkSaveData.chunkPos);
             }
             RefreshChunks(chunksToRefresh.ToArray());
+            for (int i = 0; i < chunksToRefresh.Count; i++) {
+                onChunkLoadEvent?.Invoke(chunksToRefresh[i]);
+            }
         }
         public IEnumerator LoadChunksFromDataCo(ChunkSaveData[] chunks, bool overwrite = false) {
             Debug.Log($"Loading chunks from data {chunks.Length}");
@@ -406,6 +409,7 @@ namespace VoxelSystem {
         void RemoveChunks(params Vector3Int[] chunkposs) {
             HashSet<Vector3Int> chunksToRefresh = new HashSet<Vector3Int>();
             foreach (var cp in chunkposs) {
+                onChunkPreUnloadEvent?.Invoke(cp);
                 VoxelChunk chunk = GetChunkAt(cp);
                 if (!chunk) continue;
                 chunk.Clear();
@@ -520,6 +524,9 @@ namespace VoxelSystem {
         }
         public Vector3 BlockposToWorldPos(Vector3Int bpos) {
             return transform.TransformPoint(bpos) * voxelSize;
+        }
+        public Vector3 BlockposToWorldPosCenter(Vector3Int bpos) {
+            return transform.TransformPoint(bpos) * voxelSize + voxelSize / 2f * Vector3.one;
         }
 
         public static int ChunkPosToHash(Vector3Int chunkpos) {

@@ -302,6 +302,10 @@ namespace VoxelSystem {
         //     return hidden;
         // }
 
+        public Vector3Int GetVoxelBlockPos(int voxelIndex) {
+            return chunkPos * resolution + GetLocalPos(voxelIndex);
+        }
+
         /// <summary>
         /// local position of voxel at index i
         /// </summary>

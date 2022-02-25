@@ -170,15 +170,13 @@ namespace VoxelSystem.Mesher {
         bool CanRenderFace(TexturedMaterial voxelMat, Voxel coverNeighbor, TexturedMaterial neimat) {
             bool renderFace;
             if (renderNullSides) {
-                // render face if neighbor is invisible or one of us is transparent
-                // todo this is rendering faces transparents have with solids
-                renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
+                // render face if neighbor is invisible or neighbor is transparent and we arent
+                renderFace = coverNeighbor == null || (neimat.isInvisible || (neimat.isTransparent && !voxelMat.isTransparent));
             } else {
-                renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent ^ voxelMat.isTransparent));
+                renderFace = coverNeighbor != null && (neimat.isInvisible || (neimat.isTransparent && !voxelMat.isTransparent));
             }
             return renderFace;
         }
-        // }
 
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         struct GenMeshJob : IJobFor {
@@ -236,7 +234,7 @@ namespace VoxelSystem.Mesher {
                     float3 vertexpos = faceData.voxelPos * voxelSize - math.float3(voxelSize / 2f);
                     vertexpos += vOffsets[d] * voxelSize;
                     float2 uvfrom = faceData.texcoord;// * textureUVScale;
-                    float2 uvto = (faceData.texcoord + float2(1f)* textureUVScale);
+                    float2 uvto = (faceData.texcoord + float2(1f) * textureUVScale);
                     meshStream.SetFace(
                         vi, ti, vertexpos, math.float2(voxelSize), normal, tangent, uvfrom, uvto);
                     // vi += 4;

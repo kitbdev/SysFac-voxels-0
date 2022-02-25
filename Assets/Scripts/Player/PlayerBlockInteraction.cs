@@ -47,14 +47,14 @@ public class PlayerBlockInteraction : MonoBehaviour {
         if (validTarget && Mouse.current.leftButton.isPressed) {
 
         }
-        if (Keyboard.current.uKey.wasPressedThisFrame) {
-            if (gameObject.TryGetComponent<StarterAssets.StarterAssetsInputs>(out var si)) {
-                si.cursorInputForLook = !si.cursorInputForLook;
-                Cursor.lockState = si.cursorInputForLook ? CursorLockMode.Locked : CursorLockMode.None;
-                Cursor.visible = !si.cursorInputForLook;
-                si.look = Vector2.zero;
-            }
-        }
+        // if (Keyboard.current.uKey.wasPressedThisFrame) {
+        //     if (gameObject.TryGetComponent<StarterAssets.StarterAssetsInputs>(out var si)) {
+        //         si.cursorInputForLook = !si.cursorInputForLook;
+        //         Cursor.lockState = si.cursorInputForLook ? CursorLockMode.Locked : CursorLockMode.None;
+        //         Cursor.visible = !si.cursorInputForLook;
+        //         si.look = Vector2.zero;
+        //     }
+        // }
         scrollAcc += -Mouse.current.scroll.y.ReadValue() * scrollSensitivity;
         int nselectedBlockType = selectedBlockType + Mathf.RoundToInt(scrollAcc);
         if (selectedBlockType != nselectedBlockType) {
@@ -86,7 +86,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
     bool CheckCursorBlock() {
         Ray camRay = new Ray(cam.position, cam.forward);
         // Debug.DrawRay(camRay.origin, camRay.direction * maxRayDist, Color.black, 0.1f);
-        if (Physics.Raycast(camRay, out var hit, maxRayDist, blockMask, QueryTriggerInteraction.Ignore)) {
+        if (Physics.Raycast(camRay, out var hit, maxRayDist, blockMask, QueryTriggerInteraction.Collide)) {
             // targetBlockPos = world.WorldposToBlockpos(hit.collider.bounds.center);
             targetBlockPos = world.WorldposToBlockpos(hit.point + camRay.direction * 0.001f);
             Debug.DrawLine(camRay.origin, hit.point + camRay.direction * 0.001f, Color.black, 0.1f);

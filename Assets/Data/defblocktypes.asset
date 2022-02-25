@@ -12,17 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63a403a76d9672c468451a6f47961c02, type: 3}
   m_Name: defblocktypes
   m_EditorClassIdentifier: 
-  findType: light
+  findType: water
   findTypeId: 0
   findTypeRef:
     blockid: -1
   foundType:
-    id: 161
-    idname: light
-    displayName: light
+    id: 97
+    idname: water
+    displayName: water
     voxelMaterialId:
-      id: 48
-    customDatas: []
+      id: 44
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LiquidDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931323
     maxStack: 0
     itemid: 0
   blockTypes:
@@ -103,7 +109,13 @@ MonoBehaviour:
     displayName: wood
     voxelMaterialId:
       id: 4
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931300
     maxStack: 0
     itemid: 0
   - id: 10
@@ -111,7 +123,13 @@ MonoBehaviour:
     displayName: stone
     voxelMaterialId:
       id: 5
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931301
     maxStack: 0
     itemid: 0
   - id: 11
@@ -119,7 +137,13 @@ MonoBehaviour:
     displayName: sand
     voxelMaterialId:
       id: 6
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931302
     maxStack: 0
     itemid: 0
   - id: 12
@@ -127,7 +151,13 @@ MonoBehaviour:
     displayName: concrete
     voxelMaterialId:
       id: 7
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931303
     maxStack: 0
     itemid: 0
   - id: 13
@@ -167,7 +197,13 @@ MonoBehaviour:
     displayName: hard wood
     voxelMaterialId:
       id: 9
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931304
     maxStack: 0
     itemid: 0
   - id: 18
@@ -231,7 +267,13 @@ MonoBehaviour:
     displayName: dirt
     voxelMaterialId:
       id: 14
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931305
     maxStack: 0
     itemid: 0
   - id: 26
@@ -239,7 +281,13 @@ MonoBehaviour:
     displayName: grass
     voxelMaterialId:
       id: 15
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931306
     maxStack: 0
     itemid: 0
   - id: 27
@@ -247,7 +295,13 @@ MonoBehaviour:
     displayName: plant
     voxelMaterialId:
       id: 16
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931307
     maxStack: 0
     itemid: 0
   - id: 28
@@ -255,7 +309,13 @@ MonoBehaviour:
     displayName: vine
     voxelMaterialId:
       id: 17
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931308
     maxStack: 0
     itemid: 0
   - id: 29
@@ -263,7 +323,13 @@ MonoBehaviour:
     displayName: stem?
     voxelMaterialId:
       id: 18
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931309
     maxStack: 0
     itemid: 0
   - id: 30
@@ -271,7 +337,13 @@ MonoBehaviour:
     displayName: shroom
     voxelMaterialId:
       id: 19
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931310
     maxStack: 0
     itemid: 0
   - id: 31
@@ -279,7 +351,13 @@ MonoBehaviour:
     displayName: shroomstalk
     voxelMaterialId:
       id: 20
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931311
     maxStack: 0
     itemid: 0
   - id: 32
@@ -287,7 +365,13 @@ MonoBehaviour:
     displayName: leaf
     voxelMaterialId:
       id: 21
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931312
     maxStack: 0
     itemid: 0
   - id: 33
@@ -295,7 +379,13 @@ MonoBehaviour:
     displayName: packeddirt
     voxelMaterialId:
       id: 22
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931313
     maxStack: 0
     itemid: 0
   - id: 34
@@ -303,7 +393,13 @@ MonoBehaviour:
     displayName: bark
     voxelMaterialId:
       id: 23
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931314
     maxStack: 0
     itemid: 0
   - id: 35
@@ -423,7 +519,13 @@ MonoBehaviour:
     displayName: glass
     voxelMaterialId:
       id: 24
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931315
     maxStack: 0
     itemid: 0
   - id: 50
@@ -431,7 +533,13 @@ MonoBehaviour:
     displayName: glass red
     voxelMaterialId:
       id: 25
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931316
     maxStack: 0
     itemid: 0
   - id: 51
@@ -439,7 +547,13 @@ MonoBehaviour:
     displayName: glass orange
     voxelMaterialId:
       id: 26
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931317
     maxStack: 0
     itemid: 0
   - id: 52
@@ -447,7 +561,13 @@ MonoBehaviour:
     displayName: glass yellow
     voxelMaterialId:
       id: 27
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931318
     maxStack: 0
     itemid: 0
   - id: 53
@@ -455,7 +575,13 @@ MonoBehaviour:
     displayName: glass green
     voxelMaterialId:
       id: 28
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931319
     maxStack: 0
     itemid: 0
   - id: 54
@@ -463,7 +589,13 @@ MonoBehaviour:
     displayName: glass cyan
     voxelMaterialId:
       id: 29
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931320
     maxStack: 0
     itemid: 0
   - id: 55
@@ -471,7 +603,13 @@ MonoBehaviour:
     displayName: glass blue
     voxelMaterialId:
       id: 30
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931321
     maxStack: 0
     itemid: 0
   - id: 56
@@ -479,7 +617,13 @@ MonoBehaviour:
     displayName: glass pink
     voxelMaterialId:
       id: 31
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: FlamabilityDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931322
     maxStack: 0
     itemid: 0
   - id: 57
@@ -807,7 +951,13 @@ MonoBehaviour:
     displayName: water
     voxelMaterialId:
       id: 44
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LiquidDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931323
     maxStack: 0
     itemid: 0
   - id: 98
@@ -815,7 +965,13 @@ MonoBehaviour:
     displayName: acid
     voxelMaterialId:
       id: 45
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LiquidDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931324
     maxStack: 0
     itemid: 0
   - id: 99
@@ -823,7 +979,13 @@ MonoBehaviour:
     displayName: lava
     voxelMaterialId:
       id: 46
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LiquidDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931325
     maxStack: 0
     itemid: 0
   - id: 100
@@ -831,7 +993,13 @@ MonoBehaviour:
     displayName: oil
     voxelMaterialId:
       id: 47
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LiquidDataVD, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931326
     maxStack: 0
     itemid: 0
   - id: 101
@@ -1319,7 +1487,13 @@ MonoBehaviour:
     displayName: light
     voxelMaterialId:
       id: 48
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931327
     maxStack: 0
     itemid: 0
   - id: 162
@@ -1327,7 +1501,13 @@ MonoBehaviour:
     displayName: light red
     voxelMaterialId:
       id: 49
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931328
     maxStack: 0
     itemid: 0
   - id: 163
@@ -1335,7 +1515,13 @@ MonoBehaviour:
     displayName: light orange
     voxelMaterialId:
       id: 50
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931329
     maxStack: 0
     itemid: 0
   - id: 164
@@ -1343,7 +1529,13 @@ MonoBehaviour:
     displayName: light yellow
     voxelMaterialId:
       id: 51
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931330
     maxStack: 0
     itemid: 0
   - id: 165
@@ -1351,7 +1543,13 @@ MonoBehaviour:
     displayName: light green
     voxelMaterialId:
       id: 52
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931331
     maxStack: 0
     itemid: 0
   - id: 166
@@ -1359,7 +1557,13 @@ MonoBehaviour:
     displayName: light cyan
     voxelMaterialId:
       id: 53
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931332
     maxStack: 0
     itemid: 0
   - id: 167
@@ -1367,7 +1571,13 @@ MonoBehaviour:
     displayName: light blue
     voxelMaterialId:
       id: 54
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931333
     maxStack: 0
     itemid: 0
   - id: 168
@@ -1375,7 +1585,13 @@ MonoBehaviour:
     displayName: light pink
     voxelMaterialId:
       id: 55
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931334
     maxStack: 0
     itemid: 0
   - id: 169
@@ -1383,7 +1599,13 @@ MonoBehaviour:
     displayName: light dim
     voxelMaterialId:
       id: 56
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931335
     maxStack: 0
     itemid: 0
   - id: 170
@@ -1391,7 +1613,13 @@ MonoBehaviour:
     displayName: light bright
     voxelMaterialId:
       id: 57
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931336
     maxStack: 0
     itemid: 0
   - id: 171
@@ -1447,7 +1675,13 @@ MonoBehaviour:
     displayName: fire
     voxelMaterialId:
       id: 58
-    customDatas: []
+    customDatas:
+    - _type:
+        _selectedType:
+          assemblyName: LightVoxelData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+            PublicKeyToken=null
+      _objvalue:
+        rid: 4170073256851931337
     maxStack: 0
     itemid: 0
   - id: 178
@@ -2074,3 +2308,212 @@ MonoBehaviour:
     customDatas: []
     maxStack: 0
     itemid: 0
+  liquidTypes:
+  - flowSpeed: 0
+    spread: 0
+    entitySpeedMult: 0
+    miscability: 0
+    permeability: 0
+    baseElementalAttunement: 0
+    baseAspects: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 4170073256851931300
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 7
+        burningDur: 0
+    - rid: 4170073256851931301
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931302
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 3
+        burningDur: 0
+    - rid: 4170073256851931303
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931304
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 6
+        burningDur: 0
+    - rid: 4170073256851931305
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 3
+        burningDur: 0
+    - rid: 4170073256851931306
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 8
+        burningDur: 0
+    - rid: 4170073256851931307
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 8
+        burningDur: 0
+    - rid: 4170073256851931308
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 6
+        burningDur: 0
+    - rid: 4170073256851931309
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 9
+        burningDur: 0
+    - rid: 4170073256851931310
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 9
+        burningDur: 0
+    - rid: 4170073256851931311
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 9
+        burningDur: 0
+    - rid: 4170073256851931312
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 9
+        burningDur: 0
+    - rid: 4170073256851931313
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931314
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 6
+        burningDur: 0
+    - rid: 4170073256851931315
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931316
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931317
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931318
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931319
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931320
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931321
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931322
+      type: {class: FlamabilityDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        flamability: 2
+        burningDur: 0
+    - rid: 4170073256851931323
+      type: {class: LiquidDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        liquidType: 1
+        toxicity: 0
+        elementAmounts: 0
+        infusedAspects: 0
+    - rid: 4170073256851931324
+      type: {class: LiquidDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        liquidType: 2
+        toxicity: 0
+        elementAmounts: 0
+        infusedAspects: 0
+    - rid: 4170073256851931325
+      type: {class: LiquidDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        liquidType: 3
+        toxicity: 0
+        elementAmounts: 0
+        infusedAspects: 0
+    - rid: 4170073256851931326
+      type: {class: LiquidDataVD, ns: , asm: Assembly-CSharp}
+      data:
+        liquidType: 4
+        toxicity: 0
+        elementAmounts: 0
+        infusedAspects: 0
+    - rid: 4170073256851931327
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 0
+    - rid: 4170073256851931328
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 1
+    - rid: 4170073256851931329
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 2
+    - rid: 4170073256851931330
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 3
+    - rid: 4170073256851931331
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 4
+    - rid: 4170073256851931332
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 5
+    - rid: 4170073256851931333
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 6
+    - rid: 4170073256851931334
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 8
+        color: 7
+    - rid: 4170073256851931335
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 4
+        color: 0
+    - rid: 4170073256851931336
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 10
+        color: 0
+    - rid: 4170073256851931337
+      type: {class: LightVoxelData, ns: , asm: Assembly-CSharp}
+      data:
+        intensity: 5
+        color: 0

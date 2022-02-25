@@ -9,7 +9,7 @@ public class BlockType {
     public string idname;
     public string displayName;
     public VoxelMaterialId voxelMaterialId;
-    public TypeChoice<VoxelData>[] customDatas;
+    public TypeSelector<VoxelData>[] customDatas;
     [Min(0)]
     public int maxStack;
     public int itemid;

@@ -199,35 +199,43 @@ public class MapSO : ScriptableObject {
                 // defaultVoxelData.localVoxelPos = VoxelChunk.GetLocalPos(v, chunkRes);
                 // defaultVoxelData.blockPos = defaultVoxelData.localVoxelPos + chunkSaveData.chunkPos * chunkRes;
                 BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-                if (voxel.voxelMaterialId < maxBlockType) {
-                    // if (voxel.voxelMaterialId == 0) {
-                    int blockTypeId = voxel.voxelMaterialId;
-                    if (specialBlocksDict.ContainsKey(voxel.voxelMaterialId)) {
-                        SpecialBlocksMap specialBlock = specialBlocksDict[voxel.voxelMaterialId];
-                        Debug.Log($"found special {specialBlock} !");
-                        if (specialBlock.newblockType.IsValid()) {
-                            if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()) {
-                                blockTypeId = specialBlocksDict[voxel.voxelMaterialId].newblockType.blockid;
-                            }
-                        }
-                        SpecialBlockType specialBlockType = specialBlocksDict[voxel.voxelMaterialId].specialType;
-                        if (specialBlockType == SpecialBlockType.PLAYER_SPAWN) {
-                            mapData.playerSpawn = VoxelChunk.GetLocalPos(v, chunkRes) + chunkSaveData.chunkPos * chunkRes;
-                        }
-                    }
-                    // if (blockTypeId != voxel.voxelMaterialId) {
-                    //     Debug.Log($"assigning {voxel.voxelMaterialId} to {blockTypeId}");
-                    // }
-                    voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
-                        blockTypeRef = new BlockTypeRef().SetBlockId(blockTypeId)
-                    });
-                    BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
-                    // Debug.Log($"set {blockTypeVoxelData} id to {btypel.importMatId} now {blockTypeVoxelData1}");
-                } else {
+                if (voxel.voxelMaterialId >= maxBlockType) {
                     Debug.Log($"set {blockTypeVoxelData} mat:{voxel.voxelMaterialId} block id to unknown type");
                     voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
                         blockTypeRef = unkownBlockDefault
                     });
+                    continue;
+                }
+                // if (voxel.voxelMaterialId == 0) {
+                int blockTypeId = voxel.voxelMaterialId;
+                if (specialBlocksDict.ContainsKey(voxel.voxelMaterialId)) {
+                    SpecialBlocksMap specialBlock = specialBlocksDict[voxel.voxelMaterialId];
+                    Debug.Log($"found special {specialBlock} !");
+                    if (specialBlock.newblockType.IsValid()) {
+                        if (specialBlocksDict[voxel.voxelMaterialId].newblockType.IsValid()) {
+                            blockTypeId = specialBlocksDict[voxel.voxelMaterialId].newblockType.blockid;
+                        }
+                    }
+                    SpecialBlockType specialBlockType = specialBlocksDict[voxel.voxelMaterialId].specialType;
+                    if (specialBlockType == SpecialBlockType.PLAYER_SPAWN) {
+                        mapData.playerSpawn = VoxelChunk.GetLocalPos(v, chunkRes) + chunkSaveData.chunkPos * chunkRes;
+                    }
+                }
+                // if (blockTypeId != voxel.voxelMaterialId) {
+                //     Debug.Log($"assigning {voxel.voxelMaterialId} to {blockTypeId}");
+                // }
+                BlockTypeRef blockTypeRef = new BlockTypeRef().SetBlockId(blockTypeId);
+                voxel.RawSetVoxelDataFor<BlockTypeVoxelData>(new BlockTypeVoxelData() {
+                    blockTypeRef = blockTypeRef
+                });
+                // BlockTypeVoxelData blockTypeVoxelData1 = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
+                // Debug.Log($"set {blockTypeVoxelData} id to {btypel.importMatId} now {blockTypeVoxelData1}");
+                // other VD is added here
+                BlockType blockType = blockTypeRef.GetBlockType();
+                if (blockType != null) {
+                    foreach (var btcd in blockType.customDatas) {
+                        voxel.SetOrAddVoxelDataFor(btcd.objvalue, false, true, false);
+                    }
                 }
             }
         }

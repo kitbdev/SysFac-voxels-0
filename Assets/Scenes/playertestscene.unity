@@ -328,7 +328,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 495717582}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -821,7 +821,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 675836067}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -957,7 +957,7 @@ GameObject:
   m_Component:
   - component: {fileID: 789862162}
   - component: {fileID: 789862163}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1281,7 +1281,7 @@ GameObject:
   - component: {fileID: 1118303349}
   - component: {fileID: 1118303348}
   - component: {fileID: 1118303347}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1452,7 +1452,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1248079465}
   - component: {fileID: 1248079466}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: blockinteracter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1490,7 +1490,7 @@ MonoBehaviour:
   scrollSensitivity: 0.01
   blockMask:
     serializedVersion: 2
-    m_Bits: 4294967275
+    m_Bits: 80
   dirtref:
     blockid: 2
   airref:
@@ -1612,7 +1612,7 @@ GameObject:
   - component: {fileID: 1385734613}
   - component: {fileID: 1385734615}
   - component: {fileID: 1385734614}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1697,7 +1697,7 @@ GameObject:
   - component: {fileID: 1626699637}
   - component: {fileID: 1626699636}
   - component: {fileID: 1626699635}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1779,7 +1779,7 @@ MonoBehaviour:
   maxGroundAngle: 25
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 64
   stepSmoothing: 0
   maxStepHeight: 0.3
   jumpHeight: 1
@@ -1789,13 +1789,13 @@ MonoBehaviour:
   fastFallSpeed: 0.02
   coyoteJumpDur: 0.1
   maxFallSpeed: 100
-  submergenceOffset: 0.5
-  submergenceRange: 1
+  submergenceOffset: 0.8
+  submergenceRange: 1.6
   waterDrag: 1
   buoyancy: 1
   waterLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 16
   doOutOfBoundsCheck: 1
   oobMinHeight: -10
   isGrounded: 0
