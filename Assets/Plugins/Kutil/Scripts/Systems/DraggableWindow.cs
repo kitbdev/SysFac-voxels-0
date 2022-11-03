@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+#endif
 using UnityEngine.EventSystems;
 using System.Linq;
 
@@ -153,7 +155,11 @@ namespace Kutil {
                 return false;
             }
 
+#if ENABLE_INPUT_SYSTEM
             Vector2 mscreenpos = Mouse.current.position.ReadValue() / canvas.scaleFactor;
+#else
+            Vector2 mscreenpos = Input.mousePosition / canvas.scaleFactor;
+#endif
             Vector2 rectspos = GetRectScreenPos();
             Vector2 rectRel = (mscreenpos - rectspos) / rectTransform.rect.size;
             // float scaleEdgeThickness = 0.1f;

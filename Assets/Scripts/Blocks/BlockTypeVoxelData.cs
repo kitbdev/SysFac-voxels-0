@@ -15,6 +15,7 @@ public struct BlockTypeVoxelData : VoxelData {
         // var defVoxelData = voxel.GetVoxelDataFor<DefaultVoxelData>();
         // Debug.Log($"BlockTypeVoxelData Initialize voxel as '{blockTypeRef}' +{voxel.ToStringFull()}");
         // voxel.voxelMaterialId
+        // todo do this elsewhere? data only
         BlockManager.UpdateBlockType(voxel, blockTypeRef);
         // note: block type is now based on 
     }

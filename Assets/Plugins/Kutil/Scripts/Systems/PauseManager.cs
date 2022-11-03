@@ -40,9 +40,11 @@ namespace Kutil {
 #endif
         }
         private void OnDisable() {
+#if ENABLE_INPUT_SYSTEM
             if (togglePauseButton) {
                 togglePauseButton.action.Dispose();
             }
+#endif
         }
         private void Start() {
             if (pauseOnStart) {

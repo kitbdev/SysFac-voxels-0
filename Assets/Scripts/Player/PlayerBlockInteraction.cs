@@ -22,6 +22,7 @@ public class PlayerBlockInteraction : MonoBehaviour {
     [SerializeField] [ReadOnly] int selectedBlockType;
     [ReadOnly] public float scrollAcc = 0;
     [SerializeField] [ReadOnly] BlockTypeRef selBlocktypeRef;
+    [SerializeField] bool debugMode = false;
 
     public VoxelWorld world;
     Transform cam;
@@ -91,11 +92,11 @@ public class PlayerBlockInteraction : MonoBehaviour {
             targetBlockPos = world.WorldposToBlockpos(hit.point + camRay.direction * 0.001f);
             Debug.DrawLine(camRay.origin, hit.point + camRay.direction * 0.001f, Color.black, 0.1f);
             targetBlockNorm = world.transform.InverseTransformDirection(hit.normal).normalized;// for placing 
-            // Debug.Log($"hit {hit.collider.name} bp:{blockPos}");
             BlockTypeRef blockTypeRef = GetBlockType(targetBlockPos);
 
+            if (debugMode) Debug.Log($"hit {hit.collider.name} bp:{targetBlockPos} btr:{blockTypeRef}");
             // if (blockType != null) {
-            Voxel voxel = world.GetVoxelAt(targetBlockPos);
+            // Voxel voxel = world.GetVoxelAt(targetBlockPos);
             // BlockTypeVoxelData blockTypeVoxelData = voxel.GetVoxelDataFor<BlockTypeVoxelData>();
             // Debug.Log($"hit {blockTypeRef}");
             // }

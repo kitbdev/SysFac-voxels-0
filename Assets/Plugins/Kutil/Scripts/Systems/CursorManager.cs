@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+#endif
 
 namespace Kutil {
     /// <summary>
     /// Manages the cursor lock and visible state. must be placed in scene
     /// </summary>
     public class CursorManager : MonoBehaviour {
-
+#if ENABLE_INPUT_SYSTEM
         [SerializeField] InputActionReference unlockAction;
         [SerializeField] InputActionReference lockAction;
+#endif
         [SerializeField] CursorLockMode lockMode = CursorLockMode.Locked;
         [SerializeField] bool hideWhenLocked = true;
         [SerializeField] bool lockOnAwake = true;
@@ -24,6 +27,7 @@ namespace Kutil {
             }
         }
         private void OnEnable() {
+#if ENABLE_INPUT_SYSTEM
             if (unlockAction != null) {
                 unlockAction.action.Enable();
                 unlockAction.action.performed += c => SetCursorLock(false);
@@ -32,6 +36,7 @@ namespace Kutil {
                 lockAction.action.Enable();
                 lockAction.action.performed += c => SetCursorLock(true);
             }
+#endif
             if (toggleOnPause) {
                 // todo only if using keyboard and mouse
                 PauseManager.Instance.pauseEvent.AddListener(UnlockCursor);
@@ -46,7 +51,11 @@ namespace Kutil {
             }
         }
         private void Update() {
+#if ENABLE_INPUT_SYSTEM
             if (toggleOnMKey && (Keyboard.current?.mKey.wasPressedThisFrame ?? false)) {
+#else
+            if (toggleOnMKey && Input.GetKeyDown(KeyCode.M)) {
+#endif
                 SetCursorLock(!isLocked);
             }
         }
